@@ -182,6 +182,18 @@ function Tablero() {
   const [evidenciaVisible, setEvidenciaVisible] = useState(true);
   const [pantallaCompleta, setPantallaCompleta] = useState(false);
   const [presentando, setPresentando] = useState(false);
+  /**
+   * El tablero abre con el mapa de alertas, pero eso no es una consulta: hasta que alguien
+   * pregunte o cambie de componente a mano, la vista se rotula como punto de partida y el
+   * panel de evidencia espera vacío. Una URL con componente ya es una vista elegida.
+   */
+  const [vistaDePartida, setVistaDePartida] = useState(() => inicial.current === null);
+  /**
+   * Adónde volver tras abrir un documento desde la evidencia: la petición que se estaba
+   * mirando y su título. Un solo nivel, explícito; la vuelta atrás del navegador sigue
+   * siendo del hilo del agente (`replaceState`), no de cada salto.
+   */
+  const [retorno, setRetorno] = useState<{ peticion: Peticion; titulo: string } | null>(null);
 
   const claveEjecutada = useRef<string | null>(null);
   const control = useRef<AbortController | null>(null);
@@ -257,6 +269,8 @@ function Tablero() {
       };
       const nuevaPeticion: Peticion = { componente, filtros };
       setSeleccion(null);
+      setVistaDePartida(false);
+      setRetorno(null);
       if (resultado) {
         // El agente ya calculó el componente: se muestra sin repetir la petición.
         claveEjecutada.current = claveDe(nuevaPeticion, nuevosGlobales);
@@ -325,16 +339,45 @@ function Tablero() {
     [aplicarEspecificacion, historial],
   );
 
-  /** Enlace de una cita a su referencia: todos los fragmentos de ese documento. */
-  const verDocumento = useCallback((docId: string) => {
+  /**
+   * Enlace de una cita a su referencia: todos los fragmentos de ese documento. Se guarda de
+   * dónde se venía, porque leer el documento entero es un desvío, no un destino: quien lo
+   * abre quiere volver a su mapa con sus filtros tal cual.
+   */
+  const verDocumento = useCallback(
+    (docId: string) => {
+      if (peticion.componente !== "panel_evidencia" || peticion.filtros["doc_id"] === undefined) {
+        // Desde un documento a otro documento se conserva el retorno original.
+        if (!(peticion.componente === "panel_evidencia" && retorno)) {
+          setRetorno({
+            peticion,
+            titulo:
+              (vista.fase === "listo" ? vista.resultado.titulo : null) ||
+              (definicionDe(peticion.componente)?.etiqueta ?? peticion.componente),
+          });
+        }
+      }
+      setSeleccion(null);
+      setMotivo(null);
+      setPantallaCompleta(false);
+      setVistaDePartida(false);
+      setPeticion({
+        componente: "panel_evidencia",
+        filtros: { ...filtrosPredeterminados("panel_evidencia"), doc_id: docId },
+      });
+    },
+    [peticion, retorno, vista],
+  );
+
+  /** Deshace el desvío al documento: la petición anterior, con sus filtros, tal cual. */
+  const volverDelDocumento = useCallback(() => {
+    if (!retorno) {
+      return;
+    }
     setSeleccion(null);
-    setMotivo(null);
-    setPantallaCompleta(false);
-    setPeticion({
-      componente: "panel_evidencia",
-      filtros: { ...filtrosPredeterminados("panel_evidencia"), doc_id: docId },
-    });
-  }, []);
+    setPeticion(retorno.peticion);
+    setRetorno(null);
+  }, [retorno]);
 
   /**
    * Salto propuesto por una selección: mismo componente u otro, con los filtros del salto
@@ -344,6 +387,8 @@ function Tablero() {
   const ejecutarAccion = useCallback((accion: Accion) => {
     setSeleccion(null);
     setMotivo(null);
+    setVistaDePartida(false);
+    setRetorno(null);
     setPeticion((previa) => ({
       componente: accion.componente,
       filtros: {
@@ -357,6 +402,8 @@ function Tablero() {
   const cambiarComponente = useCallback((componente: NombreComponente) => {
     setSeleccion(null);
     setMotivo(null);
+    setVistaDePartida(false);
+    setRetorno(null);
     setPeticion({ componente, filtros: filtrosPredeterminados(componente) });
   }, []);
 
@@ -372,7 +419,10 @@ function Tablero() {
   const nivelColombia: NivelMapa =
     peticion.filtros["nivel"] === "municipio" ? "municipio" : "departamento";
 
-  const evidenciaGlobal: readonly Ref[] = vista.fase === "listo" ? vista.resultado.evidencia : [];
+  // En la vista de partida el panel no se precarga con las alertas del mapa: espera a que se
+  // elija una región o se pregunte, para que nadie tome el arranque por una búsqueda hecha.
+  const evidenciaGlobal: readonly Ref[] =
+    vista.fase === "listo" && !vistaDePartida ? vista.resultado.evidencia : [];
 
   /** Lo que se dibuja: el resultado listo, o el anterior mientras llega el nuevo. */
   const resultadoVisible: ResultadoComponente | null =
@@ -415,6 +465,12 @@ function Tablero() {
               <LienzoComponente
                 resultado={resultadoVisible}
                 motivo={motivo}
+                partida={vistaDePartida}
+                retorno={
+                  retorno && resultadoVisible.componente === "panel_evidencia"
+                    ? { titulo: retorno.titulo, onVolver: volverDelDocumento }
+                    : null
+                }
                 seleccion={seleccion}
                 onSeleccionar={setSeleccion}
                 onAccion={ejecutarAccion}
@@ -444,6 +500,11 @@ function Tablero() {
               onOcultar={() => setEvidenciaVisible(false)}
               onVerDocumento={verDocumento}
               onAccion={ejecutarAccion}
+              mensajeVacio={
+                vistaDePartida
+                  ? "Elija una región del mapa para ver sus fuentes, o pregunte al agente."
+                  : undefined
+              }
             />
           </div>
         ) : !pantallaCompleta ? (

@@ -686,6 +686,15 @@ Eso cambia la forma que toma la coordinación, y conviene decir exactamente cuá
   reproduce exactamente lo que el evaluador está viendo; «Copiar enlace», en la barra
   superior, lo pone en el portapapeles. El hilo de la conversación permite
   además volver a cualquier vista anterior sin repetir la instrucción.
+- **El arranque no es una búsqueda.** El tablero abre con el mapa de alertas para que la
+  entrada no sea una pantalla en blanco, pero lo rotula como «Vista inicial · aún no ha
+  preguntado nada» y el panel de evidencia espera vacío hasta que se elige una región o se
+  pregunta. El rótulo desaparece con la primera consulta o el primer cambio de componente a
+  mano; una URL con componente ya es una vista elegida y no lo lleva.
+- **El desvío al documento tiene vuelta.** Pulsar el título de un fragmento abre el documento
+  entero en `panel_evidencia`, y el lienzo ofrece «Volver a {vista}», que restaura la petición
+  anterior con sus filtros tal cual. Un solo nivel y explícito: la vuelta atrás del
+  navegador sigue siendo del hilo del agente, no de cada salto.
 - **La decisión del agente, a la vista.** Bajo el título del componente se lee «Por qué esta
   vista», con la justificación que devolvió el agente al elegir ese gráfico y esos filtros.
   El bloque B del Reto 2 evalúa exactamente esa decisión; hasta hace poco solo se leía

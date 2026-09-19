@@ -25,6 +25,8 @@ interface Props {
   onVerDocumento: (docId: string) => void;
   /** Ejecuta el salto que propone la selección (p. ej. expandir la red en un nodo). */
   onAccion: (accion: Accion) => void;
+  /** Qué decir cuando no hay nada que mostrar; sin esto, la invitación general. */
+  mensajeVacio?: string | undefined;
 }
 
 /**
@@ -42,6 +44,7 @@ export function PanelLateralEvidencia({
   onOcultar,
   onVerDocumento,
   onAccion,
+  mensajeVacio,
 }: Props) {
   const tecnica = useVistaTecnica();
   const conCorpus = useCorpusDisponible();
@@ -114,7 +117,10 @@ export function PanelLateralEvidencia({
         {chunkIds.length === 0 ? (
           <Vacio
             titulo="Sin fragmentos que mostrar"
-            detalle="Pulse una región, un punto, una celda o una arista para abrir la evidencia que la sustenta."
+            detalle={
+              mensajeVacio ??
+              "Pulse una región, un punto, una celda o una arista para abrir la evidencia que la sustenta."
+            }
           />
         ) : evidencia.fase === "cargando" ? (
           <Cargando mensaje="Leyendo los fragmentos originales…" />

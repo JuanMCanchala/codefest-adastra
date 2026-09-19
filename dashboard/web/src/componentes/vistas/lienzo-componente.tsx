@@ -1,4 +1,12 @@
-import { Layers3, Maximize2, Minimize2, Sparkles, TriangleAlert } from "lucide-react";
+import {
+  ArrowLeft,
+  Compass,
+  Layers3,
+  Maximize2,
+  Minimize2,
+  Sparkles,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, type CSSProperties } from "react";
 
 import type { NombreComponente, ResultadoComponente } from "@/api/tipos";
@@ -18,6 +26,10 @@ interface Props {
   resultado: ResultadoComponente;
   /** Por qué el agente eligió esta vista; `null` cuando la eligió una persona. */
   motivo: string | null;
+  /** Vista con la que abre el tablero, antes de la primera consulta: no es un resultado. */
+  partida: boolean;
+  /** Adónde volver si esta vista es el desvío a un documento abierto desde la evidencia. */
+  retorno: { titulo: string; onVolver: () => void } | null;
   seleccion: Seleccion | null;
   onSeleccionar: (seleccion: Seleccion) => void;
   onAccion: (accion: Accion) => void;
@@ -77,6 +89,8 @@ function filtrosLegibles(resultado: ResultadoComponente): { clave: string; texto
 export function LienzoComponente({
   resultado,
   motivo,
+  partida,
+  retorno,
   seleccion,
   onSeleccionar,
   onAccion,
@@ -179,6 +193,33 @@ export function LienzoComponente({
           ) : null}
         </div>
       </header>
+
+      {/* El desvío al documento tiene vuelta explícita: la petición anterior con sus filtros. */}
+      {retorno ? (
+        <div className="border-b border-borde px-4 py-1.5">
+          <button
+            type="button"
+            onClick={retorno.onVolver}
+            className="inline-flex max-w-full items-center gap-1.5 rounded-md px-2 py-1 text-sm text-senal hover:bg-elevado hover:text-texto"
+          >
+            <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />
+            <span className="truncate">Volver a {retorno.titulo}</span>
+          </button>
+        </div>
+      ) : null}
+
+      {/* El arranque no es una búsqueda: se dice, y desaparece con la primera consulta o el
+          primer cambio de componente a mano. El mapa se queda, para que la entrada no sea
+          una pantalla en blanco. */}
+      {partida ? (
+        <p className="flex items-start gap-1.5 border-b border-borde px-4 py-2 text-sm text-apagado">
+          <Compass aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-senal" />
+          <span>
+            <span className="font-semibold text-texto">Vista inicial</span> · aún no ha preguntado
+            nada. Pregunte al agente o elija un componente en «Ajustar».
+          </span>
+        </p>
+      ) : null}
 
       {/* La decisión del agente, a la vista (§3.3.2): qué componente eligió y por qué. Es lo
           que el bloque B del Reto 2 evalúa, y hasta ahora solo se leía dentro del hilo. */}

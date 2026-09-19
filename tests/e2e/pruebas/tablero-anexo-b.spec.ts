@@ -326,6 +326,60 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     await expect(lienzo(page)).toContainText("Alertas tempranas por departamento");
   });
 
+  test("abrir un documento desde la evidencia ofrece volver a la consulta con sus filtros", async ({
+    page,
+  }) => {
+    // Una consulta con filtros propios: nivel municipal y una economía ilícita.
+    await abrirEn(page, { componente: "mapa_colombia", nivel: "municipio", economia: "minería" });
+    await cerrarAgente(page);
+    const titulo = page.getByRole("heading", { level: 2, name: /Alertas tempranas por municipio/ });
+    await expect(titulo).toBeVisible();
+    // El título de un fragmento del panel lleva al documento entero…
+    const documento = panel(page).getByRole("listitem").first().getByRole("button").first();
+    await expect(documento).toHaveAttribute("title", /^Ver todos los fragmentos de /);
+    const recalculo = page.waitForResponse((r) => {
+      if (!r.url().includes("/api/componente")) return false;
+      const cuerpo = r.request().postDataJSON() as { componente?: string } | null;
+      return cuerpo?.componente === "panel_evidencia";
+    });
+    await documento.click();
+    expect((await recalculo).ok()).toBe(true);
+    await expect(titulo).toHaveCount(0);
+    // …y el desvío tiene vuelta explícita, con el nombre de la vista que se dejó.
+    const volver = lienzo(page).getByRole("button", {
+      name: /^Volver a Alertas tempranas por municipio/,
+    });
+    await expect(volver).toBeVisible();
+    const vuelta = page.waitForResponse((r) => {
+      if (!r.url().includes("/api/componente")) return false;
+      const cuerpo = r.request().postDataJSON() as {
+        componente?: string;
+        filtros?: { nivel?: string; economia?: string };
+      } | null;
+      return cuerpo?.componente === "mapa_colombia" && cuerpo.filtros?.nivel === "municipio";
+    });
+    await volver.click();
+    const cuerpo = (await vuelta).request().postDataJSON() as { filtros: { economia?: string } };
+    expect(cuerpo.filtros.economia).toBe("minería");
+    await expect(titulo).toBeVisible();
+    await expect(volver).toHaveCount(0);
+    await expect.poll(() => new URL(page.url()).searchParams.get("nivel")).toBe("municipio");
+  });
+
+  test("la vista inicial se rotula como punto de partida y deja de serlo al elegir a mano", async ({
+    page,
+  }) => {
+    await page.goto(TABLERO_URL);
+    await expect(lienzo(page)).toContainText("Vista inicial");
+    await expect(panel(page)).toContainText("Elija una región del mapa para ver sus fuentes");
+    await cerrarAgente(page);
+    // Cambiar de componente a mano es una decisión: el rótulo de partida se retira.
+    await page.getByTitle("Cambiar de componente").click();
+    await page.getByRole("menuitemradio", { name: /Distribución/ }).click();
+    await expect(page.getByRole("heading", { level: 2, name: /Distribución de/ })).toBeVisible();
+    await expect(lienzo(page)).not.toContainText("Vista inicial");
+  });
+
   test("las referencias [n] de la respuesta abren su fragmento, también en la presentación", async ({
     page,
     guardia,

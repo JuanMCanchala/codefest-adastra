@@ -83,8 +83,7 @@ const agente = (page: Page) => page.getByRole("region", { name: "Agente" });
 /** Componente activo: `section` con el título de la API como nombre accesible. */
 const lienzo = (page: Page) => page.locator("section[aria-labelledby='titulo-componente']");
 const panel = (page: Page) => page.getByRole("complementary", { name: "Panel de evidencia" });
-const tablaRegiones = (page: Page) =>
-  page.getByRole("table").filter({ hasText: "Región" });
+const tablaRegiones = (page: Page) => page.getByRole("table").filter({ hasText: "Región" });
 const campoInstruccion = (page: Page) =>
   page.getByRole("textbox", { name: "Instrucción en lenguaje natural" });
 const botonVisualizar = (page: Page) => page.getByRole("button", { name: /Visualizar|Analizando/ });
@@ -152,6 +151,19 @@ async function abrirTablero(page: Page): Promise<Resultado> {
   );
   await page.goto(TABLERO_URL);
   await salud;
+  return (await (await componente).json()) as Resultado;
+}
+
+/**
+ * Abre el mapa como vista elegida por URL. Sin componente en la URL el tablero arranca en
+ * la «vista inicial»: el panel de evidencia espera vacío hasta que se seleccione o se
+ * pregunte, así que las pruebas que leen la evidencia global del mapa entran por aquí.
+ */
+async function abrirTableroConsultado(page: Page): Promise<Resultado> {
+  const componente = page.waitForResponse(
+    (r) => r.url().includes("/api/componente") && r.request().method() === "POST",
+  );
+  await page.goto(`${TABLERO_URL}/?componente=mapa_colombia`);
   return (await (await componente).json()) as Resultado;
 }
 
@@ -225,9 +237,7 @@ test.describe("Tablero · carga inicial", () => {
     await page.goto(TABLERO_URL);
 
     await expect(page).toHaveTitle("Analítica visual · AeroCode");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      /AeroCode.*Analítica visual/,
-    );
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(/AeroCode.*Analítica visual/);
 
     // Con la API sana el encabezado no anuncia nada: el recuento de fragmentos no le
     // sirve a quien revisa y competía con la vista.
@@ -308,15 +318,25 @@ test.describe("Tablero · carga inicial", () => {
     await expect(cuerpoTabla.first()).toContainText(mayor.nombre);
     await expect(cuerpoTabla.first()).toContainText(entero(mayor.alertas));
 
-    // Panel lateral: evidencia del componente completo mientras no hay selección.
+    // El arranque no es una búsqueda: se rotula como vista inicial y el panel de evidencia
+    // espera vacío con su invitación, en vez de precargarse con las alertas del mapa.
+    await expect(lienzo(page)).toContainText("Vista inicial");
+    await expect(lienzo(page)).toContainText("aún no ha preguntado nada");
     await expect(panel(page).getByRole("heading", { name: "Evidencia" })).toBeVisible();
-    const enPanel = Math.min(resultado.evidencia.length, MAX_PANEL);
-    await expect(panel(page).getByRole("listitem")).toHaveCount(enPanel);
-    await expect(panel(page)).not.toContainText("fragmentos en total");
+    await expect(panel(page).getByRole("listitem")).toHaveCount(0);
+    await expect(panel(page)).toContainText("Elija una región del mapa para ver sus fuentes");
 
     // El agente arranca sin conversación: una pregunta, una línea y nada más.
     await expect(agente(page)).toContainText("¿Qué quiere ver?");
     await expect(agente(page).getByRole("listitem")).toHaveCount(0);
+
+    // Abierto como vista elegida (recarga: va al final para no cerrar la ventana del agente
+    // que las comprobaciones anteriores necesitan) (URL con componente) el panel sí trae la evidencia global.
+    const consultado = await abrirTableroConsultado(page);
+    await expect(lienzo(page)).not.toContainText("Vista inicial");
+    const enPanel = Math.min(consultado.evidencia.length, MAX_PANEL);
+    await expect(panel(page).getByRole("listitem")).toHaveCount(enPanel);
+    await expect(panel(page)).not.toContainText("fragmentos en total");
   });
 
   test("la burbuja se cierra y se vuelve a abrir desde la esquina", async ({ page }) => {
@@ -407,7 +427,7 @@ test.describe("Tablero · trazabilidad", () => {
   test("al pulsar un territorio el panel abre los fragmentos originales con doc y chunk", async ({
     page,
   }) => {
-    const resultado = await abrirTablero(page);
+    const resultado = await abrirTableroConsultado(page);
     await cerrarAgente(page);
     const filas = resultado.datos as FilaMapa[];
     const fila = [...filas]
@@ -424,25 +444,24 @@ test.describe("Tablero · trazabilidad", () => {
         r.status() === 200 &&
         new URL(r.url()).searchParams.get("chunk_ids") === esperados,
     );
-    const boton = tablaRegiones(page).getByRole("button", { name: new RegExp(fila.nombre) }).first();
+    const boton = tablaRegiones(page)
+      .getByRole("button", { name: new RegExp(fila.nombre) })
+      .first();
     await boton.click();
     await expect(boton).toHaveAttribute("aria-pressed", "true");
     const respuesta = await evidencia;
 
     await expect(panel(page)).toContainText(fila.nombre);
-    await expect(panel(page).getByRole("listitem")).toHaveCount(
-      chunkIdsDe(fila.refs ?? []).length,
-    );
+    await expect(panel(page).getByRole("listitem")).toHaveCount(chunkIdsDe(fila.refs ?? []).length);
 
     // Los fragmentos son los de la API, con su texto real.
-    const fragmentos = (await respuesta.json()) as FilaEvidencia[] | { fragmentos: FilaEvidencia[] };
+    const fragmentos = (await respuesta.json()) as
+      FilaEvidencia[] | { fragmentos: FilaEvidencia[] };
     const lista = Array.isArray(fragmentos) ? fragmentos : fragmentos.fragmentos;
     expect(lista.length).toBeGreaterThan(0);
     const primero = lista[0]!;
     const item = panel(page).getByRole("listitem").first();
-    await expect(item).toContainText(
-      `fragmento ${String(primero.chunk_id)} de ${primero.doc_id}`,
-    );
+    await expect(item).toContainText(`fragmento ${String(primero.chunk_id)} de ${primero.doc_id}`);
     const texto = ((primero as unknown as { texto?: string }).texto ?? "").slice(0, 60).trim();
     if (texto) {
       await expect(item).toContainText(texto);
@@ -497,9 +516,7 @@ test.describe("Tablero · trazabilidad", () => {
     await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText(/^Evidencia · .+/);
   });
 
-  test("el mapa se dibuja sin pedir una sola tesela a un tercero", async ({
-    page,
-  }, testInfo) => {
+  test("el mapa se dibuja sin pedir una sola tesela a un tercero", async ({ page }, testInfo) => {
     test.skip(esMovil(testInfo), "El mapa solo ocupa la mitad del lienzo en escritorio.");
 
     // PRODUCT.md: sin mapas base ni recursos remotos que dependan de tokens.
@@ -561,7 +578,7 @@ test.describe("Tablero · enlace de la cita a su referencia", () => {
   test("pulsar el documento de un fragmento abre todos los fragmentos de ese documento", async ({
     page,
   }) => {
-    const resultado = await abrirTablero(page);
+    const resultado = await abrirTableroConsultado(page);
     const fila = (resultado.datos as FilaMapa[]).find((f) => (f.refs ?? []).length > 0)!;
     const docId = fila.refs![0]!.doc_id;
 
@@ -634,11 +651,17 @@ test.describe("Tablero · componentes y filtros", () => {
 
     const filas = resultado.datos as FilaEvidencia[];
     expect(filas.length, "la entidad en mayúsculas debe devolver fragmentos").toBeGreaterThan(0);
-    await expect(page.getByRole("heading", { level: 2, name: /Fragmentos de la entidad/ })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: /Fragmentos de la entidad/ }),
+    ).toBeVisible();
     await expect(lienzo(page)).toContainText(`doc ${filas[0]!.doc_id}`);
 
     // Cada fragmento del componente abre su propia evidencia en el panel.
-    await lienzo(page).getByRole("button").filter({ hasText: `doc ${filas[0]!.doc_id}` }).first().click();
+    await lienzo(page)
+      .getByRole("button")
+      .filter({ hasText: `doc ${filas[0]!.doc_id}` })
+      .first()
+      .click();
     await expect(panel(page)).toContainText(`de ${filas[0]!.doc_id}`);
   });
 
@@ -647,7 +670,9 @@ test.describe("Tablero · componentes y filtros", () => {
     expect(cuerpo.filtros["desde"]).toBeUndefined();
     expect(cuerpo.filtros["hasta"]).toBeUndefined();
     // Y el gráfico se describe para lectores de pantalla.
-    await expect(page.getByRole("img", { name: /^Matriz de \d+ filas por \d+ columnas/ })).toBeVisible();
+    await expect(
+      page.getByRole("img", { name: /^Matriz de \d+ filas por \d+ columnas/ }),
+    ).toBeVisible();
   });
 
   test("un filtro sin resultados se descarta, se avisa y se muestra el corpus", async ({
@@ -667,9 +692,7 @@ test.describe("Tablero · componentes y filtros", () => {
     await expect(lienzo(page)).toContainText("Fragmentos del corpus completo");
   });
 
-  test("un filtro que la API descarta se avisa sin encender la vista técnica", async ({
-    page,
-  }) => {
+  test("un filtro que la API descarta se avisa sin encender la vista técnica", async ({ page }) => {
     // El vocabulario de `economia` es cerrado: un valor inventado se descarta y el
     // componente responde con el conjunto completo, que hay que declarar.
     const { resultado } = await abrirTableroEn(page, {
@@ -742,9 +765,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await expect(respuesta).not.toContainText("tokens");
 
     // El resultado que ya calculó el agente se muestra sin repetir /api/componente.
-    await expect(
-      page.getByRole("heading", { level: 2, name: V.resultado.titulo }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: V.resultado.titulo })).toBeVisible();
     await expect(lienzo(page)).toContainText(
       `Economía ilícita: ${String(V.resultado.filtros_aplicados["economia"])}`,
     );
@@ -752,9 +773,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
 
     // Las cifras del resultado se leen junto a la respuesta, sin interpretar el gráfico.
     await expect(respuesta).toContainText("Evidencia");
-    await expect(respuesta).toContainText(
-      `${entero(V.resultado.total_evidencia)} fragmentos`,
-    );
+    await expect(respuesta).toContainText(`${entero(V.resultado.total_evidencia)} fragmentos`);
 
     // Los filtros globales quedan sincronizados con lo que decidió el agente.
     await expect(lienzo(page)).toContainText(FENOMENOS[2].clave);
@@ -796,9 +815,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await conRecalculo(page, async () => {
       await panel(page).getByRole("listitem").first().getByRole("button").first().click();
     });
-    await expect(
-      lienzo(page).getByRole("note", { name: "Panel de evidencia" }),
-    ).toBeVisible();
+    await expect(lienzo(page).getByRole("note", { name: "Panel de evidencia" })).toBeVisible();
 
     // …y el historial lo devuelve tal como lo entregó el agente, sin volver a preguntar.
     await agente(page).getByRole("button", { name: "Consultas anteriores" }).click();
@@ -881,15 +898,13 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await campoInstruccion(page).fill("   ");
     await expect(botonVisualizar(page)).toBeDisabled();
     await campoInstruccion(page).press("Enter");
-    await campoInstruccion(page).evaluate((el) =>
-      (el as HTMLInputElement).form?.requestSubmit(),
-    );
+    await campoInstruccion(page).evaluate((el) => (el as HTMLInputElement).form?.requestSubmit());
 
     await page.waitForTimeout(500);
     expect(visualizar.peticiones).toHaveLength(0);
-    await expect(
-      page.getByRole("status").filter({ hasText: "Consultando al agente" }),
-    ).toHaveCount(0);
+    await expect(page.getByRole("status").filter({ hasText: "Consultando al agente" })).toHaveCount(
+      0,
+    );
   });
 });
 
@@ -906,7 +921,10 @@ test.describe("Tablero · presentación", () => {
 
     const filas = resultado.datos as FilaMapa[];
     const fila = [...filas].sort((a, b) => b.alertas - a.alertas)[0]!;
-    await tablaRegiones(page).getByRole("button", { name: new RegExp(fila.nombre) }).first().click();
+    await tablaRegiones(page)
+      .getByRole("button", { name: new RegExp(fila.nombre) })
+      .first()
+      .click();
     await expect(panel(page)).toContainText(fila.nombre);
     await esperarSinDesbordeHorizontal(page);
 
@@ -924,13 +942,18 @@ test.describe("Tablero · presentación", () => {
 
     const filas = resultado.datos as FilaMapa[];
     const fila = [...filas].sort((a, b) => b.alertas - a.alertas)[0]!;
-    await tablaRegiones(page).getByRole("button", { name: new RegExp(fila.nombre) }).first().click();
+    await tablaRegiones(page)
+      .getByRole("button", { name: new RegExp(fila.nombre) })
+      .first()
+      .click();
     await expect(panel(page)).toContainText(fila.nombre);
     await auditarAccesibilidad(page, testInfo, "tablero-evidencia");
 
     // La ventana ampliada es otra superficie entera: conversación y gráfico a la vez.
     await agente(page).getByRole("button", { name: "Ampliar el panel del agente" }).click();
-    await expect(agente(page).getByRole("button", { name: "Reducir el panel del agente" })).toBeVisible();
+    await expect(
+      agente(page).getByRole("button", { name: "Reducir el panel del agente" }),
+    ).toBeVisible();
     await auditarAccesibilidad(page, testInfo, "tablero-agente-ampliado");
   });
 
