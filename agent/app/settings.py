@@ -17,14 +17,16 @@ class Settings(BaseSettings):
     aws_region: str = "us-east-1"
     # Gateway OpenAI-compatible de ADL (clave "sk-..."). Si LLM_BASE_URL está definido,
     # se usa en lugar de boto3; los IDs de modelo son los que exponga el gateway.
-    llm_base_url: str = ""
+    llm_base_url: str = "https://litellm.admin-adl.codefest2026.augusta.avaldigitallabs.com/v1"
     llm_api_key: str = ""
-    # Valores iniciales según benchmarks públicos (docs/investigacion/03_arquitectura/
-    # benchmarks_modelos_bedrock.md); se confirman con mediciones propias antes de fijarlos.
-    modelo_orquestador: str = "openai.gpt-oss-120b-1:0"
-    modelo_corpus: str = "us.meta.llama3-3-70b-instruct-v1:0"
-    modelo_visualizacion: str = "openai.gpt-oss-120b-1:0"
-    # Esfuerzo de razonamiento de los modelos gpt-oss: "low" reduce tokens y latencia.
+    # IDs del gateway de ADL. Elegidos con benchmarks públicos y una prueba mínima en el
+    # gateway (docs/investigacion/03_arquitectura/benchmarks_modelos_bedrock.md): Qwen3-Next
+    # clasificó bien y fue el más rápido (1,1 s) sin tokens de razonamiento; Llama 3.3 70B
+    # tiene la alucinación más baja y estable en RAG. gpt-oss-120b erró el fenómeno.
+    modelo_orquestador: str = "qwen3-next-80b"
+    modelo_corpus: str = "meta.llama3-3-70b-instruct"
+    modelo_visualizacion: str = "qwen3-next-80b"
+    # Esfuerzo de razonamiento si se usa un modelo gpt-oss: "low" reduce tokens y latencia.
     razonamiento_gpt_oss: str = "low"
     llm_timeout_s: float = 60.0
     llm_max_tokens_respuesta: int = 700

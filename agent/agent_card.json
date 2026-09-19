@@ -15,8 +15,8 @@
   "orquestador": {
     "nombre": "orquestador",
     "descripcion": "Recibe la pregunta, aplica el filtro de seguridad contra prompt injection y clasifica la intención (corpus, visualización, ambas o fuera de alcance). Delega en el sub-agente especializado con una consulta de búsqueda reformulada y el fenómeno detectado.",
-    "modelo": "gpt-oss-120b",
-    "proveedor": "openai",
+    "modelo": "qwen3-next-80b",
+    "proveedor": "qwen",
     "tools": [
       {
         "name": "filtro_seguridad",
@@ -54,8 +54,8 @@
       "id": "agente_visualizacion",
       "nombre": "Agente de visualización",
       "descripcion": "Elige, de un catálogo cerrado, el componente del tablero que responde a la tarea analítica pedida (comparación, distribución, relación, tendencia, composición o espacial) y define sus filtros. Los valores los calcula el backend a partir del corpus, con trazabilidad a doc_id y chunk_id.",
-      "modelo": "gpt-oss-120b",
-      "proveedor": "openai",
+      "modelo": "qwen3-next-80b",
+      "proveedor": "qwen",
       "activado_por": "orquestador",
       "ejemplos_de_activacion": [
         "Muéstrame en un mapa los departamentos de Colombia con más alertas tempranas",
