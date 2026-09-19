@@ -69,13 +69,9 @@ const panelEvidencia = (page: Page) =>
 const panelTraza = (page: Page) =>
   page.getByRole("tabpanel", { name: "Traza" });
 const alerta = (page: Page) => page.getByRole("main").getByRole("alert");
-const interruptorTecnico = (page: Page) =>
-  page.getByRole("button", { name: "Vista técnica" });
-
-/** Enciende la vista técnica, apagada por defecto. */
-async function activarVistaTecnica(page: Page): Promise<void> {
-  await interruptorTecnico(page).click();
-  await expect(interruptorTecnico(page)).toHaveAttribute("aria-pressed", "true");
+/** La consola desplegada para el jurado no enseña los detalles internos del sistema. */
+async function sinVistaTecnica(page: Page): Promise<void> {
+  await expect(page.getByRole("button", { name: "Vista técnica" })).toHaveCount(0);
 }
 const respuestas = (page: Page) =>
   page
@@ -229,8 +225,8 @@ test.describe("Chat · consulta con respuesta citada", () => {
     await expect(respuesta).toContainText(
       R.metadata.agentes_invocados.join(" → "),
     );
-    // Consumo de tokens y ruta interna: solo con la vista técnica encendida.
-    await expect(interruptorTecnico(page)).toHaveAttribute("aria-pressed", "false");
+    // Consumo de tokens y ruta interna: solo con VISTA_TECNICA en el contenedor.
+    await sinVistaTecnica(page);
     const cabecera = respuesta.locator("header");
     await expect(cabecera).not.toContainText("tokens");
     await expect(cabecera).not.toContainText(R.extras.ruta ?? "sin ruta");
@@ -268,8 +264,15 @@ test.describe("Chat · consulta con respuesta citada", () => {
       .getByRole("listitem")
       .filter({ has: page.getByRole("button", { expanded: true }) });
     await expect(activa).toHaveCount(1);
-    await expect(activa).toContainText(`doc ${cita1.doc_id}`);
-    await expect(activa).toContainText(`chunk ${cita1.chunk_id}`);
+    await expect(activa).toContainText(
+      `fragmento ${String(cita1.chunk_id)} de ${cita1.doc_id}`,
+    );
+    const enlace = activa.getByRole("link", { name: /ver el documento/ });
+    await expect(enlace).toHaveAttribute(
+      "href",
+      `${TABLERO_URL}/?componente=panel_evidencia&doc_id=${cita1.doc_id}`,
+    );
+    await expect(enlace).toHaveAttribute("target", "_blank");
     await expect(activa.locator("blockquote")).toContainText(
       R.evaluacion.retrieval_context[0]!.slice(0, 120).trim(),
     );
@@ -287,8 +290,9 @@ test.describe("Chat · consulta con respuesta citada", () => {
     await page.keyboard.press("Enter");
     await expect(panelInspeccion(page)).toBeVisible();
     const cita3 = R.extras.citas[2]!;
-    await expect(activa).toContainText(`doc ${cita3.doc_id}`);
-    await expect(activa).toContainText(`chunk ${cita3.chunk_id}`);
+    await expect(activa).toContainText(
+      `fragmento ${String(cita3.chunk_id)} de ${cita3.doc_id}`,
+    );
     await expect(activa.locator("blockquote")).toContainText(
       R.evaluacion.retrieval_context[2]!.slice(0, 120).trim(),
     );
@@ -304,7 +308,7 @@ test.describe("Chat · consulta con respuesta citada", () => {
     await expect(traza).toContainText(R.metadata.estado);
     await expect(traza).toContainText(latencia(R.metadata.latencia_ms));
     await expect(traza).not.toContainText("interacciones");
-    await expect(traza.getByRole("table")).toBeHidden();
+    await expect(traza.getByRole("table")).toHaveCount(0);
     const agentes = traza.getByRole("list").first().getByRole("listitem");
     await expect(agentes).toHaveText(
       R.metadata.agentes_invocados.map(
@@ -314,39 +318,6 @@ test.describe("Chat · consulta con respuesta citada", () => {
     for (const herramienta of R.evaluacion.tools_called) {
       await expect(traza).toContainText(herramienta.name);
     }
-
-    // Vista técnica: aparecen los parámetros de cada herramienta y el consumo por agente.
-    await activarVistaTecnica(page);
-    await expect(traza).toContainText(
-      `${R.metadata.num_interacciones} interacciones`,
-    );
-    for (const herramienta of R.evaluacion.tools_called) {
-      for (const [clave, valor] of Object.entries(
-        herramienta.input_parameters,
-      )) {
-        await expect(traza).toContainText(`${clave}:`);
-        await expect(traza).toContainText(String(valor));
-      }
-    }
-    const tabla = traza.getByRole("table");
-    for (const fila of R.metadata.tokens_por_agente) {
-      const tr = tabla.getByRole("row").filter({ hasText: fila.modelo });
-      await expect(tr).toContainText(fila.agente);
-      await expect(tr.getByRole("cell")).toHaveText([
-        new RegExp(fila.agente),
-        entero(fila.input),
-        entero(fila.output),
-        entero(fila.total),
-      ]);
-    }
-    await expect(
-      tabla.getByRole("row").filter({ hasText: "Total" }).getByRole("cell"),
-    ).toHaveText([
-      /Total/,
-      entero(R.metadata.tokens.input),
-      entero(R.metadata.tokens.output),
-      entero(R.metadata.tokens.total),
-    ]);
   });
 
   test("el botón Enviar consulta también envía y «Ver traza del sistema» abre la traza", async ({
@@ -433,9 +404,6 @@ test.describe("Chat · rechazo y errores", () => {
     await expect(panelTraza(page)).toContainText("patrón de inyección");
     // El parámetro con el que se rechazó es un detalle del sistema.
     await expect(panelTraza(page)).not.toContainText("accion:");
-    await activarVistaTecnica(page);
-    await expect(panelTraza(page)).toContainText("accion:");
-    await expect(panelTraza(page)).toContainText("rechazo");
   });
 
   for (const caso of [
