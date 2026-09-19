@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { calcularComponente, visualizar } from "@/api/cliente";
 import type {
   CuerpoComponente,
+  EspecificacionVisual,
   Filtros,
   IdFenomeno,
   NombreComponente,
@@ -75,6 +76,17 @@ function construirCuerpo(peticion: Peticion, globales: FiltrosGlobales): CuerpoC
 
 function claveDe(peticion: Peticion, globales: FiltrosGlobales): string {
   return JSON.stringify(construirCuerpo(peticion, globales));
+}
+
+/**
+ * Filtros que se reflejan en los controles: los que el agente pidió, corregidos con los que
+ * la API dice haber aplicado. Si no coincidieran, los controles mentirían sobre el gráfico.
+ */
+function filtrosEfectivos(
+  especificacion: EspecificacionVisual,
+  resultado: ResultadoComponente | null,
+): Record<string, unknown> {
+  return { ...especificacion.filtros, ...(resultado?.filtros_aplicados ?? {}) };
 }
 
 function anioValido(valor: unknown): number | null {
@@ -171,7 +183,7 @@ export function App() {
           if (especificacion) {
             aplicarEspecificacion(
               especificacion.componente,
-              especificacion.filtros,
+              filtrosEfectivos(especificacion, respuesta.resultado),
               especificacion.fenomeno,
               respuesta.resultado,
             );
@@ -202,7 +214,7 @@ export function App() {
       if (entrada && especificacion) {
         aplicarEspecificacion(
           especificacion.componente,
-          especificacion.filtros,
+          filtrosEfectivos(especificacion, entrada.respuesta?.resultado ?? null),
           especificacion.fenomeno,
           entrada.respuesta?.resultado ?? null,
         );
