@@ -12,7 +12,14 @@ import { Vacio } from "@/componentes/ui/estados";
 import { colorCategoria } from "@/lib/paleta";
 import type { PropsVista } from "@/lib/seleccion";
 import { TEMA } from "@/lib/tema";
-import { formatearEntero } from "@/lib/utils";
+import { cn, formatearEntero } from "@/lib/utils";
+
+const VISTAS: { valor: DatosPoblacionOrbital["vista"]; etiqueta: string }[] = [
+  { valor: "crecimiento", etiqueta: "Crecimiento" },
+  { valor: "asat", etiqueta: "Ensayos antisatélite" },
+  { valor: "colombia", etiqueta: "Colombia" },
+  { valor: "inspectores", etiqueta: "Inspección y proximidad" },
+];
 
 /**
  * Población de objetos en órbita, ensayos antisatélite, satélites de Colombia y satélites
@@ -448,18 +455,68 @@ function VistaInspectores({
   );
 }
 
+/**
+ * Encabezado único de la analítica aeroespacial: cambia de vista sin repetir el selector
+ * dentro de cada una. Vive aquí, no en `VistaCrecimiento`/`VistaAsat`/etc., porque las cuatro
+ * comparten el mismo componente y el mismo filtro `vista` — un botón por vista, no cuatro.
+ */
+function CabeceraVistas({
+  activa,
+  onAccion,
+}: {
+  activa: DatosPoblacionOrbital["vista"];
+  onAccion: PropsVista<unknown>["onAccion"];
+}) {
+  if (!onAccion) {
+    return null;
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 border-b border-borde px-4 py-2">
+      <span className="text-xs text-apagado">Analítica aeroespacial:</span>
+      {VISTAS.map((v) => (
+        <button
+          key={v.valor}
+          type="button"
+          onClick={() =>
+            onAccion({
+              etiqueta: `Ver ${v.etiqueta.toLowerCase()}`,
+              componente: "poblacion_orbital",
+              filtros: { vista: v.valor },
+            })
+          }
+          aria-pressed={activa === v.valor}
+          className={cn(
+            "rounded-md border px-2 py-0.5 text-xs transition-colors",
+            activa === v.valor
+              ? "border-senal/60 bg-senal/10 text-texto"
+              : "border-borde text-apagado hover:text-texto",
+          )}
+        >
+          {v.etiqueta}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function VistaPoblacionOrbital({
   datos,
   onSeleccionar,
+  onAccion,
 }: PropsVista<DatosPoblacionOrbital>) {
-  switch (datos.vista) {
-    case "crecimiento":
-      return <VistaCrecimiento datos={datos} />;
-    case "asat":
-      return <VistaAsat datos={datos} onSeleccionar={onSeleccionar} />;
-    case "colombia":
-      return <VistaColombia datos={datos} />;
-    case "inspectores":
-      return <VistaInspectores datos={datos} onSeleccionar={onSeleccionar} />;
-  }
+  return (
+    <div className="flex h-full flex-col">
+      <CabeceraVistas activa={datos.vista} onAccion={onAccion} />
+      <div className="min-h-0 flex-1">
+        {datos.vista === "crecimiento" ? <VistaCrecimiento datos={datos} /> : null}
+        {datos.vista === "asat" ? (
+          <VistaAsat datos={datos} onSeleccionar={onSeleccionar} />
+        ) : null}
+        {datos.vista === "colombia" ? <VistaColombia datos={datos} /> : null}
+        {datos.vista === "inspectores" ? (
+          <VistaInspectores datos={datos} onSeleccionar={onSeleccionar} />
+        ) : null}
+      </div>
+    </div>
+  );
 }
