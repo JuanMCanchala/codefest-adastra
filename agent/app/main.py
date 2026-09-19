@@ -53,13 +53,19 @@ async def lifespan(app: FastAPI):
     sistema, recuperador = _crear_sistema()
     app.state.sistema = sistema
     app.state.recuperador = recuperador
+
     # La base vectorial y los modelos de embeddings tardan en cargar: se precargan en
     # segundo plano para que la primera pregunta de la evaluación no pague ese costo.
-    threading.Thread(target=recuperador.cargar, daemon=True, name="precarga").start()
-    if sistema.clasificador is not None:
-        threading.Thread(
-            target=sistema.clasificador.cargar, daemon=True, name="precarga-guardia"
-        ).start()
+    # Un solo hilo y en secuencia: si el clasificador y FlagEmbedding importan
+    # `transformers` a la vez desde dos hilos, la importación diferida de transformers 5
+    # falla ("cannot import name 'is_torch_npu_available'") y la base nunca carga, con
+    # /health en 503 para siempre. Reproducido 3 de 3 veces en la imagen del agente.
+    def precargar() -> None:
+        if sistema.clasificador is not None:
+            sistema.clasificador.cargar()
+        recuperador.cargar()
+
+    threading.Thread(target=precargar, daemon=True, name="precarga").start()
     yield
 
 
