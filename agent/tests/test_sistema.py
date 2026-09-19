@@ -236,6 +236,23 @@ def test_health_y_agent_card(cliente):
     assert len(card["subagentes"]) >= 2
 
 
+def test_la_ficha_declara_todos_los_agentes_que_el_grafo_puede_invocar(cliente):
+    """La ficha es el insumo del bloque D (20 %): un agente que corre y no está
+    declarado no puntúa. Pasó con `agente_satelital`, que estuvo en producción varias
+    horas sin aparecer en la ficha; esta prueba es para que no vuelva a pasar."""
+    from app.agents import AgenteCorpus, AgenteSatelital, AgenteVisualizacion
+
+    card = cliente.get("/agent-card").json()
+    declarados = {s["id"] for s in card["subagentes"]}
+    for clase in (AgenteCorpus, AgenteSatelital, AgenteVisualizacion):
+        assert clase.nombre in declarados, f"{clase.nombre} no está en agent_card.json"
+    # Los que llaman a un modelo necesitan modelo y proveedor: con eso se calcula el
+    # costo estimado por pregunta (§2.3).
+    for sub in card["subagentes"]:
+        if sub["id"] in {AgenteCorpus.nombre, AgenteSatelital.nombre, AgenteVisualizacion.nombre}:
+            assert sub.get("modelo") and sub.get("proveedor"), sub["id"]
+
+
 class ClasificadorFalso:
     def __init__(self, ataque: bool) -> None:
         self.ataque = ataque

@@ -101,6 +101,28 @@
       ]
     },
     {
+      "id": "agente_satelital",
+      "nombre": "Agente satelital",
+      "descripcion": "Responde con área medida sobre imagen, no con texto recuperado: hectáreas de minería ilegal y de cobertura boscosa. Se apoya en dos fuentes porque ninguna cubre las dos cosas: Amazon Mining Watch sobre Sentinel-2 (10 m/px) para Colombia, con serie 2018-2026T2 por departamento, resguardo indígena, área protegida y municipio con código DIVIPOLA; y la segmentación de ortomosaicos de dron (5 cm/px) del conjunto ELDOR para Madre de Dios, Perú, que es la parte validada contra máscaras anotadas. Las cifras se precalculan fuera de línea y el agente solo las lee y las redacta, así que la respuesta no paga la latencia de la segmentación. La procedencia (fuente, sensor, modelo, periodo, sitio con bbox o código DIVIPOLA) cumple el papel de doc_id y chunk_id, y entra a 'retrieval_context' igual que un fragmento del corpus. Una pregunta sobre Colombia nunca arrastra los sitios peruanos. Sin detecciones en disco no se monta en el grafo.",
+      "modelo": "qwen3-next-80b",
+      "proveedor": "qwen",
+      "activado_por": "orquestador",
+      "ejemplos_de_activacion": [
+        "¿Cuántas hectáreas de minería ilegal hay en Eldorado?",
+        "¿Cuánta minería aurífera se ha detectado en los resguardos indígenas de Colombia?"
+      ],
+      "tools": [
+        {
+          "name": "medir_cobertura_satelital",
+          "descripcion": "Lee las mediciones precalculadas que correspondan a la pregunta y devuelve cada una con su procedencia, más el agregado cuando son varios sitios. Determinista, sin invocar modelos: la segmentación y el conteo de hectáreas ocurrieron antes, en 'scripts/eldor_precalcular.py' y 'scripts/amw_colombia.py'.",
+          "input_parameters": {
+            "colombia": "boolean",
+            "sitios_peru": "array"
+          }
+        }
+      ]
+    },
+    {
       "id": "agente_visualizacion",
       "nombre": "Agente de visualización",
       "descripcion": "Elige, de un catálogo cerrado, el componente del tablero que responde a la tarea analítica pedida (comparación, distribución, relación, tendencia, composición o espacial) y define sus filtros. Los valores los calcula el backend a partir del corpus, con trazabilidad a doc_id y chunk_id.",

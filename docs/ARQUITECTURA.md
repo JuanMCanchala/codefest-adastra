@@ -40,12 +40,14 @@ flowchart LR
     E -- sin confianza --> O["orquestador (LLM)<br/>1 llamada"]
     O --> D
     D -- corpus/ambos/visualizacion --> C["agente de corpus<br/>1 llamada"]
+    D -- satelital --> S["agente satelital<br/>1 llamada"]
     D -- fuera_de_alcance --> F[fuera de alcance]
     C --> VER["verificador de citas<br/>0 llamadas"]
     VER -- ambos/visualizacion --> V["agente de visualización<br/>1 llamada"]
     VER -- corpus --> FIN2[respuesta]
     V --> FIN3[respuesta]
-    F --> FIN4[respuesta]
+    S --> FIN4[respuesta]
+    F --> FIN5[respuesta]
 ```
 
 El flujo real es un `StateGraph` de LangGraph sin ciclos ni autocrítica
@@ -57,7 +59,7 @@ sola llamada al modelo** (corpus vía enrutador), medido en el harness propio
 
 ## 2. Agentes y orquestación
 
-### 2.1 Los ocho participantes
+### 2.1 Los nueve participantes
 
 | # | Nombre | Tipo | Llamadas al modelo | Rol |
 | --- | --- | --- | --- | --- |
@@ -69,8 +71,9 @@ sola llamada al modelo** (corpus vía enrutador), medido en el harness propio
 | 6 | `agente_corpus` | LLM (Llama 3.3 70B) | 1, si hay fragmentos (si no, 0) | Recupera, escanea y sanea fragmentos, redacta citando cada afirmación, se abstiene si la evidencia no alcanza |
 | 7 | `verificador_citas` | Determinista | 0 | Corre siempre después del corpus: valida cada marca `[n]` contra el contexto real entregado |
 | 8 | `agente_visualizacion` | LLM (Qwen3-Next-80B) | 1 | Elige componente de un catálogo cerrado y sus filtros; el backend calcula los valores |
+| 9 | `agente_satelital` | LLM (Qwen3-Next-80B) | 1, solo en la ruta `satelital` | Responde con hectáreas medidas sobre imagen —minería ilegal y cobertura boscosa— en vez de texto recuperado, con su procedencia (§2.7) |
 
-Ocho participantes, **cinco de ellos sin costo de interacción** (0 llamadas al
+Nueve participantes, **cinco de ellos sin costo de interacción** (0 llamadas al
 modelo). El diseño del bloque D (20 % de la nota) se apoya en esto: sumar capacidad al
 sistema **sin** sumar coste al bloque B (20 %). Guarda, memoria, enrutador, planner y
 verificador son la prueba de que ambos objetivos no son excluyentes.
@@ -223,6 +226,50 @@ el usuario. Está acotada en turnos por sesión, en número de sesiones y con ca
 vive en memoria del proceso: si el contenedor se reinicia se pierde, que es el
 comportamiento correcto para un dato de conversación.
 
+### 2.7 El agente satelital: evidencia medida, no recuperada
+
+**Problema que resuelve.** *"¿Cuántas hectáreas de minería ilegal hay en Eldorado?"* no
+tiene respuesta en el corpus: la cifra no está escrita en ningún documento, hay que
+medirla sobre la imagen. Enrutada al corpus, esa pregunta devuelve contexto
+tangencialmente relacionado y el redactor se abstiene — que es el comportamiento
+correcto, pero no la respuesta.
+
+**Solución.** `agent/app/agents.py`, clase `AgenteSatelital`. La ruta `satelital` la
+decide el orquestador (el enrutador por embeddings no tiene prototipos para ella, así que
+esta es una de las preguntas que sí paga la llamada de clasificación). El agente lee
+mediciones **precalculadas** y redacta sobre ellas; no ejecuta la segmentación en línea,
+de modo que la respuesta no paga esa latencia y toda cifra es reproducible corriendo de
+nuevo el script sobre el mismo insumo.
+
+**Dos fuentes, porque ninguna cubre las dos cosas.**
+
+| Fuente | Cobertura | Sensor | Qué aporta |
+| --- | --- | --- | --- |
+| `app.amw` — Amazon Mining Watch | Colombia (cuenca amazónica; no el Bajo Cauca antioqueño) | Sentinel-2, 10 m/px | Serie 2018 – 2026T2, 663,8 ha acumuladas, desglosada por departamento, resguardo indígena, área protegida y municipio con DIVIPOLA |
+| `app.eldor` — conjunto ELDOR | Madre de Dios, Perú (3 sitios) | Ortomosaico de dron, 5 cm/px | La única parte **validada contra máscaras anotadas**: SegFormer MiT-B2, IoU por clase y exactitud de píxel publicadas junto a cada medición |
+
+El reparto no es arbitrario. El modelo de ELDOR se entrenó a 5 cm/px y se derrumba por
+debajo de ~0,30 m/px; la mejor imagen disponible de las zonas mineras colombianas es de
+0,59 m/px, y sobre ella etiqueta casi todo como agua (la medición está en
+`docs/investigacion/03_arquitectura/deteccion_satelital_eldor.md`). Por eso Colombia se
+responde con un modelo hecho para la resolución que sí existe, y ELDOR se conserva porque
+es lo que sostiene la calidad del método con validación propia.
+
+**Trazabilidad.** Una medición no tiene `doc_id` ni `chunk_id`, así que se cita con su
+equivalente espacial y entra a `retrieval_context` igual que un fragmento: fuente,
+sensor, modelo y periodo siempre; y según el caso el sitio con CRS y bbox en
+longitud/latitud más el checkpoint que la produjo, o el código DIVIPOLA de la
+jurisdicción. La respuesta se mide contra esa evidencia en el bloque A, como cualquier
+otra.
+
+**Una regla que no es negociable:** una pregunta sobre Colombia nunca arrastra los sitios
+peruanos. Mezclarlas invitaría a presentar hectáreas de Madre de Dios como si fueran
+colombianas, que es exactamente el error que este agente existe para no cometer. Si no
+hay detecciones en disco, `disponible` queda en `False`, el nodo no se monta en el grafo
+y la ruta cae al corpus.
+
+---
+
 ## 3. Recuperación
 
 Envuelve el `Retriever` de la Etapa 1 (`agent/etapa1/`) sin reimplementarlo:
@@ -313,9 +360,14 @@ corpus.
   fragmento usado — la vista rica que consume `frontagent`, no el contrato de
   evaluación (que se queda con `retrieval_context` como lista plana de textos, por
   §2.4).
+- **Una medición de imagen se cita con su procedencia** (§2.7), que cumple el papel de
+  `doc_id`/`chunk_id` cuando la evidencia no es texto: fuente, sensor, modelo y periodo,
+  más el sitio con CRS y bbox o el código DIVIPOLA de la jurisdicción. Va en
+  `retrieval_context` como cualquier fragmento.
 - **`tools_called`** (contrato §2.4) es en sí mismo un registro de trazabilidad de
   *qué hizo* el sistema, no solo qué dijo: `filtro_seguridad`, `enrutar_por_embeddings`,
-  `buscar_corpus`, `escanear_fragmentos`, `verificar_citas`, `seleccionar_componente`.
+  `buscar_corpus`, `escanear_fragmentos`, `verificar_citas`, `medir_cobertura_satelital`,
+  `seleccionar_componente`.
   Cada uno con sus parámetros de entrada y su salida (truncada a 600 caracteres),
   registrados por `Tracker` (`agent/app/tracker.py`) en el momento en que ocurren, no
   reconstruidos después.
