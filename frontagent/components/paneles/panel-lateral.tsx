@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 export type Pestana = "evidencia" | "traza";
 
 interface Props {
+  /** En pantallas estrechas el panel solo se muestra cuando se elige su vista. */
+  visibleEnMovil: boolean;
   datos: RespuestaAgente | null;
   nActiva: number | null;
   pestana: Pestana;
@@ -21,6 +23,7 @@ const PESTANAS: ReadonlyArray<{ clave: Pestana; etiqueta: string }> = [
 ];
 
 export function PanelLateral({
+  visibleEnMovil,
   datos,
   nActiva,
   pestana,
@@ -28,7 +31,13 @@ export function PanelLateral({
   onSeleccionar,
 }: Props) {
   return (
-    <aside className="flex min-h-0 flex-col border-borde bg-panel lg:w-96 lg:border-l xl:w-[26rem]">
+    <aside
+      aria-label="Panel de inspección"
+      className={cn(
+        "min-h-0 flex-1 flex-col border-borde bg-panel lg:w-96 lg:flex-none lg:border-l xl:w-[26rem]",
+        visibleEnMovil ? "flex" : "hidden lg:flex",
+      )}
+    >
       <div role="tablist" aria-label="Paneles de inspección" className="flex border-b border-borde">
         {PESTANAS.map(({ clave, etiqueta }) => (
           <button
@@ -39,7 +48,7 @@ export function PanelLateral({
             aria-selected={pestana === clave}
             aria-controls={`panel-${clave}`}
             className={cn(
-              "flex-1 px-4 py-2.5 text-xs font-medium uppercase tracking-wider transition-colors",
+              "h-11 flex-1 px-4 text-xs font-semibold uppercase tracking-[0.06em] transition-colors",
               pestana === clave
                 ? "border-b-2 border-acento text-texto"
                 : "border-b-2 border-transparent text-apagado hover:text-texto",
