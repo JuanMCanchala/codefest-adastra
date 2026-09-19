@@ -52,6 +52,29 @@ Cada fenómeno sigue la misma estructura de archivos: `README`, `fuentes_corpus`
 - [`proyectos_referencia.md`](03_arquitectura/proyectos_referencia.md) y [`repos_utiles.md`](03_arquitectura/repos_utiles.md): proyectos y librerías evaluados.
 - [`modelo_local.md`](03_arquitectura/modelo_local.md): modelo local. **Queda descartado para la entrega**, porque la especificación exige usar los modelos de Bedrock.
 
+
+### Profundización y rectificación (Esteban)
+
+Seis documentos que profundizan sobre los temas anteriores, más una **auditoría de rigor**
+que los revisa a todos. La auditoría es lo primero que hay que leer de este grupo: corrige
+cifras que iban a usarse en el pitch.
+
+| Documento | Contenido |
+| --- | --- |
+| [`RECTIFICACION_OPUS.md`](RECTIFICACION_OPUS.md) | **Auditoría de rigor** sobre los seis documentos de profundización. Corrige, entre otras, la cifra de personas venezolanas en Colombia (decía «más de 1 millón», son ~2,81 millones según Migración Colombia vía R4V) y marca como no verificadas las que ninguna fuente primaria sostiene |
+| [`profundizacion_fenomeno1_2_cifras.md`](profundizacion_fenomeno1_2_cifras.md) | Cifras verificadas de F1 (IA militar) y F2 (seguridad espacial) |
+| [`profundizacion_fenomeno3_cifras.md`](profundizacion_fenomeno3_cifras.md) | Cifras verificadas de F3 (dinámicas territoriales en ALC y Colombia) |
+| [`profundizacion_arquitectura_multiagente.md`](profundizacion_arquitectura_multiagente.md) | Estado real de los frameworks multiagente y riesgo de degradación multi-turno |
+| [`profundizacion_llm_generativo.md`](profundizacion_llm_generativo.md) | Candidatos de LLM generativo para el agente de síntesis |
+| [`profundizacion_analitica_visual.md`](profundizacion_analitica_visual.md) | Límites reales de escala del grafo y estado de las librerías de visualización |
+| [`profundizacion_verificacion_citas.md`](profundizacion_verificacion_citas.md) | Verificación de citas y *grounding* |
+
+> Estos documentos se escribieron antes de fijar la arquitectura final. Donde contradigan a
+> [`../ARQUITECTURA.md`](../ARQUITECTURA.md) o a
+> [`03_arquitectura/benchmarks_modelos_bedrock.md`](03_arquitectura/benchmarks_modelos_bedrock.md),
+> manda lo que está medido allí: la especificación obliga a usar los modelos de Bedrock, así que
+> las recomendaciones de modelos de estos documentos no aplican a la entrega.
+
 ## Convenciones
 
 - `F1-…`, `F2-…` y `F3-…` son `doc_id` del corpus oficial de ADL.
