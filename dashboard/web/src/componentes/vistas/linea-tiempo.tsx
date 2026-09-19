@@ -7,6 +7,7 @@ import { Vacio } from "@/componentes/ui/estados";
 import { FENOMENOS } from "@/lib/fenomenos";
 import type { PropsVista } from "@/lib/seleccion";
 import { formatearEntero } from "@/lib/utils";
+import { TEMA, TEXTO_MINIMO } from "@/lib/tema";
 
 const SERIE_REAPARICIONES = "Reapariciones de la entidad";
 
@@ -60,7 +61,7 @@ export function VistaLineaTiempo({ datos, onSeleccionar }: PropsVista<DatosLinea
               type: "scatter" as const,
               symbol: "pin" as const,
               symbolSize: 26,
-              itemStyle: { color: "#58a6ff", borderColor: "#080b10", borderWidth: 1 },
+              itemStyle: { color: TEMA.senal, borderColor: TEMA.fondo, borderWidth: 1 },
               z: 5,
               data: marcas.map((marca) => [
                 String(marca.anio),
@@ -75,7 +76,7 @@ export function VistaLineaTiempo({ datos, onSeleccionar }: PropsVista<DatosLinea
       tooltip: { ...TEMA_TOOLTIP, trigger: "axis" },
       legend: {
         bottom: 0,
-        textStyle: { color: "#9dacbd", fontSize: 11 },
+        textStyle: { color: TEMA.apagado, fontSize: TEXTO_MINIMO },
         itemWidth: 14,
         itemHeight: 10,
       },
@@ -84,14 +85,14 @@ export function VistaLineaTiempo({ datos, onSeleccionar }: PropsVista<DatosLinea
         data: anios.map((a) => String(a)),
         name: "año",
         nameLocation: "end",
-        nameTextStyle: { color: "#9dacbd" },
+        nameTextStyle: { color: TEMA.apagado },
         ...TEMA_EJE,
         splitLine: { show: false },
       },
       yAxis: {
         type: "value",
         name: "documentos con fecha",
-        nameTextStyle: { color: "#9dacbd", align: "left" },
+        nameTextStyle: { color: TEMA.apagado, align: "left" },
         ...TEMA_EJE,
       },
       series: [...seriesFenomeno, ...serieMarcas],

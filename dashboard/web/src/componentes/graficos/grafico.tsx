@@ -1,5 +1,6 @@
 import * as echarts from "echarts";
 import { useEffect, useRef } from "react";
+import { TEMA, TEXTO_MINIMO } from "@/lib/tema";
 
 /**
  * Datos de un clic en un gráfico. Las vistas resuelven las refs con `indiceDato`
@@ -23,16 +24,16 @@ interface Props {
 }
 
 export const TEMA_EJE = {
-  axisLine: { lineStyle: { color: "#1e2936" } },
+  axisLine: { lineStyle: { color: TEMA.borde } },
   axisTick: { show: false },
-  axisLabel: { color: "#9dacbd", fontSize: 11 },
-  splitLine: { lineStyle: { color: "#141b24" } },
+  axisLabel: { color: TEMA.apagado, fontSize: TEXTO_MINIMO },
+  splitLine: { lineStyle: { color: TEMA.elevado } },
 } as const;
 
 export const TEMA_TOOLTIP = {
-  backgroundColor: "#141b24",
-  borderColor: "#1e2936",
-  textStyle: { color: "#e9eff7", fontSize: 12 },
+  backgroundColor: TEMA.elevado,
+  borderColor: TEMA.borde,
+  textStyle: { color: TEMA.texto, fontSize: 12 },
   extraCssText: "box-shadow: 0 8px 24px rgb(0 0 0 / 0.5); border-radius: 6px;",
 } as const;
 

@@ -15,6 +15,7 @@ import { Vacio } from "@/componentes/ui/estados";
 import { colorCategoria } from "@/lib/paleta";
 import type { PropsVista } from "@/lib/seleccion";
 import { cn, formatearEntero, maximoDe, recortar, refsUnicas } from "@/lib/utils";
+import { TEMA, TEXTO_MINIMO } from "@/lib/tema";
 
 const ANCHO = 960;
 const ALTO = 540;
@@ -149,7 +150,7 @@ export function VistaRedEntidades({ datos, onSeleccionar }: PropsVista<DatosRedE
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2 px-4 pt-3">
-        <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-apagado">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
           <Filter aria-hidden="true" className="size-3.5" />
           Tipos de entidad
         </span>
@@ -162,9 +163,9 @@ export function VistaRedEntidades({ datos, onSeleccionar }: PropsVista<DatosRedE
               aria-pressed={activo}
               onClick={() => alternarTipo(tipo)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] transition-colors",
+                "inline-flex min-h-8 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors",
                 activo
-                  ? "border-borde bg-elevado text-texto"
+                  ? "border-control bg-elevado text-texto"
                   : "border-borde/60 bg-transparent text-apagado line-through",
               )}
             >
@@ -181,7 +182,7 @@ export function VistaRedEntidades({ datos, onSeleccionar }: PropsVista<DatosRedE
           <button
             type="button"
             onClick={() => setCentro(null)}
-            className="ml-auto rounded border border-borde bg-elevado px-2.5 py-1 text-[11px] text-apagado hover:text-texto"
+            className="ml-auto rounded border border-borde bg-elevado px-2.5 py-1 text-xs text-apagado hover:text-texto"
           >
             Quitar foco en {recortar(centro, 22)}
           </button>
@@ -217,7 +218,7 @@ export function VistaRedEntidades({ datos, onSeleccionar }: PropsVista<DatosRedE
                   y1={origen.y ?? 0}
                   x2={destino.x ?? 0}
                   y2={destino.y ?? 0}
-                  stroke={relevante ? "#3a5674" : "#1b2531"}
+                  stroke={relevante ? TEMA.control : TEMA.borde}
                   strokeWidth={Math.min(4, 1 + Math.log2(arista.peso + 1))}
                   strokeOpacity={relevante ? 0.9 : 0.25}
                   className="cursor-pointer"
@@ -247,7 +248,7 @@ export function VistaRedEntidades({ datos, onSeleccionar }: PropsVista<DatosRedE
                   tabIndex={0}
                   role="button"
                   aria-label={`${nodo.id}, ${nodo.tipo}, ${formatearEntero(nodo.menciones)} menciones`}
-                  className="cursor-pointer focus:outline-none"
+                  className="nodo-red cursor-pointer outline-none"
                   opacity={relevante ? 1 : 0.28}
                   onClick={() => seleccionarNodo(nodo)}
                   onKeyDown={(evento) => {
@@ -261,17 +262,17 @@ export function VistaRedEntidades({ datos, onSeleccionar }: PropsVista<DatosRedE
                     cx={nodo.x ?? 0}
                     cy={nodo.y ?? 0}
                     r={r}
-                    fill={colorPorTipo.get(nodo.tipo) ?? "#58a6ff"}
+                    fill={colorPorTipo.get(nodo.tipo) ?? TEMA.senal}
                     fillOpacity={0.85}
-                    stroke={centro === nodo.id ? "#e9eff7" : "#080b10"}
+                    stroke={centro === nodo.id ? TEMA.texto : TEMA.fondo}
                     strokeWidth={centro === nodo.id ? 2.5 : 1.5}
                   />
                   <text
                     x={nodo.x ?? 0}
-                    y={(nodo.y ?? 0) + r + 11}
+                    y={(nodo.y ?? 0) + r + 14}
                     textAnchor="middle"
-                    fontSize={10}
-                    fill="#c3cedb"
+                    fontSize={TEXTO_MINIMO}
+                    fill={TEMA.texto}
                     pointerEvents="none"
                   >
                     {recortar(nodo.id, 18)}

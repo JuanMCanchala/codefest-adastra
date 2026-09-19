@@ -7,6 +7,7 @@ import { Vacio } from "@/componentes/ui/estados";
 import { colorFenomeno } from "@/lib/fenomenos";
 import type { PropsVista } from "@/lib/seleccion";
 import { formatearEntero, formatearSigno, mediana, recortar } from "@/lib/utils";
+import { TEMA, TEXTO_MINIMO } from "@/lib/tema";
 
 const CUADRANTES = [
   { titulo: "Alto y en aumento", posicion: "insideTopRight" as const },
@@ -47,8 +48,8 @@ export function VistaCuadrantePriorizacion({
           label: {
             show: true,
             position: cuadrante.posicion,
-            color: "#5c6b7d",
-            fontSize: 11,
+            color: TEMA.tenue,
+            fontSize: TEXTO_MINIMO,
             formatter: cuadrante.titulo,
           },
         },
@@ -76,13 +77,13 @@ export function VistaCuadrantePriorizacion({
         name: "conteo total (menciones)",
         nameLocation: "middle",
         nameGap: 26,
-        nameTextStyle: { color: "#9dacbd" },
+        nameTextStyle: { color: TEMA.apagado },
         ...TEMA_EJE,
       },
       yAxis: {
         type: "value",
         name: "cambio del conteo (después − antes del año de corte)",
-        nameTextStyle: { color: "#9dacbd", align: "left" },
+        nameTextStyle: { color: TEMA.apagado, align: "left" },
         ...TEMA_EJE,
       },
       series: [
@@ -94,13 +95,13 @@ export function VistaCuadrantePriorizacion({
             const intensidad = Number(par[0]);
             return 8 + Math.sqrt(Math.max(0, intensidad) / maxIntensidad) * 18;
           },
-          itemStyle: { color, opacity: 0.85, borderColor: "#080b10" },
-          emphasis: { itemStyle: { borderColor: "#e9eff7", borderWidth: 2 } },
+          itemStyle: { color, opacity: 0.85, borderColor: TEMA.fondo },
+          emphasis: { itemStyle: { borderColor: TEMA.texto, borderWidth: 2 } },
           label: {
             show: datos.length <= 28,
             position: "right",
-            color: "#9dacbd",
-            fontSize: 10,
+            color: TEMA.apagado,
+            fontSize: TEXTO_MINIMO,
             formatter: (params) => {
               const p = params as unknown as { dataIndex?: number };
               return recortar(datos[p.dataIndex ?? -1]?.item ?? "", 18);
@@ -111,14 +112,14 @@ export function VistaCuadrantePriorizacion({
             silent: true,
             symbol: "none",
             label: {
-              color: "#9dacbd",
-              fontSize: 10,
+              color: TEMA.apagado,
+              fontSize: TEXTO_MINIMO,
               formatter: (params: unknown) => {
                 const p = params as { name?: string };
                 return p.name ?? "";
               },
             },
-            lineStyle: { color: "#3a4a5d", type: "dashed" },
+            lineStyle: { color: TEMA.control, type: "dashed" },
             data: [
               { name: "mediana", xAxis: medianas.intensidad },
               { name: "mediana", yAxis: medianas.tendencia },
