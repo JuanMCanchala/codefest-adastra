@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { DatosMatrizCalor } from "@/api/tipos";
 import { Grafico, TEMA_EJE, TEMA_TOOLTIP, type ClicGrafico } from "@/componentes/graficos/grafico";
 import { Vacio } from "@/componentes/ui/estados";
-import { VIRIDIS_VISIBLE } from "@/lib/paleta";
+import { ESCALA_VISIBLE } from "@/lib/paleta";
 import type { PropsVista } from "@/lib/seleccion";
 import { formatearEntero, maximoDe, recortar } from "@/lib/utils";
 import { TEMA, TEXTO_MINIMO } from "@/lib/tema";
@@ -63,7 +63,7 @@ export function VistaMatrizCalor({ datos, onSeleccionar }: PropsVista<DatosMatri
         bottom: 8,
         text: [`${formatearEntero(maximo)} coincidencias`, "0"],
         textStyle: { color: TEMA.apagado, fontSize: TEXTO_MINIMO },
-        inRange: { color: [...VIRIDIS_VISIBLE] },
+        inRange: { color: [...ESCALA_VISIBLE] },
       },
       series: [
         {

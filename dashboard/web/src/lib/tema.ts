@@ -3,21 +3,21 @@
  * (ECharts, MapLibre y el SVG de la red). Si cambia un token, cambia aquí y en estilos.css.
  */
 export const TEMA = {
-  fondo: "#070d19",
-  panel: "#0b1426",
-  elevado: "#12203a",
-  borde: "#1d2c47",
-  control: "#5f7499",
-  texto: "#e8edf5",
-  apagado: "#a7b4ca",
-  tenue: "#8494ae",
-  acento: "#e8b64c",
-  senal: "#8cb4ff",
-  mapaFondo: "#0a1222",
-  sinDato: "#16223a",
-  /** Filas alternas de las matrices: dos pasos entre casco y cabina. */
-  franjaA: "#0b1426",
-  franjaB: "#0e192f",
+  fondo: "#0a0a0a",
+  panel: "#111111",
+  elevado: "#1a1a1a",
+  borde: "#262626",
+  control: "#404040",
+  texto: "#ededed",
+  apagado: "#a1a1a1",
+  tenue: "#737373",
+  acento: "#fafafa",
+  senal: "#3291ff",
+  mapaFondo: "#0a0a0a",
+  sinDato: "#1c1c1c",
+  /** Filas alternas de las matrices: un solo paso entre superficie y elevada. */
+  franjaA: "#111111",
+  franjaB: "#161616",
 } as const;
 
 /** Tamaño mínimo de texto en los lienzos (regla del proyector: nunca menos de 12 px). */
