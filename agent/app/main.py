@@ -31,12 +31,12 @@ CLAVES_PREGUNTA = ("pregunta", "question", "input", "query", "message", "mensaje
 
 
 def _crear_sistema() -> tuple[Sistema, object]:
-    from .llm import BedrockLLM
+    from .llm import crear_llm
     from .retrieval import RecuperadorEtapa1
 
     cfg = get_settings()
     recuperador = RecuperadorEtapa1(cfg.base_vectorial_dir, cfg.retrieval_config)
-    return Sistema(BedrockLLM(), recuperador, cfg), recuperador
+    return Sistema(crear_llm(), recuperador, cfg), recuperador
 
 
 @asynccontextmanager

@@ -112,3 +112,76 @@ class BedrockLLM:
         if not texto:
             raise ErrorModelo(f"respuesta vacía de {modelo}")
         return texto
+
+
+class GatewayLLM:
+    """Cliente para un gateway compatible con la API de OpenAI (p. ej. LiteLLM de ADL).
+
+    ADL entrega una clave con formato ``sk-...``: el acceso a los modelos de Bedrock pasa
+    por un proxy OpenAI-compatible. Los tokens se toman del bloque ``usage`` real.
+    """
+
+    def __init__(self) -> None:
+        import httpx
+
+        cfg = get_settings()
+        if not cfg.llm_api_key:
+            raise RuntimeError("falta LLM_API_KEY para usar el gateway")
+        self._http = httpx.Client(
+            base_url=cfg.llm_base_url.rstrip("/"),
+            headers={"Authorization": f"Bearer {cfg.llm_api_key}"},
+            timeout=cfg.llm_timeout_s,
+        )
+        self.presupuesto = _Presupuesto(cfg.presupuesto_tokens)
+        self._razonamiento = cfg.razonamiento_gpt_oss
+
+    def completar(
+        self,
+        *,
+        tracker: Tracker,
+        agente: str,
+        modelo: str,
+        sistema: str,
+        mensaje: str,
+        max_tokens: int,
+        temperatura: float = 0.2,
+    ) -> str:
+        import httpx
+
+        self.presupuesto.verificar()
+        cuerpo: dict = {
+            "model": modelo,
+            "messages": [
+                {"role": "system", "content": sistema},
+                {"role": "user", "content": mensaje},
+            ],
+            "max_tokens": max_tokens,
+            "temperature": temperatura,
+        }
+        if "gpt-oss" in modelo:
+            cuerpo["reasoning_effort"] = self._razonamiento
+        try:
+            resp = self._http.post("/chat/completions", json=cuerpo)
+            resp.raise_for_status()
+            datos = resp.json()
+        except (httpx.HTTPError, ValueError) as exc:
+            log.exception("fallo llamando al gateway (%s)", modelo)
+            raise ErrorModelo(str(exc)) from exc
+
+        uso = datos.get("usage") or {}
+        tin, tout = int(uso.get("prompt_tokens", 0)), int(uso.get("completion_tokens", 0))
+        tracker.llamada_modelo(agente, modelo, tin, tout)
+        self.presupuesto.sumar(tin + tout)
+
+        texto = ((datos.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
+        texto = texto.strip()
+        if not texto:
+            raise ErrorModelo(f"respuesta vacía de {modelo}")
+        return texto
+
+
+def crear_llm() -> LLM:
+    """Gateway OpenAI-compatible si hay ``LLM_BASE_URL``; si no, Bedrock nativo (boto3)."""
+    if get_settings().llm_base_url:
+        return GatewayLLM()
+    return BedrockLLM()

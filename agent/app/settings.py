@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     # boto3 lee AWS_BEARER_TOKEN_BEDROCK directamente del entorno; aquí solo se
     # declara la región y los IDs de modelo, que se copian de la consola de Bedrock.
     aws_region: str = "us-east-1"
+    # Gateway OpenAI-compatible de ADL (clave "sk-..."). Si LLM_BASE_URL está definido,
+    # se usa en lugar de boto3; los IDs de modelo son los que exponga el gateway.
+    llm_base_url: str = ""
+    llm_api_key: str = ""
     # Valores iniciales según benchmarks públicos (docs/investigacion/03_arquitectura/
     # benchmarks_modelos_bedrock.md); se confirman con mediciones propias antes de fijarlos.
     modelo_orquestador: str = "openai.gpt-oss-120b-1:0"
