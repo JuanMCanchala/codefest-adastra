@@ -198,6 +198,7 @@ Se declaran en **Configuration → Environment Variables**.
 | ----------------- | ------------- | ----------------------------------------------------------------- |
 | `AGENT_URL`       | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com` |
 | `AGENT_TIMEOUT_S` | No            | Tiempo límite de `POST /chat` en segundos. Por defecto, 90.       |
+| `CONSOLA_URL`     | No            | `https://frontagent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el enlace a la consola de chat. |
 
 `DB_PATH`, `METADATA_PATH`, `GEO_DIR` y `WEB_DIST` ya vienen con su valor en la imagen.
 
@@ -238,7 +239,7 @@ docker run -d --name agent --network aerocode -p 8000:8000 \
 # 2. Tablero
 docker build -t aerocode-dashboard ./dashboard
 docker run -d --name dashboard --network aerocode -p 8080:8080 \
-  -e AGENT_URL=http://agent:8000 aerocode-dashboard
+  -e AGENT_URL=http://agent:8000 -e CONSOLA_URL=http://localhost:3000 aerocode-dashboard
 
 # 3. Chat
 docker build -t aerocode-frontagent ./frontagent

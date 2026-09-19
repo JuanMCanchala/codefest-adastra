@@ -67,6 +67,7 @@ Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `compos
 | `GEO_DIR` | `/app/datos/geo` | GeoJSON servidos en `/geo` |
 | `WEB_DIST` | `/app/web` | SPA compilada |
 | `CORS_ORIGINS` | `*` | Orígenes permitidos, separados por coma |
+| `CONSOLA_URL` | _(vacía)_ | Base de la consola de chat del Reto 1. Si está, el encabezado enlaza a ella; si no, el enlace no aparece |
 | `VISTA_TECNICA` | `0` | Detalles internos en la interfaz: identificadores del catálogo, claves crudas de los filtros, consumo de tokens y rutas del corpus. El tablero que revisa el jurado va limpio |
 
 ## Desarrollo y pruebas

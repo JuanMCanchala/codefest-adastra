@@ -192,6 +192,10 @@ export interface Fragmento {
 export interface Salud {
   estado: string;
   tablas: Record<string, number>;
+  /** Lo fija `VISTA_TECNICA` en el contenedor: detalles internos en la interfaz. */
+  vista_tecnica?: boolean;
+  /** Lo fija `CONSOLA_URL` en el contenedor: a dónde va el enlace a la consola de chat. */
+  consola_url?: string | null;
 }
 
 // --- GeoJSON de `/geo/*.geojson` ------------------------------------------------------

@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     # revisa el jurado va limpio y el del equipo se enciende con VISTA_TECNICA=1.
     vista_tecnica: bool = False
 
+    # Consola de inteligencia (Reto 1). Si el despliegue la publica, el tablero enlaza a ella
+    # para poder ir y volver entre preguntar y explorar.
+    consola_url: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -104,6 +104,7 @@ def salud(request: Request) -> dict[str, Any]:
         "tablas": bd.conteos(),
         "textos": {"disponible": textos.disponible, "indexado": textos.listo},
         "vista_tecnica": cfg.vista_tecnica,
+        "consola_url": cfg.consola_url.rstrip("/") or None,
     }
 
 
