@@ -7,6 +7,11 @@ import {
   BurbujaUsuario,
   EstadoPensando,
 } from "@/components/chat/burbujas";
+import {
+  PanelHistorial,
+  horaActual,
+  type EntradaHistorial,
+} from "@/components/chat/panel-historial";
 import { PanelSugerencias } from "@/components/chat/panel-sugerencias";
 import { Redactor } from "@/components/chat/redactor";
 import { RespuestaAgente as VistaRespuesta } from "@/components/chat/respuesta-agente";
@@ -53,21 +58,30 @@ export function Consola({
   const [idInspeccionado, setIdInspeccionado] = useState<string | null>(null);
   const [pestana, setPestana] = useState<Pestana>("evidencia");
   const [vistaMovil, setVistaMovil] = useState<VistaMovil>("conversacion");
+  // Las consultas enviadas, más reciente al final: la lista que también tiene el tablero.
+  const [historial, setHistorial] = useState<EntradaHistorial[]>([]);
+  const [verHistorial, setVerHistorial] = useState(false);
+  const [idConsultaActiva, setIdConsultaActiva] = useState<string | null>(null);
   const finHilo = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // En el estado inicial no hay hilo que seguir: se deja visible el encabezado de sugerencias.
-    if (mensajes.length === 0 && !cargando) {
+    if (verHistorial || (mensajes.length === 0 && !cargando)) {
       return;
     }
     finHilo.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [mensajes, cargando]);
+  }, [mensajes, cargando, verHistorial]);
 
   const enviar = useCallback(async (pregunta: string) => {
     const idUsuario = nuevoId("usuario");
     setMensajes((previos) => [
       ...previos,
       { id: idUsuario, rol: "usuario", texto: pregunta },
+    ]);
+    setIdConsultaActiva(idUsuario);
+    setHistorial((previas) => [
+      ...previas,
+      { id: idUsuario, instruccion: pregunta, hora: horaActual(), error: false },
     ]);
     setCargando(true);
 
@@ -93,8 +107,31 @@ export function Consola({
             : { detalle: resultado.detalle }),
         },
       ]);
+      setHistorial((previas) =>
+        previas.map((entrada) =>
+          entrada.id === idUsuario ? { ...entrada, error: true } : entrada,
+        ),
+      );
     }
     setCargando(false);
+  }, []);
+
+  /** Volver a una consulta: se cierra la lista y el hilo salta a ese turno. */
+  const recuperar = useCallback((id: string) => {
+    setVerHistorial(false);
+    setIdConsultaActiva(id);
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({ block: "start" });
+    });
+  }, []);
+
+  const limpiar = useCallback(() => {
+    setVerHistorial(false);
+    setMensajes([]);
+    setHistorial([]);
+    setSeleccion(null);
+    setIdInspeccionado(null);
+    setIdConsultaActiva(null);
   }, []);
 
   const seleccionarCita = useCallback((idMensaje: string, n: number) => {
@@ -131,7 +168,12 @@ export function Consola({
   return (
     <ProveedorVistaTecnica valor={vistaTecnica}>
       <div className="flex h-dvh flex-col">
-        <BarraSuperior urlTablero={urlTablero} />
+        <BarraSuperior
+          urlTablero={urlTablero}
+          verHistorial={verHistorial}
+          onAlternarHistorial={() => setVerHistorial((previa) => !previa)}
+          onLimpiar={limpiar}
+        />
 
         <div
           role="group"
@@ -170,17 +212,26 @@ export function Consola({
           >
             <div className="barra-fina min-h-0 flex-1 overflow-y-auto">
               <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-6">
-                {mensajes.length === 0 ? (
-                  <PanelSugerencias
-                    deshabilitado={cargando}
-                    onElegir={(pregunta) => void enviar(pregunta)}
+                {verHistorial ? (
+                  <PanelHistorial
+                    entradas={historial}
+                    idActivo={idConsultaActiva}
+                    onRecuperar={recuperar}
                   />
                 ) : null}
 
-                {mensajes.map((mensaje) => {
+                {!verHistorial && mensajes.length === 0 ? (
+                  <PanelSugerencias />
+                ) : null}
+
+                {(verHistorial ? [] : mensajes).map((mensaje) => {
                   if (mensaje.rol === "usuario") {
                     return (
-                      <BurbujaUsuario key={mensaje.id} texto={mensaje.texto} />
+                      <BurbujaUsuario
+                        key={mensaje.id}
+                        id={mensaje.id}
+                        texto={mensaje.texto}
+                      />
                     );
                   }
                   if (mensaje.rol === "error") {
@@ -211,7 +262,7 @@ export function Consola({
                   );
                 })}
 
-                {cargando ? <EstadoPensando /> : null}
+                {!verHistorial && cargando ? <EstadoPensando /> : null}
                 <div ref={finHilo} />
               </div>
             </div>

@@ -1,20 +1,17 @@
 "use client";
 
-import { Loader2, TriangleAlert, User } from "lucide-react";
+import { Loader2, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useVistaTecnica } from "@/lib/vista-tecnica";
 
-export function BurbujaUsuario({ texto }: { texto: string }) {
+export function BurbujaUsuario({ id, texto }: { id?: string; texto: string }) {
   return (
-    <div className="flex justify-end">
-      <div className="flex max-w-[85%] items-start gap-3 rounded-md border border-control/60 bg-elevado px-4 py-3">
-        <p className="text-base leading-relaxed text-texto">{texto}</p>
-        <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded border border-control/60 text-apagado">
-          <User aria-hidden="true" className="size-4" />
-          <span className="sr-only">Consulta del usuario</span>
-        </span>
-      </div>
+    <div id={id} className="flex scroll-mt-4 justify-end">
+      <p className="max-w-[85%] rounded-2xl rounded-br-sm bg-elevado px-3.5 py-2.5 text-sm leading-relaxed text-texto">
+        <span className="sr-only">Consulta: </span>
+        {texto}
+      </p>
     </div>
   );
 }
@@ -27,16 +24,13 @@ export function BurbujaError({
   detalle?: string;
 }) {
   return (
-    <div
-      role="alert"
-      className="flex items-start gap-3 rounded-md border border-alerta/50 bg-alerta/10 px-4 py-3"
-    >
+    <div role="alert" className="flex items-start gap-3 text-alerta">
       <TriangleAlert
         aria-hidden="true"
         className="mt-0.5 size-4 shrink-0 text-alerta"
       />
       <div className="min-w-0">
-        <p className="text-sm font-medium text-texto">{texto}</p>
+        <p className="text-sm font-medium text-alerta">{texto}</p>
         <p className="mt-1 text-sm text-apagado">
           Puede reformular la consulta o enviarla de nuevo; la conversación
           anterior se conserva.
@@ -65,10 +59,7 @@ export function EstadoPensando() {
   }, []);
 
   return (
-    <div
-      role="status"
-      className="flex items-start gap-3 rounded-md border border-borde bg-panel px-4 py-3"
-    >
+    <div role="status" className="flex items-start gap-3">
       <Loader2
         aria-hidden="true"
         className="mt-0.5 size-4 shrink-0 animate-spin text-acento"

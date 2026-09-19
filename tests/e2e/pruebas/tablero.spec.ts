@@ -291,10 +291,9 @@ test.describe("Tablero · carga inicial", () => {
     await expect(panel(page).getByRole("listitem")).toHaveCount(enPanel);
     await expect(panel(page)).not.toContainText("fragmentos en total");
 
-    // El agente arranca sin conversación: una línea y cuatro entradas, que son la única
-    // pista de que el componente y los filtros se piden hablando.
-    await expect(agente(page)).toContainText("Pida lo que quiere ver en lenguaje natural");
-    await expect(agente(page).getByRole("listitem")).toHaveCount(4);
+    // El agente arranca sin conversación: una línea y nada más.
+    await expect(agente(page)).toContainText("Pida lo que quiere ver");
+    await expect(agente(page).getByRole("listitem")).toHaveCount(0);
   });
 
   test("la burbuja se cierra y se vuelve a abrir desde la esquina", async ({ page }) => {
