@@ -4,15 +4,6 @@ import { useState, type FormEvent } from "react";
 import { Ayuda } from "@/componentes/ui/ayuda";
 import { Boton } from "@/componentes/ui/boton";
 
-const SUGERENCIAS: readonly string[] = [
-  "Muéstrame las alertas tempranas por departamento con minería ilegal desde 2020",
-  "¿Cómo evolucionan los documentos de seguridad espacial por año?",
-  "Cruza las entidades más mencionadas con las organizaciones que las publican",
-  "¿Qué países concentran las menciones en el fenómeno de IA militar?",
-  "Red de entidades alrededor del ELN",
-  "Prioriza departamentos por conteo de alertas con corte en 2022",
-];
-
 interface Props {
   ocupado: boolean;
   onEnviar: (instruccion: string) => void;
@@ -80,23 +71,6 @@ export function BarraInstruccion({ ocupado, onEnviar }: Props) {
         </Boton>
       </form>
 
-      <p className="mt-4 text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
-        Ejemplos
-      </p>
-      <ul className="mt-2 flex flex-wrap gap-2">
-        {SUGERENCIAS.map((sugerencia) => (
-          <li key={sugerencia}>
-            <button
-              type="button"
-              disabled={ocupado}
-              onClick={() => onEnviar(sugerencia)}
-              className="inline-flex min-h-8 items-center rounded-md border border-control/60 bg-elevado px-2.5 py-1 text-left text-[13px] text-texto transition-colors hover:border-acento/70 disabled:opacity-50"
-            >
-              {sugerencia}
-            </button>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }
