@@ -1,0 +1,19 @@
+{
+  "name": "aerocode-e2e",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Suite E2E con Playwright para la consola de chat (frontagent) y el tablero (dashboard) de AeroCode.",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:escritorio": "playwright test --project=escritorio",
+    "test:movil": "playwright test --project=movil",
+    "reporte": "playwright show-report playwright-report",
+    "instalar-navegador": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.15.3"
+  }
+}
