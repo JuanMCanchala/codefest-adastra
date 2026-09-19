@@ -11,6 +11,9 @@ import type { Seleccion } from "@/lib/seleccion";
 import { useRecurso } from "@/lib/usar-recurso";
 import { chunkIdsDe, etiquetaDocumento, formatearEntero } from "@/lib/utils";
 
+/** Tope del lote de `/api/evidencia`: el panel pide y muestra como máximo estos fragmentos. */
+const MAX_PANEL = 50;
+
 interface Props {
   seleccion: Seleccion | null;
   /** Evidencia del componente completo, que se usa cuando el elemento no trae refs propias. */
@@ -37,8 +40,8 @@ export function PanelLateralEvidencia({
     () => (usaGlobal ? [...evidenciaGlobal] : propias),
     [evidenciaGlobal, propias, usaGlobal],
   );
-  const chunkIds = useMemo(() => chunkIdsDe(refs), [refs]);
-  const clave = chunkIds.slice(0, 50).join(",");
+  const chunkIds = useMemo(() => chunkIdsDe(refs).slice(0, MAX_PANEL), [refs]);
+  const clave = chunkIds.join(",");
   const evidencia = useRecurso(clave, (senal) =>
     chunkIds.length === 0 ? Promise.resolve([]) : obtenerEvidencia(chunkIds, senal),
   );
