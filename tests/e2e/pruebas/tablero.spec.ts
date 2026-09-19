@@ -417,6 +417,32 @@ test.describe("Tablero · trazabilidad", () => {
     // La lectura de coordenadas repite en cifras lo que el mapa dice con color.
     await expect(page.getByText(/^Z \d+\.\d{2}$/)).toBeVisible();
   });
+
+  test("una consulta nueva reencuadra la cámara sobre las regiones con dato", async ({
+    page,
+  }, testInfo) => {
+    test.skip(esMovil(testInfo), "El mapa solo ocupa la mitad del lienzo en escritorio.");
+    await abrirTablero(page);
+
+    // El HUD es la única lectura de la cámara que se puede comprobar desde el DOM; queda
+    // encendido al cambiar de modo porque su estado se recuerda.
+    await page.getByRole("button", { name: "HUD" }).click();
+    const zoom = page.getByText(/^Z \d+\.\d{2}$/);
+    await expect(zoom).toBeVisible();
+    const antes = await zoom.innerText();
+
+    // Con solo minería ilegal desaparecen alertas de los extremos del país (San Andrés,
+    // entre otros), así que la extensión de los datos —y con ella el encuadre— cambia.
+    await page.getByRole("button", { name: /Exploración/ }).click();
+    const economia = page.getByLabel("Economía ilícita");
+    await economia.fill("Minería ilegal");
+    await economia.press("Enter");
+
+    await expect(page.getByText("economia: Minería ilegal")).toBeVisible();
+    await expect(async () => {
+      expect(await zoom.innerText()).not.toBe(antes);
+    }).toPass({ timeout: 15_000 });
+  });
 });
 
 /* ---------------------------------------------------------------------------------------

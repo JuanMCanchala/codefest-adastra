@@ -12,8 +12,16 @@ import { formatearEntero, maximoDe } from "@/lib/utils";
 
 const CENTRO: [number, number] = [0, 15];
 
+/** Tope del reencuadre: con pocos países el globo no debe caer sobre una ciudad. */
+const ZOOM_MAXIMO_ENFOQUE = 3.4;
+
+interface Props extends PropsVista<FilaMapaMundo[]> {
+  /** Identidad de la consulta: al cambiar, la cámara reencuadra sobre los datos. */
+  enfoque: string;
+}
+
 /** Coropleta mundial de menciones de países en el corpus. */
-export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<FilaMapaMundo[]>) {
+export function VistaMapaMundo({ datos, seleccion, onSeleccionar, enfoque }: Props) {
   const geo = useRecurso("geo-paises", (senal) => obtenerGeoPaises(senal));
 
   const valores = useMemo(() => {
@@ -94,6 +102,8 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<F
           zoomMaximo={6}
           seleccionada={seleccionada}
           onClicRegion={seleccionarPais}
+          enfoque={enfoque}
+          zoomMaximoEnfoque={ZOOM_MAXIMO_ENFOQUE}
           globo
         />
         <div className="pointer-events-none absolute bottom-9 left-3">

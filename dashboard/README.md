@@ -64,9 +64,17 @@ Los dos componentes espaciales comparten `MapaCoropleta`. Sobre el lienzo hay do
   `Callejero` (CARTO) y `Satélite` (Esri World Imagery). Ninguno pide llave. Las capas raster
   entran al estilo apagadas, así que sin encenderlas no se pide una sola tesela; si una falla,
   el mapa vuelve al fondo analítico y lo avisa. La elección se recuerda en `localStorage`.
-- **HUD**: coordenadas del centro, retícula y encuadre de la región seleccionada con su conteo.
+- **HUD**: coordenadas del centro, retícula y encuadre de la región seleccionada con su
+  conteo. Como el mapa se vuelve a montar al cambiar de modo, su estado también se recuerda.
 
 `mapa_mundo` se dibuja con la proyección de globo de MapLibre y su atmósfera.
+
+La cámara la dirige la consulta: cada vez que cambia la pregunta —una instrucción al agente
+o un filtro— el mapa encuadra las regiones que tienen dato (`enfoque` en `MapaCoropleta`,
+calculado en `App.tsx` como la clave de ejecución sin el nivel). No se mueve mientras el
+usuario navega a mano, no cruza solo el umbral que pasa de departamentos a municipios, y si
+la respuesta no trae datos se queda donde está. Con `prefers-reduced-motion` el salto es
+instantáneo.
 
 ## Variables de entorno
 

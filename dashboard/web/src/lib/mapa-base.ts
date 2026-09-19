@@ -79,6 +79,7 @@ export function idCapaBase(clave: ClaveBase): string {
 }
 
 const LLAVE_MEMORIA = "aerocode:mapa-base";
+const LLAVE_HUD = "aerocode:mapa-hud";
 
 /** La elección sobrevive al cambio de vista (Colombia ↔ mundo) dentro de la sesión. */
 export function leerBaseGuardada(): ClaveBase {
@@ -98,5 +99,22 @@ export function guardarBase(clave: ClaveBase): void {
     window.localStorage.setItem(LLAVE_MEMORIA, clave);
   } catch {
     // Sin persistencia: la elección vale solo para esta vista.
+  }
+}
+
+/** El HUD también sobrevive: cambiar de modo vuelve a montar el mapa y lo apagaría. */
+export function leerHudGuardado(): boolean {
+  try {
+    return window.localStorage.getItem(LLAVE_HUD) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function guardarHud(activo: boolean): void {
+  try {
+    window.localStorage.setItem(LLAVE_HUD, activo ? "1" : "0");
+  } catch {
+    // Sin persistencia: el HUD vale solo para esta vista.
   }
 }

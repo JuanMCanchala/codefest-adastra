@@ -9,9 +9,11 @@ import {
   type ClaveBase,
   baseDe,
   guardarBase,
+  guardarHud,
   idCapaBase,
   idFuenteBase,
   leerBaseGuardada,
+  leerHudGuardado,
 } from "@/lib/mapa-base";
 import { SIN_DATO, colorPorValor } from "@/lib/paleta";
 import { formatearEntero } from "@/lib/utils";
@@ -81,6 +83,14 @@ export interface Props {
   onZoom?: (zoom: number) => void;
   /** Proyección esférica con atmósfera: solo tiene sentido en la vista mundial. */
   globo?: boolean;
+  /**
+   * Identidad de la consulta vigente. Cuando cambia —otra instrucción del agente u otros
+   * filtros— la cámara reencuadra sobre las regiones con dato y destella la mayor. No
+   * incluye el nivel del mapa, para no arrancarle el zoom al usuario al pasar a municipios.
+   */
+  enfoque?: string;
+  /** Tope de zoom del reencuadre: evita que la cámara cruce sola un umbral de la vista. */
+  zoomMaximoEnfoque?: number;
 }
 
 function expresionColor(valores: ReadonlyMap<string, number>, maximo: number, claveGeo: string) {
@@ -157,6 +167,36 @@ function recuadroEnPantalla(instancia: maplibregl.Map, caja: Caja): Recuadro | n
   return { x, y, ancho, alto };
 }
 
+/** Caja que contiene todas las regiones con dato: el encuadre de la respuesta. */
+function cajaDeValores(
+  geojson: FeatureCollection,
+  claveGeo: string,
+  valores: ReadonlyMap<string, number>,
+): Caja | null {
+  let union: Caja | null = null;
+  for (const rasgo of geojson.features) {
+    const clave = leerTexto(rasgo.properties, claveGeo);
+    if (!clave || (valores.get(clave) ?? 0) <= 0) {
+      continue;
+    }
+    const caja = cajaDe(rasgo.geometry);
+    if (!caja) continue;
+    union = union
+      ? [
+          Math.min(union[0], caja[0]),
+          Math.min(union[1], caja[1]),
+          Math.max(union[2], caja[2]),
+          Math.max(union[3], caja[3]),
+        ]
+      : caja;
+  }
+  return union;
+}
+
+function prefiereMenosMovimiento(): boolean {
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+}
+
 interface Telemetria {
   lng: number;
   lat: number;
@@ -179,6 +219,8 @@ export function MapaCoropleta({
   onClicRegion,
   onZoom,
   globo = false,
+  enfoque,
+  zoomMaximoEnfoque,
 }: Props) {
   const contenedor = useRef<HTMLDivElement | null>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
@@ -187,8 +229,11 @@ export function MapaCoropleta({
   const alZoom = useRef(onZoom);
 
   const [base, setBase] = useState<ClaveBase>(() => leerBaseGuardada());
-  const [hud, setHud] = useState(false);
+  const [hud, setHud] = useState(() => leerHudGuardado());
   const [avisoBase, setAvisoBase] = useState<string | null>(null);
+  // La cámara y el destello necesitan las capas ya añadidas; el estilo carga después del
+  // primer render y la vista se vuelve a montar al cambiar de modo, así que no basta un ref.
+  const [capasListas, setCapasListas] = useState(false);
   const [telemetria, setTelemetria] = useState<Telemetria>({
     lng: centro[0],
     lat: centro[1],
@@ -214,6 +259,11 @@ export function MapaCoropleta({
     setAvisoBase(
       `No se pudo descargar «${baseDe(clave).etiqueta}»: se volvió al fondo analítico.`,
     );
+  };
+
+  const cambiarHud = (activo: boolean) => {
+    setHud(activo);
+    guardarHud(activo);
   };
 
   const cambiarBase = (clave: ClaveBase) => {
@@ -277,6 +327,7 @@ export function MapaCoropleta({
     }
     const preparar = () => {
       const fuente = instancia.getSource(FUENTE);
+      setCapasListas(true);
       // El color se calcula aquí también: si los datos llegaron antes de que el estilo
       // cargara, el efecto de color ya corrió sin capa y el mapa quedaba sin colorear.
       const color = expresionColor(valoresVigentes.current, maximoVigente.current, claveGeo);
@@ -354,6 +405,28 @@ export function MapaCoropleta({
     }
     instancia.setFilter(CAPA_FOCO, ["==", ["get", claveGeo], seleccionada ?? ""]);
   }, [claveGeo, seleccionada]);
+
+  // Cámara dirigida por la consulta: cada respuesta encuadra el mapa sobre las regiones que
+  // tienen dato. Solo se mueve al cambiar la consulta, nunca mientras el usuario navega a
+  // mano, y si la respuesta no trae datos se queda donde está.
+  const enfoqueAplicado = useRef<string | null>(null);
+  useEffect(() => {
+    const instancia = mapa.current;
+    if (!instancia || !enfoque || !capasListas || enfoqueAplicado.current === enfoque) {
+      return;
+    }
+    const caja = cajaDeValores(geojson, claveGeo, valores);
+    if (!caja) {
+      return;
+    }
+    enfoqueAplicado.current = enfoque;
+    const sinMovimiento = prefiereMenosMovimiento();
+    instancia.fitBounds(caja, {
+      padding: 48,
+      duration: sinMovimiento ? 0 : 1_400,
+      ...(zoomMaximoEnfoque === undefined ? {} : { maxZoom: zoomMaximoEnfoque }),
+    });
+  }, [capasListas, claveGeo, enfoque, geojson, valores, zoomMaximoEnfoque]);
 
   // Encendido del mapa base: la coropleta se aclara para dejar ver la imagen de abajo.
   useEffect(() => {
@@ -444,7 +517,7 @@ export function MapaCoropleta({
           recuadro={telemetria.recuadro}
         />
       ) : null}
-      <ControlesMapa base={base} onCambiarBase={cambiarBase} hud={hud} onCambiarHud={setHud} />
+      <ControlesMapa base={base} onCambiarBase={cambiarBase} hud={hud} onCambiarHud={cambiarHud} />
       {avisoBase ? (
         <p
           role="status"

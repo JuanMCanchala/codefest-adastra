@@ -21,6 +21,8 @@ export type NivelMapa = "departamento" | "municipio";
 interface Props extends PropsVista<FilaMapaColombia[]> {
   nivel: NivelMapa;
   onCambiarNivel: (nivel: NivelMapa) => void;
+  /** Identidad de la consulta: al cambiar, la cámara reencuadra sobre los datos. */
+  enfoque: string;
 }
 
 /** Coropleta de Colombia: departamentos y, al acercar el zoom, municipios. */
@@ -30,6 +32,7 @@ export function VistaMapaColombia({
   seleccion,
   onSeleccionar,
   onCambiarNivel,
+  enfoque,
 }: Props) {
   const geo = useRecurso(`geo-${nivel}`, (senal) =>
     nivel === "municipio" ? obtenerGeoMunicipios(senal) : obtenerGeoDepartamentos(senal),
@@ -116,6 +119,9 @@ export function VistaMapaColombia({
           zoomMaximo={9.5}
           seleccionada={seleccionada}
           onClicRegion={seleccionarDivipola}
+          enfoque={enfoque}
+          // El reencuadre no cruza solo el umbral municipal: ese salto lo decide el usuario.
+          zoomMaximoEnfoque={ZOOM_MUNICIPIO - 0.2}
           onZoom={(zoom) => {
             const deseado: NivelMapa = zoom >= ZOOM_MUNICIPIO ? "municipio" : "departamento";
             if (deseado !== nivel) {

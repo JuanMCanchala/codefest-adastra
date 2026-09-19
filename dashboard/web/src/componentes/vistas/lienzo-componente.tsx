@@ -23,6 +23,8 @@ interface Props {
   onSeleccionar: (seleccion: Seleccion) => void;
   nivelColombia: NivelMapa;
   onCambiarNivelColombia: (nivel: NivelMapa) => void;
+  /** Identidad de la consulta vigente; los mapas la usan para reencuadrar la cámara. */
+  claveEnfoque: string;
 }
 
 function valorLegible(valor: unknown): string {
@@ -40,6 +42,7 @@ export function LienzoComponente({
   onSeleccionar,
   nivelColombia,
   onCambiarNivelColombia,
+  claveEnfoque,
 }: Props) {
   const definicion = definicionDe(resultado.componente);
   const fenomeno = fenomenoPorId(resultado.fenomeno);
@@ -61,10 +64,11 @@ export function LienzoComponente({
             datos={resultado.datos}
             nivel={nivelColombia}
             onCambiarNivel={onCambiarNivelColombia}
+            enfoque={claveEnfoque}
           />
         );
       case "mapa_mundo":
-        return <VistaMapaMundo {...comunes} datos={resultado.datos} />;
+        return <VistaMapaMundo {...comunes} datos={resultado.datos} enfoque={claveEnfoque} />;
       case "linea_tiempo":
         return <VistaLineaTiempo {...comunes} datos={resultado.datos} />;
       case "matriz_calor":

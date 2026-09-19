@@ -79,6 +79,18 @@ function claveDe(peticion: Peticion, globales: FiltrosGlobales): string {
 }
 
 /**
+ * Identidad de la consulta para la cámara de los mapas. Es la clave de ejecución sin el
+ * nivel del mapa: pasar de departamentos a municipios es una decisión de zoom del usuario,
+ * no una consulta nueva, y reencuadrar ahí le arrancaría la vista de las manos.
+ */
+function claveEnfoqueDe(peticion: Peticion, globales: FiltrosGlobales): string {
+  const cuerpo = construirCuerpo(peticion, globales);
+  const filtros: Filtros = { ...(cuerpo.filtros ?? {}) };
+  delete filtros["nivel"];
+  return JSON.stringify({ ...cuerpo, filtros });
+}
+
+/**
  * Filtros que se reflejan en los controles: los que el agente pidió, corregidos con los que
  * la API dice haber aplicado. Si no coincidieran, los controles mentirían sobre el gráfico.
  */
@@ -308,6 +320,7 @@ export function App() {
               onSeleccionar={setSeleccion}
               nivelColombia={nivelColombia}
               onCambiarNivelColombia={cambiarNivelColombia}
+              claveEnfoque={claveEnfoqueDe(peticion, globales)}
             />
             </div>
           ) : (
