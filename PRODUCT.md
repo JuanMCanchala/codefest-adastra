@@ -42,7 +42,7 @@ Demostración presencial el sábado 19 de septiembre de 2026, con la evaluación
 - **Solo datos reales del corpus o de la base SQL de ADL.** Está prohibido mostrar puntajes, índices o niveles de riesgo inventados (Anexo B.2.5); solo conteos, frecuencias y agregaciones.
 - Todo dato visible debe poder abrir su evidencia (`doc_id`, `chunk_id` y el texto original).
 - El tipo de gráfico debe corresponder a la tarea analítica: comparación, distribución, relación, tendencia, composición o espacial. Nada llamativo por sí mismo.
-- **El tablero abre sin red.** Ningún recurso remoto depende de una llave o una cuenta, y el fondo analítico del mapa —el predeterminado— no descarga nada. Las capas de imagen (satélite de Esri y callejero de CARTO) son opcionales, las enciende el usuario y, si la conectividad falla, el mapa vuelve solo al fondo analítico. Todo el texto de la interfaz en español.
+- **El tablero abre sin red.** Ningún recurso remoto depende de una llave o una cuenta, y el fondo analítico del mapa —el predeterminado— no descarga nada. Las capas de imagen (satélite de Esri y callejero de CARTO) son opcionales, las enciende el usuario y, si la conectividad falla, el mapa vuelve solo al fondo analítico. Las órbitas de las misiones satelitales se propagan con SGP4 dentro del navegador, sobre elementos orbitales que viajan en el paquete: tampoco piden red. Todo el texto de la interfaz en español.
 - Presupuesto de modelos limitado (USD 100): la interfaz no debe disparar llamadas al agente de forma automática ni repetida.
 
 ## Brand Commitments

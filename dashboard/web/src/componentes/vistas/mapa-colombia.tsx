@@ -151,7 +151,10 @@ export function VistaMapaColombia({
           centro={CENTRO}
           zoom={4.6}
           zoomMinimo={3}
-          zoomMaximo={16}
+          // Hasta donde llega la imagen: Esri sirve World Imagery hasta el nivel 19, que en
+          // Colombia son unos 30 cm por píxel. Pasado ese nivel solo habría teselas ampliadas
+          // —o el aviso de «sin cobertura» del propio Esri—, así que no se ofrece.
+          zoomMaximo={19}
           seleccionada={seleccionada}
           onClicRegion={seleccionarDivipola}
           enfoque={enfoque}
@@ -163,16 +166,20 @@ export function VistaMapaColombia({
               onCambiarNivel(deseado);
             }
           }}
+          superposicion={
+            <>
+              <div className="pointer-events-none absolute bottom-12 left-3">
+                <LeyendaEscala maximo={maximoEscala} unidad="alertas tempranas" />
+              </div>
+              <p className="pointer-events-none absolute left-3 top-3 inline-flex max-w-[calc(100%-4.5rem)] items-center gap-1.5 rounded border border-borde bg-panel px-2 py-1 text-xs text-apagado">
+                <Info aria-hidden="true" className="size-3" />
+                {nivel === "municipio"
+                  ? "Detalle municipal · aleje el zoom para volver a departamentos"
+                  : "Departamentos · acerque el zoom para ver municipios"}
+              </p>
+            </>
+          }
         />
-        <div className="pointer-events-none absolute bottom-12 left-3">
-          <LeyendaEscala maximo={maximoEscala} unidad="alertas tempranas" />
-        </div>
-        <p className="pointer-events-none absolute left-3 top-3 inline-flex max-w-[calc(100%-4.5rem)] items-center gap-1.5 rounded border border-borde bg-panel px-2 py-1 text-xs text-apagado">
-          <Info aria-hidden="true" className="size-3" />
-          {nivel === "municipio"
-            ? "Detalle municipal · aleje el zoom para volver a departamentos"
-            : "Departamentos · acerque el zoom para ver municipios"}
-        </p>
       </div>
       <div className="barra-fina max-h-[520px] overflow-y-auto">
         <TablaRanking

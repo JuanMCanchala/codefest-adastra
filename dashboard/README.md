@@ -60,9 +60,17 @@ Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `compos
 
 El mapa se explora como un visor geoespacial: arrastrar mueve, la rueda acerca, el botón
 derecho (o Ctrl+arrastrar) gira e inclina, y la brújula del control devuelve el norte. El
-zoom llega hasta 16 en Colombia y 12 en el mundo, así que con imagen de satélite se puede
-bajar a ver el terreno de un municipio; el relleno del dato se desvanece al acercarse para
-no taparlo. El botón **Encuadrar** devuelve la cámara a las regiones con dato.
+zoom llega hasta 19 en Colombia y 17 en el mundo —el tope de la imagen de Esri, unos 30 cm
+por píxel—, así que se puede bajar hasta distinguir un frente de excavación; el relleno del
+dato se desvanece al acercarse para no taparlo, y pasado el nivel 11 sobre el fondo analítico
+el mapa ofrece cambiar a la imagen, que es lo que a ese detalle se está buscando. El botón
+**Encuadrar** devuelve la cámara a las regiones con dato.
+
+**Ampliar** saca el mapa de su banda de 520 px y lo lleva a la ventana entera; `Esc` o
+**Reducir** lo devuelven. Al crecer el lienzo el zoom sube en la misma proporción, de modo
+que el trozo de terreno que se estaba mirando llena la pantalla en vez de encogerse. La
+leyenda y las notas del nivel viajan dentro del mapa (`superposicion` en `MapaCoropleta`),
+porque en pantalla completa el lienzo se despega del flujo y las dejaría atrás.
 
 Para que eso sea posible, ni un recálculo ni un cambio de nivel sustituyen el lienzo por el
 estado de carga: se mantiene en pantalla el último resultado, atenuado, y la geometría
@@ -87,6 +95,33 @@ Los dos componentes espaciales comparten `MapaCoropleta`. Sobre el lienzo hay do
   parte la extrusión sobre la esfera.
 
 `mapa_mundo` se dibuja con la proyección de globo de MapLibre y su atmósfera.
+
+### Misiones satelitales
+
+El interruptor **Órbitas** dibuja las plataformas que producen la evidencia satelital del
+proyecto: Sentinel-2A/B/C y Sentinel-1A encendidas por defecto, y Landsat 8/9, Terra, Aqua,
+NOAA-20 y NOAA-21 a un clic. De cada una se dibuja la traza en tierra (punteada la recorrida,
+continua la que viene), la franja que el sensor está barriendo y un marcador con su nombre,
+recalculados con SGP4 una vez por segundo.
+
+Con un territorio elegido, el panel dice **cuándo lo miró y cuándo vuelve a mirarlo cada
+misión**, y el mapa dibuja la banda de esa próxima pasada cruzando el país. Eso es lo que
+explica por qué una alerta satelital tiene la fecha que tiene: sin pasada no hay imagen y sin
+imagen no hay detección.
+
+Detalles que sostienen la honestidad del cálculo (`web/src/lib/satelites.ts`):
+
+- **Los elementos orbitales van embebidos** (`lib/tle-generado.ts`, generado por
+  `node scripts/actualizar-tle.mjs` desde Celestrak, que es público y no pide llave). El
+  tablero no consulta nada en tiempo de ejecución; el panel muestra la antigüedad del TLE y
+  avisa a partir de dos semanas, porque una traza vieja se desvía.
+- **Una pasada es una pasada útil.** Cuenta si el punto cae dentro de la franja del sensor y,
+  en los ópticos, si además hay luz: Sentinel-2 cruza Colombia dos veces al día pero solo la
+  de las 10:30 locales trae imagen. La nocturna se marca con luna y solo aparece en los
+  sensores que sirven de noche (el radar de Sentinel-1, los térmicos de MODIS y VIIRS).
+- **El barrido se reparte por misión** entre tareas del bucle de eventos —recorrer hasta
+  dieciséis días de órbita, segundo a segundo alrededor de cada acercamiento, cuesta décimas
+  de segundo por satélite— y el panel se va llenando en vez de congelar el tablero.
 
 ### Reproducción temporal
 

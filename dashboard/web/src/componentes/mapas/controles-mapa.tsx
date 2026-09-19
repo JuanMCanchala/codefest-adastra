@@ -1,4 +1,4 @@
-import { Box, Crosshair, Layers, Scan } from "lucide-react";
+import { Box, Crosshair, Layers, Maximize2, Minimize2, Orbit, Scan } from "lucide-react";
 
 import { BASES, type ClaveBase } from "@/lib/mapa-base";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,10 @@ interface Props {
   mostrarVolumen: boolean;
   /** Devuelve la cámara al encuadre de los datos tras navegar a mano. */
   onEncuadrar: () => void;
+  orbitas: boolean;
+  onCambiarOrbitas: (activo: boolean) => void;
+  pantallaCompleta: boolean;
+  onCambiarPantallaCompleta: (activo: boolean) => void;
 }
 
 const BOTON =
@@ -34,6 +38,10 @@ export function ControlesMapa({
   onCambiarVolumen,
   mostrarVolumen,
   onEncuadrar,
+  orbitas,
+  onCambiarOrbitas,
+  pantallaCompleta,
+  onCambiarPantallaCompleta,
 }: Props) {
   // El grupo se sitúa debajo del control de MapLibre (10 px de margen y tres botones de
   // 36 px: acercar, alejar y brújula), que si no intercepta los clics de estos botones.
@@ -66,7 +74,8 @@ export function ControlesMapa({
           );
         })}
       </div>
-      <div className="flex gap-1.5">
+      {/* Cuatro interruptores no caben en una fila sobre un mapa estrecho: envuelven. */}
+      <div className="flex max-w-[calc(100vw-2rem)] flex-wrap justify-end gap-1.5">
         {mostrarVolumen ? (
           <button
             type="button"
@@ -79,6 +88,16 @@ export function ControlesMapa({
             Volumen
           </button>
         ) : null}
+        <button
+          type="button"
+          title="Dibuja la traza y la franja de las misiones satelitales que producen la evidencia, y cuándo pasan sobre el territorio elegido"
+          aria-pressed={orbitas}
+          onClick={() => onCambiarOrbitas(!orbitas)}
+          className={cn(INTERRUPTOR, orbitas ? ENCENDIDO : APAGADO)}
+        >
+          <Orbit aria-hidden="true" className="size-3.5" />
+          Órbitas
+        </button>
         <button
           type="button"
           title="Vuelve al encuadre de las regiones con dato"
@@ -97,6 +116,24 @@ export function ControlesMapa({
         >
           <Crosshair aria-hidden="true" className="size-3.5" />
           HUD
+        </button>
+        <button
+          type="button"
+          title={
+            pantallaCompleta
+              ? "Devuelve el mapa a su sitio en el tablero (Esc)"
+              : "Agranda el mapa a toda la ventana para navegar con espacio"
+          }
+          aria-pressed={pantallaCompleta}
+          onClick={() => onCambiarPantallaCompleta(!pantallaCompleta)}
+          className={cn(INTERRUPTOR, pantallaCompleta ? ENCENDIDO : APAGADO)}
+        >
+          {pantallaCompleta ? (
+            <Minimize2 aria-hidden="true" className="size-3.5" />
+          ) : (
+            <Maximize2 aria-hidden="true" className="size-3.5" />
+          )}
+          {pantallaCompleta ? "Reducir" : "Ampliar"}
         </button>
       </div>
     </div>

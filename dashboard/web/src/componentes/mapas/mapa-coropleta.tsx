@@ -1,9 +1,11 @@
 import type { FeatureCollection, Geometry } from "geojson";
 import maplibregl, { type ExpressionSpecification, type StyleSpecification } from "maplibre-gl";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { type Prevision, useCapaSatelites } from "@/componentes/mapas/capa-satelites";
 import { ControlesMapa } from "@/componentes/mapas/controles-mapa";
 import { HudMapa, type Recuadro } from "@/componentes/mapas/hud-mapa";
+import { PanelMisiones } from "@/componentes/mapas/panel-misiones";
 import {
   BASES_REMOTAS,
   type ClaveBase,
@@ -12,15 +14,21 @@ import {
   baseDe,
   guardarBase,
   guardarHud,
+  guardarMisiones,
+  guardarOrbitas,
   guardarVolumen,
   idCapaBase,
   idFuenteBase,
   leerBaseGuardada,
   leerHudGuardado,
+  leerMisionesGuardadas,
+  leerOrbitasGuardadas,
   leerVolumenGuardado,
 } from "@/lib/mapa-base";
+import type { ClaveMision, EstadoSatelite } from "@/lib/satelites";
+import { usarPasadas } from "@/lib/usar-pasadas";
 import { SIN_DATO, colorPorValor } from "@/lib/paleta";
-import { formatearEntero } from "@/lib/utils";
+import { cn, formatearEntero } from "@/lib/utils";
 import { TEMA } from "@/lib/tema";
 
 /**
@@ -109,6 +117,12 @@ export interface Props {
   zoomMaximoEnfoque?: number;
   /** Altura en metros de la columna del valor máximo con el volumen 3D encendido. */
   escalaAltura?: number;
+  /**
+   * Adornos de la vista que van sobre el lienzo —leyenda, nota de nivel— dibujados dentro
+   * del contenedor del mapa. Van aquí y no como hermanos del componente porque en pantalla
+   * completa el mapa se despega del flujo y los dejaría atrás.
+   */
+  superposicion?: ReactNode;
 }
 
 function expresionColor(valores: ReadonlyMap<string, number>, maximo: number, claveGeo: string) {
@@ -296,6 +310,7 @@ export function MapaCoropleta({
   enfoque,
   zoomMaximoEnfoque,
   escalaAltura = 150_000,
+  superposicion,
 }: Props) {
   const contenedor = useRef<HTMLDivElement | null>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
@@ -309,6 +324,14 @@ export function MapaCoropleta({
   // solo existe en el mapa plano; la preferencia guardada se ignora en el globo.
   const [volumen, setVolumen] = useState(() => leerVolumenGuardado());
   const volumenActivo = volumen && !globo;
+  const [orbitas, setOrbitas] = useState(() => leerOrbitasGuardadas());
+  const [misiones, setMisiones] = useState<ClaveMision[]>(() => leerMisionesGuardadas());
+  const [panelMisiones, setPanelMisiones] = useState(true);
+  const [telemetriaSat, setTelemetriaSat] = useState<ReadonlyMap<ClaveMision, EstadoSatelite>>(
+    new Map(),
+  );
+  const [pantallaCompleta, setPantallaCompleta] = useState(false);
+  const [zoomActual, setZoomActual] = useState(zoom);
   const [avisoBase, setAvisoBase] = useState<string | null>(null);
   // La cámara y el destello necesitan las capas ya añadidas; el estilo carga después del
   // primer render y la vista se vuelve a montar al cambiar de modo, así que no basta un ref.
@@ -358,6 +381,21 @@ export function MapaCoropleta({
     setAvisoBase(null);
   };
 
+  const cambiarOrbitas = (activo: boolean) => {
+    setOrbitas(activo);
+    guardarOrbitas(activo);
+  };
+
+  const alternarMision = (clave: ClaveMision) => {
+    setMisiones((previas) => {
+      const siguientes = previas.includes(clave)
+        ? previas.filter((c) => c !== clave)
+        : [...previas, clave];
+      guardarMisiones(siguientes);
+      return siguientes;
+    });
+  };
+
   useEffect(() => {
     const nodo = contenedor.current;
     if (!nodo) {
@@ -387,7 +425,10 @@ export function MapaCoropleta({
       }),
       "bottom-right",
     );
-    instancia.on("zoomend", () => alZoom.current?.(instancia.getZoom()));
+    instancia.on("zoomend", () => {
+      setZoomActual(instancia.getZoom());
+      alZoom.current?.(instancia.getZoom());
+    });
     instancia.on("error", (evento) => {
       const fuente = (evento as { sourceId?: string }).sourceId;
       for (const remota of BASES_REMOTAS) {
@@ -626,6 +667,91 @@ export function MapaCoropleta({
     return rasgo ? leerTexto(rasgo.properties, claveNombre) || seleccionada : null;
   }, [claveGeo, claveNombre, geojson, seleccionada]);
 
+  /**
+   * Punto sobre el que se calculan las pasadas: el centro de la región seleccionada. Sin
+   * selección no hay objetivo —el centro de la cámara se movería con cada arrastre y el
+   * barrido se relanzaría sin parar— y el panel lo pide en vez de inventarse uno.
+   */
+  const objetivo = useMemo<[number, number] | null>(
+    () => (caja ? [(caja[0] + caja[2]) / 2, (caja[1] + caja[3]) / 2] : null),
+    [caja],
+  );
+
+  const pasadas = usarPasadas(objetivo, misiones, orbitas);
+
+  const previsiones = useMemo<Prevision[]>(() => {
+    const salida: Prevision[] = [];
+    for (const clave of misiones) {
+      const proxima = pasadas.porMision.get(clave)?.proxima;
+      if (proxima) {
+        salida.push({ clave, inicio: proxima.inicio, fin: proxima.fin });
+      }
+    }
+    return salida;
+  }, [misiones, pasadas]);
+
+  useCapaSatelites({
+    mapa,
+    listo: capasListas,
+    activa: orbitas,
+    seleccionadas: misiones,
+    previsiones,
+    onTelemetria: setTelemetriaSat,
+  });
+
+  /**
+   * Pantalla completa. El mapa vive en una banda de 520 px dentro del tablero, que alcanza
+   * para leer la coropleta pero no para navegar el terreno ni para tener los paneles
+   * abiertos. Con esto el lienzo toma la ventana entera; `Esc` lo devuelve a su sitio.
+   */
+  useEffect(() => {
+    if (!pantallaCompleta) {
+      return;
+    }
+    const alTeclear = (evento: KeyboardEvent) => {
+      if (evento.key === "Escape") setPantallaCompleta(false);
+    };
+    window.addEventListener("keydown", alTeclear);
+    // Sin esto la rueda del ratón sobre el borde del mapa desplazaría la página de detrás.
+    const desbordePrevio = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", alTeclear);
+      document.body.style.overflow = desbordePrevio;
+    };
+  }, [pantallaCompleta]);
+
+  useEffect(() => {
+    const instancia = mapa.current;
+    if (!instancia) {
+      return;
+    }
+    // El contenedor cambia de tamaño en el mismo cuadro: MapLibre necesita que se lo digan.
+    //
+    // Y hay que ajustar el zoom a mano. `resize` conserva centro y zoom, así que al triplicar
+    // el lienzo se ve más territorio y todo queda más pequeño: justo lo contrario de lo que
+    // pide quien pulsa «Ampliar». Se sube el zoom en la proporción en que creció el lienzo,
+    // con lo que el mismo trozo de terreno llena la ventana. Reencuadrar sobre los datos
+    // sería más simple pero le arrancaría la posición a quien estuviera mirando una mina.
+    const lienzo = instancia.getCanvas();
+    const anchoPrevio = lienzo.clientWidth;
+    const altoPrevio = lienzo.clientHeight;
+    const pendiente = requestAnimationFrame(() => {
+      instancia.resize();
+      const crecimiento = Math.min(
+        lienzo.clientWidth / Math.max(anchoPrevio, 1),
+        lienzo.clientHeight / Math.max(altoPrevio, 1),
+      );
+      if (crecimiento > 0 && Number.isFinite(crecimiento) && Math.abs(crecimiento - 1) > 0.01) {
+        instancia.easeTo({
+          zoom: instancia.getZoom() + Math.log2(crecimiento),
+          duration: prefiereMenosMovimiento() ? 0 : 400,
+        });
+      }
+    });
+    return () => cancelAnimationFrame(pendiente);
+  }, [pantallaCompleta]);
+
   // La telemetría solo se calcula con el HUD encendido: sin él no hay trabajo por cuadro.
   useEffect(() => {
     const instancia = mapa.current;
@@ -657,8 +783,14 @@ export function MapaCoropleta({
   }, [caja, hud]);
 
   return (
-    <div className="relative h-full w-full">
+    <div
+      className={cn(
+        "relative h-full w-full",
+        pantallaCompleta && "fixed inset-0 z-40 h-screen w-screen bg-fondo",
+      )}
+    >
       <div ref={contenedor} className="h-full w-full" />
+      {superposicion}
       {hud ? (
         <HudMapa
           lng={telemetria.lng}
@@ -681,7 +813,36 @@ export function MapaCoropleta({
         onEncuadrar={() => {
           encuadrarDatos();
         }}
+        orbitas={orbitas}
+        onCambiarOrbitas={cambiarOrbitas}
+        pantallaCompleta={pantallaCompleta}
+        onCambiarPantallaCompleta={setPantallaCompleta}
       />
+      {orbitas ? (
+        <PanelMisiones
+          abierto={panelMisiones}
+          onAlternarAbierto={() => setPanelMisiones((previo) => !previo)}
+          seleccionadas={misiones}
+          onAlternarMision={alternarMision}
+          estados={telemetriaSat}
+          pasadas={pasadas}
+          objetivoEtiqueta={nombreSeleccion}
+        />
+      ) : null}
+      {/*
+        A partir de aquí el fondo analítico es un color plano: se puede seguir acercando,
+        pero no hay nada que ver. En vez de dejar al usuario creyendo que el mapa no da más,
+        se le ofrece la imagen, que es lo que estaba buscando.
+      */}
+      {base === "analitico" && zoomActual >= 11 ? (
+        <button
+          type="button"
+          onClick={() => cambiarBase("satelite")}
+          className="pointer-events-auto absolute bottom-3 left-1/2 -translate-x-1/2 rounded border border-acento/60 bg-panel/95 px-2.5 py-1 text-xs text-texto hover:bg-elevado"
+        >
+          A este detalle el fondo analítico ya no muestra terreno · ver imagen satelital
+        </button>
+      ) : null}
       {avisoBase ? (
         <p
           role="status"

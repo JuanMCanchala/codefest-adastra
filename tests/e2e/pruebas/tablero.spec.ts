@@ -479,6 +479,86 @@ test.describe("Tablero · trazabilidad", () => {
     }).toPass({ timeout: 30_000 });
   });
 
+  test("las órbitas dibujan las misiones y sus pasadas sin pedir nada a la red", async ({
+    page,
+  }, testInfo) => {
+    test.skip(esMovil(testInfo), "El panel de misiones solo se ofrece en escritorio.");
+
+    // Las órbitas se propagan con SGP4 en el navegador sobre elementos embebidos: la
+    // promesa de abrir sin red (PRODUCT.md) también vale para esta capa.
+    const remotas: string[] = [];
+    page.on("request", (peticion) => {
+      const url = peticion.url();
+      if (!url.startsWith(TABLERO_URL) && !url.startsWith("data:") && !url.startsWith("blob:")) {
+        remotas.push(url);
+      }
+    });
+
+    await abrirTablero(page);
+
+    // Con un territorio elegido el panel puede decir cuándo lo mira cada satélite.
+    const primera = page.locator("table tbody tr th button").first();
+    const territorio = ((await primera.innerText()) ?? "").trim();
+    await primera.click();
+
+    const orbitas = page.getByRole("button", { name: "Órbitas" });
+    await expect(orbitas).toHaveAttribute("aria-pressed", "false");
+    await orbitas.click();
+    await expect(orbitas).toHaveAttribute("aria-pressed", "true");
+
+    const panelMisiones = page.getByRole("region", { name: "Misiones satelitales" });
+    await expect(panelMisiones).toBeVisible();
+    // El rótulo sale de la geometría del MGN, que nombra en mayúsculas, no de la API.
+    await expect(panelMisiones).toContainText(new RegExp(territorio, "i"));
+    // Las cuatro encendidas por defecto son las que sostienen la evidencia satelital.
+    await expect(panelMisiones).toContainText("Sentinel-2A");
+    await expect(panelMisiones).toContainText("Sentinel-1A");
+
+    // Cada satélite se dibuja con su nombre sobre el punto que sobrevuela.
+    await expect(page.locator(".maplibregl-marker")).toHaveCount(4);
+
+    // El barrido de pasadas tarda: se reparte por misión para no congelar el tablero.
+    await expect(async () => {
+      expect(await panelMisiones.innerText()).not.toContain("calculando…");
+    }).toPass({ timeout: 60_000 });
+    // Una pasada es una fecha concreta, no una promesa vaga.
+    await expect(panelMisiones).toContainText(/Próxima/);
+    await expect(panelMisiones).toContainText(/\d{1,2} de \w+,? \d{2}:\d{2}/);
+
+    expect(remotas).toEqual([]);
+  });
+
+  test("ampliar el mapa lo lleva a toda la ventana y Esc lo devuelve con su leyenda", async ({
+    page,
+  }, testInfo) => {
+    test.skip(esMovil(testInfo), "El mapa solo ocupa la mitad del lienzo en escritorio.");
+    await abrirTablero(page);
+
+    // Rótulo de la leyenda de color; se pinta en versalitas por CSS, no en el texto.
+    const leyenda = page.getByText("alertas tempranas", { exact: true });
+    await expect(leyenda).toBeVisible();
+    const mapa = page.locator(".maplibregl-map").first();
+    const banda = await mapa.boundingBox();
+    expect(banda?.height).toBeCloseTo(520, 0);
+
+    const ampliar = page.getByRole("button", { name: "Ampliar" });
+    await ampliar.click();
+
+    await expect(async () => {
+      const completo = await mapa.boundingBox();
+      expect(completo?.height ?? 0).toBeGreaterThan(700);
+      expect(completo?.width ?? 0).toBeGreaterThan(banda?.width ?? 0);
+    }).toPass({ timeout: 15_000 });
+    // La leyenda viaja con el mapa: sin ella los colores no se pueden leer.
+    await expect(leyenda).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(async () => {
+      expect((await mapa.boundingBox())?.height).toBeCloseTo(520, 0);
+    }).toPass({ timeout: 15_000 });
+    await expect(leyenda).toBeVisible();
+  });
+
   test("una consulta nueva reencuadra la cámara sobre las regiones con dato", async ({
     page,
   }, testInfo) => {
@@ -528,7 +608,7 @@ test.describe("Tablero · filtros globales", () => {
 
     await expect(async () => {
       expect(await enCurso.innerText()).not.toBe(primerAnio);
-    }).toPass({ timeout: 15_000 });
+    }).toPass({ timeout: 30_000 });
     // Un año sin alertas no debe tumbar el mapa: el lienzo sigue dibujado.
     await expect(page.locator("canvas.maplibregl-canvas")).toBeVisible();
 

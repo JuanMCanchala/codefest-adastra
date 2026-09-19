@@ -99,17 +99,19 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar, enfoque }: Pro
           centro={CENTRO}
           zoom={1.2}
           zoomMinimo={0.8}
-          zoomMaximo={12}
+          zoomMaximo={17}
           seleccionada={seleccionada}
           onClicRegion={seleccionarPais}
           enfoque={enfoque}
           zoomMaximoEnfoque={ZOOM_MAXIMO_ENFOQUE}
           escalaAltura={800_000}
           globo
+          superposicion={
+            <div className="pointer-events-none absolute bottom-12 left-3">
+              <LeyendaEscala maximo={maximo} unidad="menciones en el corpus" />
+            </div>
+          }
         />
-        <div className="pointer-events-none absolute bottom-12 left-3">
-          <LeyendaEscala maximo={maximo} unidad="menciones en el corpus" />
-        </div>
       </div>
       <div className="barra-fina max-h-[520px] overflow-y-auto">
         <TablaRanking

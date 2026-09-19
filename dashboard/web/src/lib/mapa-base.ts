@@ -1,3 +1,4 @@
+import { type ClaveMision, MISIONES, MISIONES_POR_DEFECTO } from "@/lib/satelites";
 import { TEMA } from "@/lib/tema";
 
 /**
@@ -147,5 +148,46 @@ export function guardarVolumen(activo: boolean): void {
     window.localStorage.setItem(LLAVE_VOLUMEN, activo ? "1" : "0");
   } catch {
     // Sin persistencia: el volumen vale solo para esta vista.
+  }
+}
+
+const LLAVE_ORBITAS = "aerocode:mapa-orbitas";
+const LLAVE_MISIONES = "aerocode:mapa-misiones";
+
+/** Las órbitas nacen apagadas: son una capa de contexto, no el dato del componente. */
+export function leerOrbitasGuardadas(): boolean {
+  try {
+    return window.localStorage.getItem(LLAVE_ORBITAS) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function guardarOrbitas(activo: boolean): void {
+  try {
+    window.localStorage.setItem(LLAVE_ORBITAS, activo ? "1" : "0");
+  } catch {
+    // Sin persistencia: las órbitas valen solo para esta vista.
+  }
+}
+
+export function leerMisionesGuardadas(): ClaveMision[] {
+  try {
+    const crudo = window.localStorage.getItem(LLAVE_MISIONES);
+    if (crudo !== null) {
+      const claves = crudo.split(",").filter((c) => MISIONES.some((m) => m.clave === c));
+      return claves as ClaveMision[];
+    }
+  } catch {
+    // Modo privado o almacenamiento bloqueado: se usan las de por defecto.
+  }
+  return [...MISIONES_POR_DEFECTO];
+}
+
+export function guardarMisiones(claves: readonly ClaveMision[]): void {
+  try {
+    window.localStorage.setItem(LLAVE_MISIONES, claves.join(","));
+  } catch {
+    // Sin persistencia: la selección vale solo para esta vista.
   }
 }
