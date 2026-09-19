@@ -1,4 +1,4 @@
-import { PanelLeftOpen } from "lucide-react";
+import { Compass, PanelLeftOpen } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { calcularComponente, obtenerSalud, visualizar } from "@/api/cliente";
@@ -24,6 +24,7 @@ import { horaActual, nuevoId, type EntradaHistorial } from "@/lib/historial";
 import type { Accion, Seleccion } from "@/lib/seleccion";
 import { useModoTema } from "@/lib/tema";
 import { fijarCorpusDisponible } from "@/lib/corpus";
+import { fijarLecturaDisponible } from "@/lib/lectura";
 import { fijarVistaTecnica } from "@/lib/vista-tecnica";
 import { cn, esAbortada, mensajeDeExcepcion } from "@/lib/utils";
 
@@ -251,6 +252,7 @@ function Tablero() {
       .then((salud) => {
         fijarVistaTecnica(salud.vista_tecnica === true);
         fijarCorpusDisponible(salud.corpus_disponible === true);
+        fijarLecturaDisponible(salud.lectura_disponible === true);
       })
       .catch(() => undefined);
     return () => control.abort();
@@ -495,6 +497,19 @@ function Tablero() {
                 ejecutar(peticion, globales);
               }}
             />
+          ) : vistaDePartida ? (
+            // El arranque no enseña ningún dato: un tablero que abre con cifras se lee como
+            // una consulta que alguien hizo antes. Se invita a preguntar y se espera.
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 px-6 py-10 text-center">
+              <span className="flex size-12 items-center justify-center rounded-full border border-borde bg-elevado text-apagado">
+                <Compass aria-hidden="true" className="size-5" />
+              </span>
+              <h2 className="text-base font-semibold text-texto">¿Qué quiere ver?</h2>
+              <p className="max-w-[46ch] text-sm leading-relaxed text-apagado">
+                Pregúntelo en lenguaje natural al agente, o elija un componente en «Ajustar».
+                Cada cifra que aparezca vendrá con el fragmento del corpus que la sostiene.
+              </p>
+            </div>
           ) : resultadoVisible ? (
             <div
               className={cn(
