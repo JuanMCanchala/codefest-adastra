@@ -217,12 +217,28 @@ def test_visualizar_sin_especificacion(cliente) -> None:
 
 def test_visualizar_agente_caido(cliente) -> None:
     original = cliente.app.state.cfg
-    cliente.app.state.cfg = original.model_copy(
-        update={"agent_url": "http://127.0.0.1:9"}
-    )
+    cliente.app.state.cfg = original.model_copy(update={"agent_url": "http://127.0.0.1:9"})
     try:
         respuesta = cliente.post("/api/visualizar", json={"instruccion": "hola"})
         assert respuesta.status_code == 502
         assert "agente" in respuesta.json()["detail"]
     finally:
         cliente.app.state.cfg = original
+
+
+def test_red_con_entidad_central_y_tipo_incluye_vecinos_de_otros_tipos(cliente):
+    r = cliente.post(
+        "/api/componente",
+        json={"componente": "red_entidades", "filtros": {"entidad": "Drones", "top": 30}},
+    ).json()
+    nodos = r["datos"]["nodos"]
+    assert len(nodos) >= 10, "la entidad se resuelve sin mayúsculas y se amplía a un segundo salto"
+    r2 = cliente.post(
+        "/api/componente",
+        json={
+            "componente": "red_entidades",
+            "filtros": {"entidad": "drones", "tipo_entidad": "organizacion", "top": 30},
+        },
+    ).json()
+    tipos = {n["tipo"] for n in r2["datos"]["nodos"]}
+    assert "organizacion" in tipos

@@ -25,15 +25,18 @@ CATALOGO: dict[str, str] = {
     "matriz_calor": (
         "Cruce de dos categóricas, p. ej. entidad × organización o país × fenómeno. "
         "Filtros: filas=entidad|pais, columnas=organizacion|fenomeno|documento, "
-        "tipo_entidad, top."
+        "tipo_entidad=persona|organizacion|pais|tecnologia|evento|lugar, top."
     ),
     "red_entidades": (
         "Red de entidades relacionadas (relación). "
-        "Filtros: entidad (centro), tipo_entidad, top, min_peso."
+        "Filtros: entidad (centro), "
+        "tipo_entidad=persona|organizacion|pais|tecnologia|evento|lugar, top, min_peso."
     ),
     "mapa_colombia": (
         "Mapa de Colombia con alertas tempranas por territorio (espacial). "
-        "Filtros: nivel=departamento|municipio, economia, tipo_alerta, desde, hasta."
+        "Filtros: nivel=departamento|municipio; economia=Narcotráfico|Minería ilegal|"
+        "Contrabando|Préstamos gota a gota|Tala ilegal; tipo_alerta=Inminencia|Estructural; "
+        "desde, hasta (años 2005-2026)."
     ),
     "mapa_mundo": "Mapa mundial de menciones de países (espacial). Filtros: top.",
     "cuadrante_priorizacion": (

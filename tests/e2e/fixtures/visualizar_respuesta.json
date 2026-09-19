@@ -1,0 +1,576 @@
+{
+ "respuesta_agente": "Preparé la visualización «Departamentos con más alertas por minería ilegal». El mapa de Colombia permite visualizar espacialmente las alertas tempranas por economía ilegal, en este caso minería ilegal, a nivel departamental.",
+ "especificacion": {
+  "componente": "mapa_colombia",
+  "fenomeno": 3,
+  "filtros": {
+   "nivel": "departamento",
+   "economia": "Minería ilegal"
+  },
+  "titulo": "Departamentos con más alertas por minería ilegal",
+  "justificacion": "El mapa de Colombia permite visualizar espacialmente las alertas tempranas por economía ilegal, en este caso minería ilegal, a nivel departamental."
+ },
+ "resultado": {
+  "componente": "mapa_colombia",
+  "titulo": "Departamentos con más alertas por minería ilegal",
+  "fenomeno": 3,
+  "filtros_aplicados": {
+   "nivel": "departamento",
+   "economia": "Minería ilegal",
+   "desde": 2017,
+   "hasta": 2026
+  },
+  "datos": [
+   {
+    "divipola": "05",
+    "nombre": "Antioquia",
+    "departamento": "Antioquia",
+    "alertas": 84,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-033",
+      "chunk_id": 62534
+     }
+    ]
+   },
+   {
+    "divipola": "91",
+    "nombre": "Amazonas",
+    "departamento": "Amazonas",
+    "alertas": 46,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-014",
+      "chunk_id": 62512
+     },
+     {
+      "doc_id": "F3-ALERTAS-033",
+      "chunk_id": 62534
+     },
+     {
+      "doc_id": "F3-ALERTAS-062",
+      "chunk_id": 62563
+     }
+    ]
+   },
+   {
+    "divipola": "52",
+    "nombre": "Nariño",
+    "departamento": "Nariño",
+    "alertas": 17,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-017",
+      "chunk_id": 62515
+     },
+     {
+      "doc_id": "F3-ALERTAS-070",
+      "chunk_id": 62572
+     },
+     {
+      "doc_id": "F3-ALERTAS-223",
+      "chunk_id": 62729
+     },
+     {
+      "doc_id": "F3-ALERTAS-248",
+      "chunk_id": 62754
+     },
+     {
+      "doc_id": "F3-ALERTAS-357",
+      "chunk_id": 62869
+     },
+     {
+      "doc_id": "F3-ALERTAS-359",
+      "chunk_id": 62871
+     }
+    ]
+   },
+   {
+    "divipola": "27",
+    "nombre": "Chocó",
+    "departamento": "Chocó",
+    "alertas": 10,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-091",
+      "chunk_id": 62593
+     },
+     {
+      "doc_id": "F3-ALERTAS-092",
+      "chunk_id": 62594
+     },
+     {
+      "doc_id": "F3-ALERTAS-140",
+      "chunk_id": 62645
+     },
+     {
+      "doc_id": "F3-ALERTAS-176",
+      "chunk_id": 62681
+     },
+     {
+      "doc_id": "F3-ALERTAS-203",
+      "chunk_id": 62708
+     },
+     {
+      "doc_id": "F3-ALERTAS-208",
+      "chunk_id": 62713
+     },
+     {
+      "doc_id": "F3-ALERTAS-345",
+      "chunk_id": 62857
+     }
+    ]
+   },
+   {
+    "divipola": "94",
+    "nombre": "Guainía",
+    "departamento": "Guainía",
+    "alertas": 10,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-025",
+      "chunk_id": 62525
+     },
+     {
+      "doc_id": "F3-ALERTAS-333",
+      "chunk_id": 62845
+     }
+    ]
+   },
+   {
+    "divipola": "86",
+    "nombre": "Putumayo",
+    "departamento": "Putumayo",
+    "alertas": 10,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-070",
+      "chunk_id": 62572
+     },
+     {
+      "doc_id": "F3-ALERTAS-277",
+      "chunk_id": 62783
+     },
+     {
+      "doc_id": "F3-ALERTAS-286",
+      "chunk_id": 62792
+     },
+     {
+      "doc_id": "F3-ALERTAS-327",
+      "chunk_id": 62839
+     }
+    ]
+   },
+   {
+    "divipola": "18",
+    "nombre": "Caquetá",
+    "departamento": "Caquetá",
+    "alertas": 9,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-058",
+      "chunk_id": 62559
+     },
+     {
+      "doc_id": "F3-ALERTAS-062",
+      "chunk_id": 62563
+     }
+    ]
+   },
+   {
+    "divipola": "54",
+    "nombre": "Norte de Santander",
+    "departamento": "Norte de Santander",
+    "alertas": 9,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-055",
+      "chunk_id": 62556
+     },
+     {
+      "doc_id": "F3-ALERTAS-079",
+      "chunk_id": 62581
+     },
+     {
+      "doc_id": "F3-ALERTAS-262",
+      "chunk_id": 62768
+     },
+     {
+      "doc_id": "F3-ALERTAS-267",
+      "chunk_id": 62773
+     }
+    ]
+   },
+   {
+    "divipola": "23",
+    "nombre": "Córdoba",
+    "departamento": "Córdoba",
+    "alertas": 7,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-038",
+      "chunk_id": 62539
+     },
+     {
+      "doc_id": "F3-ALERTAS-132",
+      "chunk_id": 62637
+     },
+     {
+      "doc_id": "F3-ALERTAS-193",
+      "chunk_id": 62698
+     }
+    ]
+   },
+   {
+    "divipola": "76",
+    "nombre": "Valle del Cauca",
+    "departamento": "Valle del Cauca",
+    "alertas": 7,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-006",
+      "chunk_id": 62504
+     },
+     {
+      "doc_id": "F3-ALERTAS-057",
+      "chunk_id": 62558
+     },
+     {
+      "doc_id": "F3-ALERTAS-108",
+      "chunk_id": 62612
+     },
+     {
+      "doc_id": "F3-ALERTAS-203",
+      "chunk_id": 62708
+     },
+     {
+      "doc_id": "F3-ALERTAS-276",
+      "chunk_id": 62782
+     },
+     {
+      "doc_id": "F3-ALERTAS-284",
+      "chunk_id": 62790
+     },
+     {
+      "doc_id": "F3-ALERTAS-356",
+      "chunk_id": 62868
+     }
+    ]
+   },
+   {
+    "divipola": "19",
+    "nombre": "Cauca",
+    "departamento": "Cauca",
+    "alertas": 6,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-070",
+      "chunk_id": 62572
+     },
+     {
+      "doc_id": "F3-ALERTAS-159",
+      "chunk_id": 62664
+     },
+     {
+      "doc_id": "F3-ALERTAS-257",
+      "chunk_id": 62763
+     },
+     {
+      "doc_id": "F3-ALERTAS-331",
+      "chunk_id": 62843
+     }
+    ]
+   },
+   {
+    "divipola": "20",
+    "nombre": "Cesar",
+    "departamento": "Cesar",
+    "alertas": 5,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-055",
+      "chunk_id": 62556
+     },
+     {
+      "doc_id": "F3-ALERTAS-104",
+      "chunk_id": 62607
+     }
+    ]
+   },
+   {
+    "divipola": "68",
+    "nombre": "Santander",
+    "departamento": "Santander",
+    "alertas": 4,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-136",
+      "chunk_id": 62641
+     }
+    ]
+   },
+   {
+    "divipola": "47",
+    "nombre": "Magdalena",
+    "departamento": "Magdalena",
+    "alertas": 3,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-104",
+      "chunk_id": 62607
+     }
+    ]
+   },
+   {
+    "divipola": "99",
+    "nombre": "Vichada",
+    "departamento": "Vichada",
+    "alertas": 2,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-041",
+      "chunk_id": 62542
+     },
+     {
+      "doc_id": "F3-ALERTAS-133",
+      "chunk_id": 62638
+     }
+    ]
+   },
+   {
+    "divipola": "11",
+    "nombre": "Bogotá, D.C.",
+    "departamento": "Bogotá, D.C.",
+    "alertas": 1,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-188",
+      "chunk_id": 62693
+     }
+    ]
+   },
+   {
+    "divipola": "66",
+    "nombre": "Risaralda",
+    "departamento": "Risaralda",
+    "alertas": 1,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-215",
+      "chunk_id": 62720
+     }
+    ]
+   },
+   {
+    "divipola": "97",
+    "nombre": "Vaupés",
+    "departamento": "Vaupés",
+    "alertas": 1,
+    "refs": [
+     {
+      "doc_id": "F3-ALERTAS-202",
+      "chunk_id": 62707
+     }
+    ]
+   }
+  ],
+  "evidencia": [
+   {
+    "doc_id": "F3-ALERTAS-033",
+    "chunk_id": 62534
+   },
+   {
+    "doc_id": "F3-ALERTAS-014",
+    "chunk_id": 62512
+   },
+   {
+    "doc_id": "F3-ALERTAS-062",
+    "chunk_id": 62563
+   },
+   {
+    "doc_id": "F3-ALERTAS-017",
+    "chunk_id": 62515
+   },
+   {
+    "doc_id": "F3-ALERTAS-070",
+    "chunk_id": 62572
+   },
+   {
+    "doc_id": "F3-ALERTAS-223",
+    "chunk_id": 62729
+   },
+   {
+    "doc_id": "F3-ALERTAS-248",
+    "chunk_id": 62754
+   },
+   {
+    "doc_id": "F3-ALERTAS-357",
+    "chunk_id": 62869
+   },
+   {
+    "doc_id": "F3-ALERTAS-359",
+    "chunk_id": 62871
+   },
+   {
+    "doc_id": "F3-ALERTAS-091",
+    "chunk_id": 62593
+   },
+   {
+    "doc_id": "F3-ALERTAS-092",
+    "chunk_id": 62594
+   },
+   {
+    "doc_id": "F3-ALERTAS-140",
+    "chunk_id": 62645
+   },
+   {
+    "doc_id": "F3-ALERTAS-176",
+    "chunk_id": 62681
+   },
+   {
+    "doc_id": "F3-ALERTAS-203",
+    "chunk_id": 62708
+   },
+   {
+    "doc_id": "F3-ALERTAS-208",
+    "chunk_id": 62713
+   },
+   {
+    "doc_id": "F3-ALERTAS-345",
+    "chunk_id": 62857
+   },
+   {
+    "doc_id": "F3-ALERTAS-025",
+    "chunk_id": 62525
+   },
+   {
+    "doc_id": "F3-ALERTAS-333",
+    "chunk_id": 62845
+   },
+   {
+    "doc_id": "F3-ALERTAS-277",
+    "chunk_id": 62783
+   },
+   {
+    "doc_id": "F3-ALERTAS-286",
+    "chunk_id": 62792
+   },
+   {
+    "doc_id": "F3-ALERTAS-327",
+    "chunk_id": 62839
+   },
+   {
+    "doc_id": "F3-ALERTAS-058",
+    "chunk_id": 62559
+   },
+   {
+    "doc_id": "F3-ALERTAS-055",
+    "chunk_id": 62556
+   },
+   {
+    "doc_id": "F3-ALERTAS-079",
+    "chunk_id": 62581
+   },
+   {
+    "doc_id": "F3-ALERTAS-262",
+    "chunk_id": 62768
+   },
+   {
+    "doc_id": "F3-ALERTAS-267",
+    "chunk_id": 62773
+   },
+   {
+    "doc_id": "F3-ALERTAS-038",
+    "chunk_id": 62539
+   },
+   {
+    "doc_id": "F3-ALERTAS-132",
+    "chunk_id": 62637
+   },
+   {
+    "doc_id": "F3-ALERTAS-193",
+    "chunk_id": 62698
+   },
+   {
+    "doc_id": "F3-ALERTAS-006",
+    "chunk_id": 62504
+   },
+   {
+    "doc_id": "F3-ALERTAS-057",
+    "chunk_id": 62558
+   },
+   {
+    "doc_id": "F3-ALERTAS-108",
+    "chunk_id": 62612
+   },
+   {
+    "doc_id": "F3-ALERTAS-276",
+    "chunk_id": 62782
+   },
+   {
+    "doc_id": "F3-ALERTAS-284",
+    "chunk_id": 62790
+   },
+   {
+    "doc_id": "F3-ALERTAS-356",
+    "chunk_id": 62868
+   },
+   {
+    "doc_id": "F3-ALERTAS-159",
+    "chunk_id": 62664
+   },
+   {
+    "doc_id": "F3-ALERTAS-257",
+    "chunk_id": 62763
+   },
+   {
+    "doc_id": "F3-ALERTAS-331",
+    "chunk_id": 62843
+   },
+   {
+    "doc_id": "F3-ALERTAS-104",
+    "chunk_id": 62607
+   },
+   {
+    "doc_id": "F3-ALERTAS-136",
+    "chunk_id": 62641
+   },
+   {
+    "doc_id": "F3-ALERTAS-041",
+    "chunk_id": 62542
+   },
+   {
+    "doc_id": "F3-ALERTAS-133",
+    "chunk_id": 62638
+   },
+   {
+    "doc_id": "F3-ALERTAS-188",
+    "chunk_id": 62693
+   },
+   {
+    "doc_id": "F3-ALERTAS-215",
+    "chunk_id": 62720
+   },
+   {
+    "doc_id": "F3-ALERTAS-202",
+    "chunk_id": 62707
+   }
+  ],
+  "nota_metodo": "Número de alertas tempranas (una fila por alerta y municipio alcanzado) agregadas por departamento entre 2017 y 2026 con mención de «Minería ilegal»; conteo directo de la tabla alertas.",
+  "total_evidencia": 232,
+  "filtros_ignorados": []
+ },
+ "traza": {
+  "agentes_invocados": [
+   "orquestador",
+   "agente_visualizacion"
+  ],
+  "tokens": {
+   "input": 1139,
+   "output": 138,
+   "total": 1277
+  },
+  "latencia_ms": 2420
+ },
+ "citas": []
+}

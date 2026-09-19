@@ -1,0 +1,103 @@
+{
+ "respuesta": "Según los fragmentos proporcionados, los Estados Unidos han demostrado varias capacidades antisatélite, incluyendo [1] interceptores de defensa antimisiles que han demostrado su eficacia en funciones antisatélite contra un satélite en la órbita baja terrestre (LEO). También han desarrollado en el pasado misiles antisatélite (DA-ASAT) específicos, tanto convencionales como con ojiva nuclear [1]. Además, han demostrado capacidad de interferencia en el enlace ascendente contra satélites de comunicaciones geoestacionarios a través de sistemas de guerra electrónica (EW) como el Sistema de Contramedidas de Comunicaciones (CCS) y la Terminal Modular Remota (RMT) [1].\n\nEn cuanto a los riesgos generados para la órbita baja, se menciona que la prueba de un misil antisatélite puede crear más de 100 piezas de escombros rastreables, algunos de los cuales pueden alcanzar altitudes más altas de lo sugerido inicialmente y permanecer en órbita durante años [3]. Esto puede generar riesgos para la sostenibilidad del espacio y la seguridad de los satélites en órbita baja. Sin embargo, no se proporciona información específica sobre los riesgos generados por las capacidades antisatélite de los Estados Unidos en la órbita baja. [1] y [3] son las fuentes que respaldan esta información.",
+ "evaluacion": {
+  "input": "¿Qué capacidades antisatélite han demostrado los Estados y qué riesgos generan para la órbita baja?",
+  "actual_output": "Según los fragmentos proporcionados, los Estados Unidos han demostrado varias capacidades antisatélite, incluyendo [1] interceptores de defensa antimisiles que han demostrado su eficacia en funciones antisatélite contra un satélite en la órbita baja terrestre (LEO). También han desarrollado en el pasado misiles antisatélite (DA-ASAT) específicos, tanto convencionales como con ojiva nuclear [1]. Además, han demostrado capacidad de interferencia en el enlace ascendente contra satélites de comunicaciones geoestacionarios a través de sistemas de guerra electrónica (EW) como el Sistema de Contramedidas de Comunicaciones (CCS) y la Terminal Modular Remota (RMT) [1].\n\nEn cuanto a los riesgos generados para la órbita baja, se menciona que la prueba de un misil antisatélite puede crear más de 100 piezas de escombros rastreables, algunos de los cuales pueden alcanzar altitudes más altas de lo sugerido inicialmente y permanecer en órbita durante años [3]. Esto puede generar riesgos para la sostenibilidad del espacio y la seguridad de los satélites en órbita baja. Sin embargo, no se proporciona información específica sobre los riesgos generados por las capacidades antisatélite de los Estados Unidos en la órbita baja. [1] y [3] son las fuentes que respaldan esta información.",
+  "retrieval_context": [
+   "Aunque Estados Unidos no cuenta con un programa operativo y reconocido de misiles antisatélite de ascenso directo (DA-ASAT), sí dispone de interceptores operativos de defensa antimisiles de trayectoria intermedia que han demostrado su efi cacia en funciones antisatélite contra un satélite en la órbita baja terrestre (LEO). Estados Unidos ha desarrollado en el pasado misiles antisatélite (DA-ASAT) específi cos, tanto convencionales como con ojiva nuclear, y es probable que tenga la capacidad de hacerlo en un futuro próximo si así lo deciden. Estados Unidos cuenta con tres sistemas ofensivos de guerra electrónica (EW) contra el espacio en funcionamiento: el Sistema de Contramedidas de Comunicaciones (CCS), desplegado a escala mundial para proporcionar capacidad de interferencia en el enlace ascendente contra satélites de comunicaciones geoestacionarios; Meadowlands, una versión mejorada del CCS; y la Terminal Modular Remota (RMT), un sistema contraespacial de EW que puede operarse a distancia. A través de su programa de Guerra de Navegación, Estados Unidos tiene la capacidad de bloquear e interferir con las señales civiles de los servicios globales de navegación por satélite (GNSS) dentro de un área local de operaciones para impedir su uso efectivo por parte de los adversarios, y ha demostrado hacerlo en varios ejercicios militares. Es probable que Estados Unidos también pueda interferir las señales GNSS militares, aunque la efi cacia es difícil de evaluar basándose en la información disponible públicamente.",
+   "Se desconoce la efi cacia de las medidas estadounidenses para contrarrestar las operaciones de interferencia y suplantación de identidad de los adversarios contra las señales GPS militares.",
+   "At the same time, the test created more than 100 pieces of trackable debris, some of which reached much higher altitudes than originally suggested and remained in orbit for years. The document uses that case to show how direct-ascent anti-satellite testing can create long-term orbital debris and space sustainability risks even when conducted at relatively low altitude. For readers following counterspace capabilities, anti-satellite testing, and military space policy in South Asia, this fact sheet provides a concise overview of India’s known direct-ascent anti-satellite testing and the strategic logic behind it. It is especially useful for understanding how missile defense technology, military signaling, orbital debris, and space security now intersect in India’s evolving approach to space. Explore some of our related publications below. A summary of the UN OEWG process to address space threats through norms, behaviors, and dialogue, despite its failure to reach consensus. A fact sheet summarizing the 2013 UN GGE consensus report on transparency and confidence-building measures in outer space. China’s “reusable experimental spacecraft” (Chongfu Shiyong Shiyan Hangtian Qi, or CSSHQ) is a technology demonstrator and experimental vehicle which is likely used for testing reusable space launch vehicle technologies, as well as on-orbit testing of new sensor technologies and satellite hardware for risk reduction. The CSSHQ has deployed a small satellite during each of its first three missions.",
+   "It has demonstrated limited rendezvous and proximity operations with the satellites that it has released during its missions, but the spaceplane has near-zero feasibility as an orbital weapons system for attacking targets on the ground.",
+   "We believe that this Soviet anti-satellite capability is effective against critical U.S. satellites in relatively low orbit, that in wartime we would have to face the possibility, indeed the likelihood, that critical assets of the United States would be destroyed by Soviet anti-satellite systems, ’4 In addition to these destructive ASAT capabilities, the U.S.S.R. has a technological capability to jam satellite uplinks or downlinks with some effectiveness, and could use ground- “’Ihici., p. 56. “ Ihid., p. 5/+. 121hid., p. 56, “Ibid., p. 56. “Statement of The Honorable Richard Per]e, Assistant Secretar~. of Defense ( International Security Policy), in Hearings Before the Subcommittee on Strategic and Theater Nuclear Forces of the (’ommjttee cm Armed Serl’ices United States Sen. ate, Testimon?’ on Space Defense illatters in Re\\’iew of the F1’1 98,5 Defense Authorization Bill [S. Hrg. 98-724], March 15, 1984, Pt. 7, p. 3452. Figure 4-4.—Soviet Anit.Sateltite Capabilities Artist’s conception of a Soviet ABM interceptor missile, named GALOSH by Western analysts GALOSH missiles might have capab!litles to attack satellites at low altltudes. SOURCE U S Department of Defense The utility of these U.S. satellites in various types of conflicts is discussed in Appendix D to this report, which is a separate, classified document. Projected Capabilities The Soviet Union could develop weapons capable of attacking U.S. satellites at higher altitudes than can be reached by the current Soviet coorbital interceptor. Laser weapons, among other types, could be be used for this purpose.",
+   "R É S U M É D U R A P P O R T > vii USA RUSSIE CHINE INDE AUS. FRANCE IRAN ISRAËL JAPON CORÉE N. CORÉE S. UK (Orbite Moyenne et Géosynchrone) (Orbite Moyenne et Géosynchrone) Connaissance de la Situation Spatiale SITUATION DANS LE MONDE EN 2025 AUCUNE FAIBLE IMPORTANTE INCERTAINE PAS DE DONNÉES viii 1 — ÉTATS-UNIS Les États-Unis ont effectué plusieurs essais de technologies d’approche et de rendez-vous en orbite basse et géosynchrone, ainsi que de technologies de suivi, de ciblage et d’interception par impact qui pourraient être utilisées pour une capacité antisatellite (ASAT) coorbitale. Ces tests et démonstrations ont été exécutés dans le cadre d’autres missions non offensives, telles que la défense antimissile, l’inspection de satellites et la fourniture de services en orbite. Le pays n’a pas de programme connu de développement de capacités antisatellites coorbitales. Les États-Unis possèdent, en revanche, toute la base technologique nécessaire et pourraient développer rapidement de telles capacité s’ils le souhaitaient. Si les États-Unis venaient à mettre en œuvre leur projet d’intercepteurs spatiaux dans le cadre d’un ’Dôme doré pour l’Amérique’, ces armes disposeraient de capacités antisatellites co-orbitales. Bien que les États-Unis ne disposent pas d’un programme d’interception à ascension directe opérationnelle (DA-ASAT) reconnue officiellement, le pays dispose d’intercepteurs de défense antimissile dont la fonction antisatellite a été testé contre des cibles en orbite très basse. Les États-Unis ont développé des capacités d’interception à ascension directe, conventionnelles et nucléaires, dédiés à une fonction antisatellite par le passé."
+  ],
+  "tools_called": [
+   {
+    "name": "buscar_corpus",
+    "input_parameters": {
+     "query": "capacidades antisatélite demostradas y riesgos para la órbita baja",
+     "k": 6
+    },
+    "output": "F2-SWF-120#54876; F2-SWF-120#54876; F2-SWF-013#51894; F2-SWF-013#51894; F1-CSET-074#22756; F2-SWF-041#52683"
+   }
+  ]
+ },
+ "metadata": {
+  "num_interacciones": 2,
+  "agentes_invocados": [
+   "orquestador",
+   "agente_corpus"
+  ],
+  "tokens": {
+   "input": 2465,
+   "output": 372,
+   "total": 2837
+  },
+  "tokens_por_agente": [
+   {
+    "agente": "orquestador",
+    "modelo": "qwen3-next-80b",
+    "input": 381,
+    "output": 41,
+    "total": 422
+   },
+   {
+    "agente": "agente_corpus",
+    "modelo": "meta.llama3-3-70b-instruct",
+    "input": 2084,
+    "output": 331,
+    "total": 2415
+   }
+  ],
+  "latencia_ms": 37083,
+  "estado": "ok"
+ },
+ "extras": {
+  "ruta": "corpus",
+  "citas": [
+   {
+    "n": 1,
+    "doc_id": "F2-SWF-120",
+    "chunk_id": "54876",
+    "fuente": "F2_Seguridad_Entorno_Espacial/SWF_Counterspace/pdfs/Counterspace_Reports/SWF_gcsr-2026-execsum-spa.pdf",
+    "titulo": null
+   },
+   {
+    "n": 2,
+    "doc_id": "F2-SWF-120",
+    "chunk_id": "54876",
+    "fuente": "F2_Seguridad_Entorno_Espacial/SWF_Counterspace/pdfs/Counterspace_Reports/SWF_gcsr-2026-execsum-spa.pdf",
+    "titulo": null
+   },
+   {
+    "n": 3,
+    "doc_id": "F2-SWF-013",
+    "chunk_id": "51894",
+    "fuente": "F2_Seguridad_Entorno_Espacial/SWF_Counterspace/articulos/SWF_12-2-indian-direct-ascent-anti-satellite-testing-fact-sheet.json",
+    "titulo": null
+   },
+   {
+    "n": 4,
+    "doc_id": "F2-SWF-013",
+    "chunk_id": "51894",
+    "fuente": "F2_Seguridad_Entorno_Espacial/SWF_Counterspace/articulos/SWF_12-2-indian-direct-ascent-anti-satellite-testing-fact-sheet.json",
+    "titulo": null
+   },
+   {
+    "n": 5,
+    "doc_id": "F1-CSET-074",
+    "chunk_id": "22756",
+    "fuente": "F1_IA_y_Capacidades_Estrategicas/CSET_Georgetown/pdfs/Data_Snapshot/CSET_center-for-security-and-emerging-technology-4.pdf",
+    "titulo": null
+   },
+   {
+    "n": 6,
+    "doc_id": "F2-SWF-041",
+    "chunk_id": "52683",
+    "fuente": "F2_Seguridad_Entorno_Espacial/SWF_Counterspace/pdfs/Counterspace_Reports/SWF_2025-executive-summary-french.pdf",
+    "titulo": null
+   }
+  ],
+  "visualizacion": null
+ }
+}

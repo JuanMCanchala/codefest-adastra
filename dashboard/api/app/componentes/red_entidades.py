@@ -21,10 +21,39 @@ SELECT r.origen AS origen, r.destino AS destino, r.relacion AS relacion, r.peso 
   JOIN entidades ed ON ed.entidad = r.destino
  WHERE (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
    AND COALESCE(r.peso, 0) >= :min_peso
-   AND (:tipo_entidad IS NULL OR (eo.tipo = :tipo_entidad AND ed.tipo = :tipo_entidad))
+   -- Con entidad central, el tipo filtra solo a sus vecinos (si no, "drones", una
+   -- tecnología, quedaría conectada solo a otras tecnologías).
+   AND (:tipo_entidad IS NULL
+        OR (:entidad IS NULL AND eo.tipo = :tipo_entidad AND ed.tipo = :tipo_entidad)
+        OR (:entidad IS NOT NULL AND ((r.origen = :entidad AND ed.tipo = :tipo_entidad)
+                                   OR (r.destino = :entidad AND eo.tipo = :tipo_entidad))))
    AND (:entidad IS NULL OR r.origen = :entidad OR r.destino = :entidad)
  ORDER BY r.peso DESC, r.origen, r.destino
  LIMIT :limite
+"""
+
+# Segundo salto: relaciones de los vecinos ya elegidos, para que una entidad con pocas
+# aristas directas (p. ej. "drones", 16) muestre su contexto. Sigue siendo trazable.
+SEGUNDO_SALTO = """
+SELECT r.origen AS origen, r.destino AS destino, r.relacion AS relacion, r.peso AS peso,
+       r.doc_id AS doc_id, r.chunk_id AS chunk_id
+  FROM relaciones r
+  JOIN documentos d ON d.doc_id = r.doc_id
+ WHERE (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
+   AND COALESCE(r.peso, 0) >= :min_peso
+   AND (r.origen IN (SELECT value FROM json_each(:vecinos))
+        OR r.destino IN (SELECT value FROM json_each(:vecinos)))
+ ORDER BY r.peso DESC, r.origen, r.destino
+ LIMIT :limite
+"""
+
+# El grafo guarda las entidades en minúsculas; se prefiere la coincidencia exacta y, si
+# no existe, la entidad más mencionada que contenga el texto pedido.
+RESOLVER_ENTIDAD = """
+SELECT entidad FROM entidades
+ WHERE entidad = :exacta OR entidad LIKE :patron
+ ORDER BY (entidad = :exacta) DESC, n_fragmentos DESC
+ LIMIT 1
 """
 
 NODOS = """
@@ -43,13 +72,29 @@ class Filtros(FiltrosBase):
 
 def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salida, Filtros, list]:
     f, ignorados = resolver_filtros(Filtros, filtros)
+    if f.entidad:
+        texto = f.entidad.strip().lower()
+        filas = bd.consultar(RESOLVER_ENTIDAD, {"exacta": texto, "patron": f"%{texto}%"})
+        f = f.model_copy(update={"entidad": filas[0]["entidad"] if filas else texto})
     params = {**f.model_dump(), "limite": f.top * 6}
 
     seleccion: list[str] = []
     if f.entidad:
         seleccion.append(f.entidad)
-    aristas = []
-    for fila in bd.consultar(ARISTAS, params):
+    aristas: list[dict] = []
+    vistas: set[tuple[str, str]] = set()
+    filas = list(bd.consultar(ARISTAS, params))
+    if f.entidad and len(filas) < f.top:
+        vecinos = {n for fila in filas for n in (fila["origen"], fila["destino"])} - {f.entidad}
+        filas += bd.consultar(
+            SEGUNDO_SALTO,
+            {**params, "vecinos": json.dumps(sorted(vecinos), ensure_ascii=False)},
+        )
+    for fila in filas:
+        par = (fila["origen"], fila["destino"])
+        if par in vistas:
+            continue
+        vistas.add(par)
         nuevos = [n for n in (fila["origen"], fila["destino"]) if n not in seleccion]
         if len(seleccion) + len(nuevos) > f.top:
             continue

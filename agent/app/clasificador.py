@@ -49,6 +49,14 @@ class ClasificadorInyeccion:
                 log.exception("no se pudo cargar el clasificador de inyección")
                 self._fallo = True
 
+    @property
+    def estado(self) -> str:
+        """``listo``, ``fallo`` o ``cargando``: se expone en /health para que un fallo de
+        carga no quede solo en el log."""
+        if self._pipe is not None:
+            return "listo"
+        return "fallo" if self._fallo else "cargando"
+
     def es_ataque(self, texto: str) -> bool:
         self.cargar()
         if self._pipe is None:

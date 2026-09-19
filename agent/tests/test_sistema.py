@@ -203,3 +203,16 @@ def test_clasificador_no_bloquea_preguntas_benignas():
     llm = LLMFalso({"orquestador": ruta("corpus"), "agente_corpus": "Respuesta [1]."})
     s = Sistema(llm, RecuperadorFalso(FRAG), CFG, ClasificadorFalso(ataque=False))
     assert s.responder("¿Qué es LEO?").respuesta == "Respuesta [1]."
+
+
+def test_filtros_con_alternativas_del_catalogo_se_descartan():
+    viz = json.dumps(
+        {
+            "componente": "mapa_colombia",
+            "fenomeno": 3,
+            "filtros": {"economia": "Minería ilegal", "tipo_alerta": "Inminencia|Estructural"},
+        }
+    )
+    s, _ = sistema({"orquestador": ruta("visualizacion"), "agente_visualizacion": viz})
+    r = s.responder("Mapa de alertas por minería ilegal", incluir_extras=True)
+    assert r.extras["visualizacion"]["filtros"] == {"economia": "Minería ilegal"}
