@@ -115,6 +115,7 @@ PARTES = [
             "03_arquitectura/reincorporados_copyleft.md",
             "03_arquitectura/proyectos_referencia.md",
             "03_arquitectura/repos_utiles.md",
+            "03_arquitectura/benchmarks_modelos_bedrock.md",
             "03_arquitectura/modelo_local.md",
         ],
     ),
