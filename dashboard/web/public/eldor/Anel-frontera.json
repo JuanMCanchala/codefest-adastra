@@ -1,0 +1,62 @@
+{
+ "sitio": "Anel",
+ "imagen": "/eldor/Anel-frontera.png",
+ "encuadre": "frontera bosque/mina",
+ "con_anotacion": true,
+ "recorte_px": [
+  8960,
+  14080,
+  2560,
+  2560
+ ],
+ "fecha_captura": "2022-04-08",
+ "resolucion_m_px": 0.05662,
+ "crs": "EPSG:32719",
+ "modelo": "SegFormer MiT-B2 - segformer_b2_baseline2_augv2_weighted_ce_dice",
+ "huella_minera_ha": 0.88,
+ "bosque_ha": 0.46,
+ "clases": [
+  {
+   "clase": "Suelo desnudo",
+   "porcentaje": 37.41,
+   "minera": true,
+   "color": "#e8c48c"
+  },
+  {
+   "clase": "Bosque primario",
+   "porcentaje": 22.01,
+   "minera": false,
+   "color": "#167a3f"
+  },
+  {
+   "clase": "Regeneración natural tipo 2",
+   "porcentaje": 16.3,
+   "minera": false,
+   "color": "#84c8a0"
+  },
+  {
+   "clase": "Regeneración natural tipo 1",
+   "porcentaje": 15.22,
+   "minera": false,
+   "color": "#60b080"
+  },
+  {
+   "clase": "Cuerpos de agua",
+   "porcentaje": 4.55,
+   "minera": false,
+   "color": "#3884ff"
+  },
+  {
+   "clase": "Montículos de cascajo",
+   "porcentaje": 4.37,
+   "minera": true,
+   "color": "#f0963c"
+  },
+  {
+   "clase": "Edificación",
+   "porcentaje": 0.14,
+   "minera": false,
+   "color": "#ffd666"
+  }
+ ]
+}

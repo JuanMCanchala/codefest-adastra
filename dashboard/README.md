@@ -43,7 +43,7 @@ dashboard/
 | Método | Ruta | Respuesta |
 | --- | --- | --- |
 | GET | `/api/salud` | `{estado, tablas: {...conteos}, textos: {disponible, indexado}}` |
-| GET | `/api/catalogo` | los 9 componentes (los 8 del agente más `distribucion`) con sus filtros, opciones y valores por defecto |
+| GET | `/api/catalogo` | los 10 componentes (los 8 del agente más `distribucion` y `evidencia_satelital`) con sus filtros, opciones y valores por defecto |
 | POST | `/api/componente` | `{componente, fenomeno?, filtros?}` → datos, `evidencia`, `nota_metodo`, `total_evidencia`, `filtros_ignorados` |
 | POST | `/api/visualizar` | `{instruccion}` → agente del Reto 1 → especificación ejecutada |
 | GET | `/api/evidencia/{chunk_id}` | fragmento con `doc_id`, fuente, metadatos del documento y texto |
@@ -52,9 +52,25 @@ dashboard/
 
 Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `composicion_corpus`,
 `linea_tiempo`, `matriz_calor`, `red_entidades`, `mapa_colombia`, `mapa_mundo`,
-`cuadrante_priorizacion`, `panel_evidencia`; más `distribucion` (histograma, Anexo B.2.1), que
-solo se alcanza desde el selector del tablero o por URL porque el catálogo del agente quedó
-congelado con la evaluación del Reto 1. Límites: `evidencia` ≤ 200 elementos (con
+`cuadrante_priorizacion`, `panel_evidencia`; más `distribucion` (histograma, Anexo B.2.1) y
+`evidencia_satelital` (el ortomosaico, la segmentación del modelo y la anotación humana del
+sitio minero, uno al lado del otro), que solo se alcanzan desde el selector del tablero o por
+URL porque el catálogo del agente quedó congelado con la evaluación del Reto 1.
+
+`evidencia_satelital` es el único componente que no consulta la base: enseña los trípticos que
+precalcula `scripts/eldor_recorte.py` y que viajan dentro de la SPA (`web/public/eldor/`). Su
+trazabilidad no es `doc_id`/`chunk_id` sino la espacial —sitio, CRS, ventana del recorte,
+resolución, fecha de vuelo y checkpoint—, así que su `evidencia` va vacía a propósito. Sin
+trípticos en disco devuelve `triptico: null` y la vista lo dice, en vez de salir en blanco.
+
+Tres encuadres del mismo modelo, según qué se quiera enseñar: `mineria` (la zona de más
+actividad), `frontera` (el borde donde el bosque termina y la mina empieza) y `bosque` (el
+frente de deforestación: selva en pie junto a terreno desmontado que rebrota). El de `bosque`
+encabeza con bosque primario, área intervenida y regeneración natural en vez de con la huella
+minera, y su nota de método advierte de lo que la cifra **no** es: cobertura medida en un solo
+vuelo, no pérdida de bosque entre dos fechas, que exigiría dos vuelos del mismo sitio.
+
+Límites: `evidencia` ≤ 200 elementos (con
 `total_evidencia`), `refs` ≤ 20 por elemento cliqueable, `top` ≤ 30 (≤ 60 nodos en la red),
 `limite` ≤ 20 en `panel_evidencia`.
 

@@ -60,7 +60,13 @@ def test_catalogo(cliente) -> None:
         assert componente["filtros"]
 
 
-@pytest.mark.parametrize("componente", list(CATALOGO))
+# `evidencia_satelital` no sale del corpus: es una medición sobre imagen, y su
+# trazabilidad es espacial (sitio, CRS, ventana del recorte, vuelo, checkpoint) en vez de
+# `doc_id`/`chunk_id`. Se comprueba en su propia prueba, más abajo.
+SIN_CORPUS = {"evidencia_satelital"}
+
+
+@pytest.mark.parametrize("componente", [c for c in CATALOGO if c not in SIN_CORPUS])
 def test_componente_devuelve_datos_trazables(cliente, conexion, componente: str) -> None:
     inicio = time.perf_counter()
     respuesta = cliente.post("/api/componente", json={"componente": componente})
@@ -82,6 +88,45 @@ def test_componente_devuelve_datos_trazables(cliente, conexion, componente: str)
     for doc_id, chunk_id in list(dict.fromkeys(pares))[:150]:
         assert isinstance(chunk_id, int)
         assert _existe(conexion, doc_id, chunk_id), f"{componente}: {doc_id}/{chunk_id} no existe"
+
+
+def test_evidencia_satelital_es_trazable_en_el_espacio(cliente) -> None:
+    """La medición sobre imagen cita sitio, CRS, ventana y checkpoint, no fragmentos."""
+    inicio = time.perf_counter()
+    respuesta = cliente.post("/api/componente", json={"componente": "evidencia_satelital"})
+    LATENCIAS["evidencia_satelital"] = (time.perf_counter() - inicio) * 1000
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    assert cuerpo["titulo"]
+    assert cuerpo["nota_metodo"]
+    assert cuerpo["filtros_ignorados"] == []
+
+    triptico = cuerpo["datos"]["triptico"]
+    if triptico is None:
+        pytest.skip("no hay trípticos renderizados en este árbol")
+
+    assert triptico["imagen"].startswith("/eldor/")
+    assert triptico["crs"] == "EPSG:32719"
+    assert len(triptico["recorte_px"]) == 4
+    assert triptico["resolucion_m_px"] > 0
+    assert triptico["huella_minera_ha"] >= 0
+    assert triptico["clases"], "el recorte no declara ninguna clase de cobertura"
+    for campo in (triptico["sitio"], triptico["fecha_captura"], triptico["modelo"]):
+        assert campo in triptico["procedencia"] or campo
+
+
+def test_evidencia_satelital_ignora_un_sitio_que_no_existe(cliente) -> None:
+    """Un sitio sin renderizar se informa y se cae al primero, en vez de salir en blanco."""
+    respuesta = cliente.post(
+        "/api/componente",
+        json={"componente": "evidencia_satelital", "filtros": {"sitio": "NoExiste"}},
+    )
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["triptico"] is None:
+        pytest.skip("no hay trípticos renderizados en este árbol")
+    assert cuerpo["filtros_ignorados"] == ["sitio"]
+    assert cuerpo["datos"]["triptico"]["sitio"] in cuerpo["datos"]["sitios"]
 
 
 def test_latencia_de_cada_componente(cliente) -> None:

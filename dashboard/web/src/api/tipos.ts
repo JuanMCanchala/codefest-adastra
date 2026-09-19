@@ -25,7 +25,8 @@ export type NombreComponente =
   | "mapa_mundo"
   | "cuadrante_priorizacion"
   | "panel_evidencia"
-  | "distribucion";
+  | "distribucion"
+  | "evidencia_satelital";
 
 export type Filtros = Record<string, string | number | null>;
 
@@ -141,6 +142,47 @@ export interface DatosDistribucion {
   barras: BarraDistribucion[];
 }
 
+/** Una clase de cobertura presente en el recorte segmentado. */
+export interface ClaseSatelital {
+  clase: string;
+  porcentaje: number;
+  /** Si cuenta como huella minera directa (infraestructura o remoción de material). */
+  minera: boolean;
+  color: string;
+}
+
+/** Tríptico ya renderizado: ortomosaico, predicción del modelo y anotación humana. */
+export interface TripticoSatelital {
+  sitio: string;
+  /** Ruta de la imagen dentro de la SPA (`/eldor/...png`). */
+  imagen: string;
+  encuadre: string;
+  con_anotacion: boolean;
+  /** Ventana del ortomosaico: `[x, y, ancho, alto]` en píxeles. */
+  recorte_px: [number, number, number, number];
+  fecha_captura: string;
+  resolucion_m_px: number;
+  crs: string;
+  modelo: string;
+  huella_minera_ha: number;
+  bosque_ha: number;
+  /** Vegetación rebrotando: solo crece sobre terreno intervenido antes. */
+  regeneracion_ha: number;
+  /** Lo que no es bosque primario. Resta sobre áreas medidas, no pérdida entre dos fechas. */
+  intervenida_ha: number;
+  area_total_ha: number;
+  clases: ClaseSatelital[];
+  /** Cadena de trazabilidad, el equivalente espacial de un `doc_id`/`chunk_id`. */
+  procedencia: string;
+}
+
+export interface DatosEvidenciaSatelital {
+  sitios: string[];
+  /** Encuadres renderizados para el sitio en pantalla (`frontera`, `mineria`, `bosque`). */
+  encuadres: string[];
+  triptico: TripticoSatelital | null;
+}
+
 export interface FilaEvidencia {
   doc_id: string;
   chunk_id: IdChunk;
@@ -188,6 +230,10 @@ export type ResultadoComponente =
   | (SobreComponente & {
       componente: "distribucion";
       datos: DatosDistribucion;
+    })
+  | (SobreComponente & {
+      componente: "evidencia_satelital";
+      datos: DatosEvidenciaSatelital;
     });
 
 export interface CuerpoComponente {

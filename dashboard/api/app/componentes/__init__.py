@@ -16,6 +16,7 @@ from . import (
     composicion_corpus,
     cuadrante_priorizacion,
     distribucion,
+    evidencia_satelital,
     linea_tiempo,
     mapa_colombia,
     mapa_mundo,
@@ -37,6 +38,8 @@ CATALOGO: dict[str, str] = {
     # quedó congelado al abrir la evaluación del Reto 1, así que el agente no lo propone.
     "distribucion": "Histograma de una variable contada (fragmentos por documento, alertas "
     "por municipio, menciones por entidad…): la tarea «distribución» del Anexo B.2.1.",
+    "evidencia_satelital": "Ortomosaico, segmentación del modelo y anotación humana del "
+    "sitio minero: la imagen de la que salen las hectáreas del agente satelital.",
 }
 
 MODULOS: dict[str, ModuleType] = {
@@ -49,6 +52,7 @@ MODULOS: dict[str, ModuleType] = {
     "cuadrante_priorizacion": cuadrante_priorizacion,
     "panel_evidencia": panel_evidencia,
     "distribucion": distribucion,
+    "evidencia_satelital": evidencia_satelital,
 }
 
 
