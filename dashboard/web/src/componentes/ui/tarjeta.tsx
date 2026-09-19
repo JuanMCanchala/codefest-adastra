@@ -6,7 +6,7 @@ export function Tarjeta({ className, ...props }: HTMLAttributes<HTMLDivElement>)
   return (
     <div
       className={cn(
-        "rounded-lg border border-borde bg-panel shadow-sm shadow-black/40",
+        "rounded-md border border-borde bg-panel",
         className,
       )}
       {...props}
@@ -19,7 +19,7 @@ export function TarjetaEncabezado({ className, ...props }: HTMLAttributes<HTMLDi
 }
 
 export function TarjetaTitulo({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn("text-sm font-semibold tracking-tight", className)} {...props} />;
+  return <h3 className={cn("text-base font-semibold", className)} {...props} />;
 }
 
 export function TarjetaCuerpo({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

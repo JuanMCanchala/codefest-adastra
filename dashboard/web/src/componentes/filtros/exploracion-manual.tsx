@@ -29,18 +29,18 @@ export function ExploracionManual({
 
   return (
     <section
-      className="rounded-lg border border-borde bg-panel"
+      className="rounded-md border border-borde bg-panel"
       aria-labelledby="titulo-exploracion"
     >
       <h2
         id="titulo-exploracion"
-        className="inline-flex items-center gap-2 border-b border-borde px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-apagado"
+        className="inline-flex items-center gap-2 border-b border-borde px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.06em] text-apagado"
       >
         <Compass aria-hidden="true" className="size-3.5" />
         Exploración manual
       </h2>
 
-      <div className="grid gap-1.5 px-4 py-3 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-1.5 px-4 py-3 sm:grid-cols-2">
         {CATALOGO.map((opcion) => {
           const Icono = opcion.icono;
           const activo = opcion.componente === componente;
@@ -54,7 +54,7 @@ export function ExploracionManual({
                 "flex items-start gap-2 rounded-md border px-2.5 py-2 text-left transition-colors",
                 activo
                   ? "border-acento/60 bg-acento/10"
-                  : "border-borde bg-elevado hover:border-acento/40",
+                  : "border-control/60 bg-elevado hover:border-acento/70",
               )}
             >
               <Icono
@@ -63,7 +63,7 @@ export function ExploracionManual({
               />
               <span className="min-w-0">
                 <span className="block text-xs font-medium text-texto">{opcion.etiqueta}</span>
-                <span className="block text-[10px] uppercase tracking-wide text-apagado">
+                <span className="block text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
                   {ETIQUETAS_FAMILIA[opcion.familia]}
                 </span>
               </span>
@@ -74,13 +74,13 @@ export function ExploracionManual({
 
       {definicion.filtros.length > 0 ? (
         <div className="border-t border-borde px-4 py-3">
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
             {definicion.filtros.map((filtro) => {
               const id = `filtro-${componente}-${filtro.clave}`;
               const valor = filtros[filtro.clave];
               return (
                 <div key={filtro.clave} className="flex flex-col gap-1">
-                  <label htmlFor={id} className="text-[10px] uppercase tracking-wide text-apagado">
+                  <label htmlFor={id} className="text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
                     {filtro.etiqueta}
                   </label>
                   {filtro.tipo === "opciones" ? (
@@ -90,7 +90,7 @@ export function ExploracionManual({
                       onChange={(evento) =>
                         actualizar(filtro.clave, evento.target.value === "" ? null : evento.target.value)
                       }
-                      className="h-8 rounded-md border border-borde bg-fondo px-2 text-xs text-texto"
+                      className="h-9 rounded-md border border-control bg-fondo px-2 text-xs text-texto"
                     >
                       <option value="">Sin filtrar</option>
                       {filtro.opciones?.map((opcion) => (
@@ -111,7 +111,7 @@ export function ExploracionManual({
                         const numero = Number.parseInt(evento.target.value, 10);
                         actualizar(filtro.clave, Number.isNaN(numero) ? null : numero);
                       }}
-                      className="h-8 rounded-md border border-borde bg-fondo px-2 font-mono text-xs text-texto"
+                      className="h-9 rounded-md border border-control bg-fondo px-2 font-mono text-xs text-texto"
                     />
                   ) : (
                     <input
@@ -123,7 +123,7 @@ export function ExploracionManual({
                       onChange={(evento) =>
                         actualizar(filtro.clave, evento.target.value === "" ? null : evento.target.value)
                       }
-                      className="h-8 rounded-md border border-borde bg-fondo px-2 text-xs text-texto placeholder:text-apagado/70"
+                      className="h-9 rounded-md border border-control bg-fondo px-2 text-xs text-texto"
                     />
                   )}
                 </div>

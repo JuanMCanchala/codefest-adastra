@@ -14,18 +14,18 @@ interface Props {
 export function HistorialInstrucciones({ entradas, idActivo, onSeleccionar }: Props) {
   return (
     <section
-      className="rounded-lg border border-borde bg-panel"
+      className="rounded-md border border-borde bg-panel"
       aria-labelledby="titulo-historial"
     >
       <h2
         id="titulo-historial"
-        className="inline-flex items-center gap-2 border-b border-borde px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-apagado"
+        className="inline-flex items-center gap-2 border-b border-borde px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.06em] text-apagado"
       >
         <History aria-hidden="true" className="size-3.5" />
         Historial de instrucciones
       </h2>
       {entradas.length === 0 ? (
-        <p className="px-4 py-3 text-[11px] leading-relaxed text-apagado">
+        <p className="px-4 py-3 text-xs leading-relaxed text-apagado">
           Todavía no hay instrucciones en esta sesión.
         </p>
       ) : (

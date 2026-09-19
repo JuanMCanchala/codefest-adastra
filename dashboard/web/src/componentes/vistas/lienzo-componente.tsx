@@ -2,6 +2,7 @@ import { FlaskConical, Layers3, SlidersHorizontal, TriangleAlert } from "lucide-
 
 import type { ResultadoComponente } from "@/api/tipos";
 import { Insignia } from "@/componentes/ui/insignia";
+import { SimboloFenomeno } from "@/componentes/ui/simbolo-fenomeno";
 import { Tarjeta } from "@/componentes/ui/tarjeta";
 import { VistaComposicionCorpus } from "@/componentes/vistas/composicion-corpus";
 import { VistaCuadrantePriorizacion } from "@/componentes/vistas/cuadrante-priorizacion";
@@ -85,16 +86,16 @@ export function LienzoComponente({
         <span
           className={cn(
             "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border",
-            fenomeno ? `${fenomeno.borde} ${fenomeno.fondo} ${fenomeno.texto}` : "border-borde bg-elevado text-acento",
+            "border-borde bg-elevado text-apagado",
           )}
         >
           <Icono aria-hidden="true" className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-semibold tracking-tight">
+          <h2 className="text-base font-semibold">
             {resultado.titulo || definicion.etiqueta}
           </h2>
-          <p className="mt-0.5 text-xs text-apagado">{definicion.descripcion}</p>
+          <p className="mt-0.5 text-sm text-apagado">{definicion.descripcion}</p>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
           <Insignia>
@@ -102,8 +103,9 @@ export function LienzoComponente({
             {resultado.componente}
           </Insignia>
           {fenomeno ? (
-            <Insignia className={cn(fenomeno.borde, fenomeno.fondo, fenomeno.texto)}>
-              {fenomeno.clave}
+            <Insignia className="text-texto">
+              <SimboloFenomeno fenomeno={fenomeno} />
+              {fenomeno.clave} · {fenomeno.nombre}
             </Insignia>
           ) : (
             <Insignia>Los tres fenómenos</Insignia>
@@ -113,7 +115,7 @@ export function LienzoComponente({
 
       {filtros.length > 0 ? (
         <div className="flex flex-wrap items-center gap-1.5 border-b border-borde bg-elevado/40 px-4 py-2">
-          <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-apagado">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
             <SlidersHorizontal aria-hidden="true" className="size-3" />
             Filtros aplicados
           </span>
@@ -126,7 +128,7 @@ export function LienzoComponente({
       ) : null}
 
       {resultado.filtros_ignorados && resultado.filtros_ignorados.length > 0 ? (
-        <p className="flex items-center gap-1.5 border-b border-borde bg-alerta/10 px-4 py-2 text-[11px] text-alerta">
+        <p className="flex items-center gap-1.5 border-b border-borde bg-alerta/10 px-4 py-2 text-xs text-alerta">
           <TriangleAlert aria-hidden="true" className="size-3.5" />
           Filtros ignorados por la API: {resultado.filtros_ignorados.join(", ")}
         </p>
@@ -135,10 +137,10 @@ export function LienzoComponente({
       <div>{cuerpo()}</div>
 
       <footer className="flex flex-wrap items-start gap-3 border-t border-borde bg-elevado/40 px-4 py-2.5">
-        <p className="inline-flex min-w-0 flex-1 items-start gap-1.5 text-[11px] leading-relaxed text-apagado">
-          <FlaskConical aria-hidden="true" className="mt-px size-3.5 shrink-0" />
+        <p className="inline-flex min-w-0 flex-1 basis-64 items-start gap-2 text-sm leading-relaxed text-apagado">
+          <FlaskConical aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-senal" />
           <span>
-            <span className="uppercase tracking-wide">Método: </span>
+            <span className="font-semibold text-texto">Método: </span>
             {resultado.nota_metodo || "La API no devolvió nota de método."}
           </span>
         </p>

@@ -29,7 +29,7 @@ import {
   type EntradaHistorial,
 } from "@/lib/historial";
 import type { Seleccion } from "@/lib/seleccion";
-import { esAbortada, mensajeDeExcepcion } from "@/lib/utils";
+import { cn, esAbortada, mensajeDeExcepcion } from "@/lib/utils";
 
 interface Peticion {
   componente: NombreComponente;
@@ -237,7 +237,7 @@ export function App() {
     <div className="min-h-dvh bg-fondo">
       <BarraSuperior modo={modo} onCambiarModo={setModo} />
 
-      <div className="mx-auto grid max-w-[1800px] gap-4 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="mx-auto grid max-w-[1800px] grid-cols-[minmax(0,1fr)] gap-4 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_380px]">
         <main className="flex min-w-0 flex-col gap-4">
           {modo === "instruccion" ? (
             <BarraInstruccion ocupado={enviando} onEnviar={enviarInstruccion} />
@@ -261,7 +261,10 @@ export function App() {
           />
 
           {modo === "instruccion" && enviando ? (
-            <Cargando mensaje="El orquestador está consultando al agente de visualización…" />
+            <Cargando
+              mensaje="El orquestador está consultando al agente de visualización…"
+              cronometro
+            />
           ) : null}
 
           {modo === "instruccion" && entradaActiva?.error ? (
@@ -283,6 +286,10 @@ export function App() {
               }}
             />
           ) : vista.fase === "listo" ? (
+            <div
+              className={cn("transition-opacity", enviando && "opacity-50")}
+              aria-busy={enviando}
+            >
             <LienzoComponente
               resultado={vista.resultado}
               seleccion={seleccion}
@@ -290,6 +297,7 @@ export function App() {
               nivelColombia={nivelColombia}
               onCambiarNivelColombia={cambiarNivelColombia}
             />
+            </div>
           ) : (
             <Vacio
               titulo="Sin componente activo"
@@ -306,7 +314,7 @@ export function App() {
           ) : null}
         </main>
 
-        <div className="lg:sticky lg:top-[61px] lg:h-[calc(100dvh-77px)]">
+        <div className="h-[70dvh] lg:sticky lg:top-[84px] lg:h-[calc(100dvh-100px)]">
           <PanelLateralEvidencia
             seleccion={seleccion}
             evidenciaGlobal={evidenciaGlobal}

@@ -9,7 +9,7 @@ import { Insignia } from "@/componentes/ui/insignia";
 import { fenomenoPorId } from "@/lib/fenomenos";
 import type { Seleccion } from "@/lib/seleccion";
 import { useRecurso } from "@/lib/usar-recurso";
-import { chunkIdsDe, formatearEntero } from "@/lib/utils";
+import { chunkIdsDe, etiquetaDocumento, formatearEntero } from "@/lib/utils";
 
 interface Props {
   seleccion: Seleccion | null;
@@ -45,20 +45,20 @@ export function PanelLateralEvidencia({
 
   return (
     <aside
-      className="flex h-full min-h-0 flex-col border-l border-borde bg-panel"
+      className="flex h-full min-h-0 flex-col rounded-md border border-borde bg-panel lg:rounded-none lg:border-y-0 lg:border-r-0"
       aria-label="Panel de evidencia"
     >
       <header className="flex items-start gap-2 border-b border-borde px-4 py-3">
-        <FileSearch aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-acento" />
+        <FileSearch aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-senal" />
         <div className="min-w-0 flex-1">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-apagado">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
             Evidencia
           </h2>
-          <p className="mt-0.5 truncate text-sm font-medium text-texto">
+          <p className="mt-0.5 truncate text-base font-semibold text-texto">
             {seleccion?.titulo ?? "Componente completo"}
           </p>
           {seleccion ? (
-            <p className="mt-0.5 text-[11px] leading-relaxed text-apagado">{seleccion.detalle}</p>
+            <p className="mt-0.5 text-sm leading-relaxed text-apagado">{seleccion.detalle}</p>
           ) : null}
         </div>
         {seleccion ? (
@@ -73,7 +73,7 @@ export function PanelLateralEvidencia({
         ) : null}
       </header>
 
-      <div className="border-b border-borde bg-elevado/40 px-4 py-2 text-[11px] leading-relaxed text-apagado">
+      <div className="border-b border-borde bg-elevado/40 px-4 py-2.5 text-sm leading-relaxed text-apagado">
         <p>{notaMetodo || "La API no devolvió nota de método."}</p>
         <p className="mt-1.5 flex flex-wrap gap-1.5">
           <Insignia>{formatearEntero(totalEvidencia)} fragmentos en total</Insignia>
@@ -98,10 +98,10 @@ export function PanelLateralEvidencia({
               const fenomeno = fenomenoPorId(fragmento.fenomeno);
               return (
                 <li key={`${fragmento.doc_id}-${String(fragmento.chunk_id)}`} className="px-4 py-3">
-                  <p className="text-xs font-medium leading-snug text-texto">
-                    {fragmento.titulo || "Documento sin título"}
+                  <p className="text-sm font-medium leading-snug text-texto">
+                    {etiquetaDocumento(fragmento.titulo, fragmento.fuente)}
                   </p>
-                  <p className="mt-0.5 truncate font-mono text-[10px] text-apagado">
+                  <p className="mt-0.5 truncate font-mono text-xs text-tenue">
                     {fragmento.fuente}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -117,8 +117,8 @@ export function PanelLateralEvidencia({
                     {fragmento.organizacion ? <Insignia>{fragmento.organizacion}</Insignia> : null}
                     {fragmento.fecha ? <Insignia>{fragmento.fecha}</Insignia> : null}
                   </div>
-                  <blockquote className="mt-2 border-l-2 border-acento/60 bg-fondo/60 px-3 py-2 text-xs leading-relaxed text-texto">
-                    <Quote aria-hidden="true" className="mb-1 size-3 text-apagado" />
+                  <blockquote className="mt-3 rounded border border-borde bg-fondo px-3 py-2.5 text-sm leading-relaxed text-texto">
+                    <Quote aria-hidden="true" className="mb-1 size-3.5 text-senal" />
                     {fragmento.texto}
                   </blockquote>
                 </li>

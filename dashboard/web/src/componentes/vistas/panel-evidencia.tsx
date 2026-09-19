@@ -4,7 +4,7 @@ import type { FilaEvidencia } from "@/api/tipos";
 import { Vacio } from "@/componentes/ui/estados";
 import { Insignia } from "@/componentes/ui/insignia";
 import type { PropsVista } from "@/lib/seleccion";
-import { cn } from "@/lib/utils";
+import { cn, etiquetaDocumento } from "@/lib/utils";
 
 /** Fragmentos originales del corpus: el componente más directo de trazabilidad. */
 export function VistaPanelEvidencia({
@@ -44,15 +44,15 @@ export function VistaPanelEvidencia({
               }
             >
               <div className="flex items-start gap-2">
-                <FileText aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-acento" />
+                <FileText aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-senal" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium leading-snug text-texto">
-                    {fila.titulo || "Documento sin título"}
+                  <p className="text-sm font-medium leading-snug text-texto">
+                    {etiquetaDocumento(fila.titulo, fila.fuente)}
                   </p>
-                  <p className="mt-0.5 truncate font-mono text-[10px] text-apagado">{fila.fuente}</p>
+                  <p className="mt-0.5 truncate font-mono text-xs text-tenue">{fila.fuente}</p>
                 </div>
               </div>
-              <p className="mt-2 line-clamp-4 text-xs leading-relaxed text-apagado">
+              <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-apagado">
                 {fila.fragmento}
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">

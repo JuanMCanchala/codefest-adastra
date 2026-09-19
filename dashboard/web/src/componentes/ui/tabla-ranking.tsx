@@ -27,7 +27,7 @@ export function TablaRanking({ filas, unidad, seleccionada, onSeleccionar }: Pro
     <table className="w-full border-collapse text-xs">
       <caption className="sr-only">{`Regiones ordenadas por ${unidad}`}</caption>
       <thead className="sticky top-0 bg-panel">
-        <tr className="border-b border-borde text-left text-[10px] uppercase tracking-wide text-apagado">
+        <tr className="border-b border-borde text-left text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
           <th scope="col" className="px-3 py-2 font-medium">
             Región
           </th>
@@ -49,7 +49,7 @@ export function TablaRanking({ filas, unidad, seleccionada, onSeleccionar }: Pro
                   type="button"
                   aria-pressed={activa}
                   onClick={() => onSeleccionar(fila.clave)}
-                  className="flex w-full items-center gap-2 text-left hover:text-acento"
+                  className="flex w-full items-center gap-2 text-left hover:text-texto hover:underline hover:decoration-acento hover:underline-offset-4"
                 >
                   <span
                     aria-hidden="true"
