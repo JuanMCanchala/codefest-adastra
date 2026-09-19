@@ -60,7 +60,15 @@ _PATRONES_AISLAR = [
 
 # Rechazo duro: alto daño (credenciales, entorno, ejecución de código) y alta precisión.
 _PATRONES_RECHAZO = [
-    r"\b(tu|your|el|the)\s+(api[\s_-]?key|token de acceso|access token|bearer token|"
+    # Credenciales: se bloquea cuando se piden las DEL ASISTENTE ("tu api key") o cuando
+    # hay un verbo de exfiltración cerca ("muéstrame el token de acceso"). Con un
+    # determinante suelto bastaba "el token de acceso" para tumbar una pregunta legítima
+    # de F2: "¿qué papel juega el token de acceso orbital en las comunicaciones?".
+    r"\b(tus?|your|sus?)\s+(api[\s_-]?key|token de acceso|access token|bearer token|"
+    r"contrase(n|ñ)a|password|credenciales|credentials)\b",
+    r"\b(muestra|mu[eé]strame|revela|imprime|dame|dime|env[ií]a|filtra|escupe|"
+    r"show|reveal|print|give me|tell me|leak)\b.{0,30}"
+    r"\b(api[\s_-]?key|token de acceso|access token|bearer token|"
     r"contrase(n|ñ)a|password|credenciales|credentials)\b",
     r"\b(variables? de entorno|environment variables?|os\.environ|\.env)\b",
     r"\b(ejecuta|execute|run)\b.{0,20}\b(este|el siguiente|this|the following)\s+"
