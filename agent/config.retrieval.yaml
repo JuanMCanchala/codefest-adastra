@@ -1,0 +1,46 @@
+# Configuracion de recuperacion para la Etapa 2.
+#
+# Parte de la configuracion medida en la Etapa 1 (config.adl.yaml), con dos cambios
+# por eficiencia: la latencia puntua en el Bloque B (seccion 2.5.2) y el contenedor de
+# Coolify corre en CPU.
+#   - rerank.top_k_candidates baja de 100 a 30: el cross-encoder en CPU es el paso
+#     mas lento y el agente solo usa 6 fragmentos, no 10 + 3 documentos.
+#   - graph.fuse_into_retrieval se activa por variable de entorno (GRAFO_EN_RECUPERACION)
+#     tras medir su costo en latencia y memoria (carga GLiNER).
+
+encoders:
+  - name: "bge-m3"
+    model_id: "BAAI/bge-m3"
+    weight: 1.0
+    normalize: true
+    use_dense: true
+    use_sparse: true
+    use_colbert: false
+
+chunking:
+  output_max_words: 250
+
+retrieval:
+  top_k_faiss: 100
+  fusion: "rrf"
+  rrf_k: 60
+  final_fragments: 10
+  final_documents: 3
+  min_fragment_words: 20
+  doc_dedup_threshold: 0.90
+
+rerank:
+  enabled: true
+  model_id: "BAAI/bge-reranker-v2-m3"
+  top_k_candidates: 30
+
+aggregation:
+  method: "max_pool"
+  k_chunks: 30
+
+graph:
+  enabled: true
+  ner_model: "urchade/gliner_multi-v2.1"
+  entity_types: ["persona", "organizacion", "pais", "tecnologia", "evento", "lugar"]
+  fuse_into_retrieval: false
+  fusion_weight: 0.3
