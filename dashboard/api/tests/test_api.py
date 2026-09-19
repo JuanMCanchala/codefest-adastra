@@ -374,6 +374,17 @@ def test_orden_observacion_cierra_el_ciclo_con_datos_reales(cliente, conexion) -
     assert cuerpo["evidencia"] and cuerpo["total_evidencia"] >= len(cuerpo["evidencia"])
 
 
+def test_amw_del_tablero_es_la_misma_copia_que_lee_el_agente() -> None:
+    """Dos lectores, una medición: si las copias divergen, el agente y la ficha darían dos
+    cifras de hectáreas distintas citando la misma fuente. `scripts/amw_colombia.py` escribe
+    las dos en la misma pasada; esto vigila que nadie regenere una sola."""
+    tablero = Path(os.environ["AMW_PATH"])
+    agente = tablero.resolve().parents[3] / "agent" / "datos" / "amw" / "colombia.json"
+    if not agente.is_file():
+        pytest.skip("sin la copia del agente en este árbol")
+    assert tablero.read_bytes() == agente.read_bytes()
+
+
 def test_orden_observacion_resuelve_nombres_y_declara_lo_que_no_encuentra(cliente) -> None:
     # Nombre parcial y sin tildes: cae en el municipio con más alertas que lo contiene.
     parcial = cliente.post(

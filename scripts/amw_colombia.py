@@ -33,7 +33,10 @@ import sys
 import urllib.request
 
 RAIZ = pathlib.Path(__file__).resolve().parents[1]
-SALIDA = RAIZ / "agent" / "datos" / "amw"
+# Dos lectores de la misma medición: el agente (agent/app/amw) y el tablero (componente
+# orden_observacion, cuyo Dockerfile solo alcanza dashboard/). Se escriben las dos copias en
+# la misma pasada para que ninguna pueda quedarse atrás y las dos cifras coincidan siempre.
+SALIDAS = (RAIZ / "agent" / "datos" / "amw", RAIZ / "dashboard" / "datos" / "amw")
 MUNICIPIOS = RAIZ / "dashboard" / "datos" / "geo" / "municipios.geojson"
 
 # Commit fijo: el repositorio se actualiza con frecuencia (la reconstrucción de agosto de
@@ -203,12 +206,12 @@ def main() -> None:
         "conteos_poligonos": conteos,
     }
 
-    SALIDA.mkdir(parents=True, exist_ok=True)
-    destino = SALIDA / "colombia.json"
-    destino.write_text(
-        json.dumps(registro, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    log.info("escrito %s", destino)
+    contenido = json.dumps(registro, ensure_ascii=False, indent=2)
+    for salida in SALIDAS:
+        salida.mkdir(parents=True, exist_ok=True)
+        destino = salida / "colombia.json"
+        destino.write_text(contenido, encoding="utf-8")
+        log.info("escrito %s", destino)
     if nacional:
         log.info(
             "Colombia: %s ha acumuladas a %s",
