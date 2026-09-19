@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from app.componentes import CATALOGO
+from app.componentes import CATALOGO, MODULOS
 
 MAX_LATENCIA_MS = 500
 LATENCIAS: dict[str, float] = {}
@@ -155,7 +155,14 @@ def test_inyeccion_sql_sin_efecto(cliente) -> None:
     for carga in cargas:
         respuesta = cliente.post("/api/componente", json=carga)
         assert respuesta.status_code == 200, carga
-        assert respuesta.json()["datos"] in ([], {}) or True
+        cuerpo = respuesta.json()
+        # La carga va como parámetro ligado, no concatenada: SQLite la trata como un valor
+        # que no existe, así que el filtro se descarta y se informa. La respuesta sigue
+        # bien formada, con datos del corpus sin ese filtro, y nunca es un error.
+        assert "datos" in cuerpo, carga
+        (clave,) = carga["filtros"].keys()
+        assert clave in cuerpo["filtros_ignorados"], carga
+    # Y la base queda intacta: ninguna carga borró, vació ni alteró una tabla.
     assert cliente.get("/api/salud").json()["tablas"] == antes
 
 
@@ -189,6 +196,141 @@ def test_evidencia_errores(cliente) -> None:
     assert cliente.get("/api/evidencia", params={"chunk_ids": "1;2"}).status_code == 422
     demasiados = ",".join(str(i) for i in range(60))
     assert cliente.get("/api/evidencia", params={"chunk_ids": demasiados}).status_code == 422
+
+
+def _un_fragmento_real(cliente) -> dict[str, Any]:
+    """Un fragmento cualquiera del corpus, con su `fuente` tal y como está en metadata."""
+    if not cliente.app.state.textos.disponible:
+        pytest.skip("metadata.jsonl no está disponible en esta máquina")
+    cuerpo = cliente.post(
+        "/api/componente",
+        json={"componente": "panel_evidencia", "fenomeno": 3, "filtros": {"limite": 1}},
+    ).json()
+    chunk_id = cuerpo["evidencia"][0]["chunk_id"]
+    fragmento = cliente.get(f"/api/evidencia/{chunk_id}").json()
+    if not fragmento["fuente"] or Path(fragmento["fuente"]).is_absolute():
+        pytest.skip("el fragmento no registra una ruta relativa de archivo fuente")
+    return fragmento
+
+
+def test_documento_sin_corpus_montado(cliente) -> None:
+    """Sin `CORPUS_DIR` la salud lo dice y el endpoint no promete un archivo que no tiene."""
+    assert cliente.get("/api/salud").json()["corpus_disponible"] is False
+    fragmento = _un_fragmento_real(cliente)
+    respuesta = cliente.get(f"/api/documento/{fragmento['chunk_id']}")
+    assert respuesta.status_code == 404
+    assert "no publica el corpus" in respuesta.json()["detail"]
+
+
+def test_documento_sirve_el_archivo_original(cliente, monkeypatch, tmp_path: Path) -> None:
+    fragmento = _un_fragmento_real(cliente)
+    archivo = tmp_path / fragmento["fuente"]
+    archivo.parent.mkdir(parents=True, exist_ok=True)
+    archivo.write_bytes(b"%PDF-1.4 prueba")
+    monkeypatch.setattr(cliente.app.state.cfg, "corpus_dir", tmp_path, raising=False)
+
+    assert cliente.get("/api/salud").json()["corpus_disponible"] is True
+    respuesta = cliente.get(f"/api/documento/{fragmento['chunk_id']}")
+    assert respuesta.status_code == 200
+    assert respuesta.content == b"%PDF-1.4 prueba"
+    # `inline`: el navegador lo abre en la pestaña en vez de descargarlo a ciegas.
+    assert respuesta.headers["content-disposition"].startswith("inline")
+
+    # El corpus montado pero sin ese archivo concreto: 404 con la ruta, no un 500.
+    archivo.unlink()
+    respuesta = cliente.get(f"/api/documento/{fragmento['chunk_id']}")
+    assert respuesta.status_code == 404
+    assert fragmento["fuente"] in respuesta.json()["detail"]
+
+    assert cliente.get("/api/documento/999999999").status_code == 404
+
+
+def test_documento_no_sale_de_la_raiz_del_corpus(cliente, monkeypatch, tmp_path: Path) -> None:
+    """Una `fuente` con `..` en metadata.jsonl no puede servir un archivo de fuera del corpus."""
+    from app import main as modulo
+
+    raiz = tmp_path / "corpus"
+    raiz.mkdir()
+    secreto = tmp_path / "secreto.txt"
+    secreto.write_text("fuera del corpus", encoding="utf-8")
+    monkeypatch.setattr(cliente.app.state.cfg, "corpus_dir", raiz, raising=False)
+    monkeypatch.setattr(
+        modulo,
+        "_fragmento",
+        lambda *_args, **_kwargs: {"chunk_id": 1, "doc_id": "X", "fuente": "../secreto.txt"},
+    )
+    respuesta = cliente.get("/api/documento/1")
+    assert respuesta.status_code == 404
+    assert "fuera del corpus" not in respuesta.text
+
+
+@pytest.mark.parametrize("componente", list(CATALOGO))
+def test_filtro_en_blanco_no_es_un_filtro(cliente, componente: str) -> None:
+    """`entidad: ""` debe dar lo mismo que no mandar `entidad`: 160 combinaciones hostiles
+    contra la API encontraron que la cadena en blanco llegaba cruda al SQL y filtraba por
+    una entidad llamada «», dejando la red sin un solo nodo."""
+    sin = cliente.post("/api/componente", json={"componente": componente, "filtros": {}})
+    assert sin.status_code == 200, componente
+    for blanco in ("", "   "):
+        con = cliente.post(
+            "/api/componente",
+            json={"componente": componente, "filtros": {"entidad": blanco}},
+        )
+        assert con.status_code == 200, (componente, blanco)
+        cuerpo = con.json()
+        assert "entidad" not in cuerpo["filtros_aplicados"], (componente, blanco)
+        if "entidad" in MODULOS[componente].Filtros.model_fields:
+            # Ni se aplica ni se declara descartado: nadie pidió un valor que descartar.
+            assert "entidad" not in cuerpo["filtros_ignorados"], (componente, blanco)
+        else:
+            # Donde el componente no admite `entidad`, la clave se informa como desconocida.
+            assert "entidad" in cuerpo["filtros_ignorados"], (componente, blanco)
+        assert cuerpo["datos"] == sin.json()["datos"], (componente, blanco)
+
+
+def test_distribucion_es_un_histograma_trazable(cliente, conexion) -> None:
+    """Las barras suman el total, la cola se recoge en la última y cada barra trae refs reales."""
+    cuerpo = cliente.post(
+        "/api/componente",
+        json={"componente": "distribucion", "filtros": {"variable": "fragmentos_por_documento"}},
+    ).json()
+    datos = cuerpo["datos"]
+    assert datos["total"] == sum(b["cuenta"] for b in datos["barras"])
+    assert (
+        datos["total"]
+        == conexion.execute("SELECT COUNT(*) FROM documentos WHERE n_fragmentos > 0").fetchone()[0]
+    )
+    assert datos["resumen"]["minimo"] <= datos["resumen"]["mediana"] <= datos["resumen"]["maximo"]
+    ultima = datos["barras"][-1]
+    assert ultima["hasta"] is None and ultima["etiqueta"].startswith("≥")
+    assert datos["resumen"]["maximo"] >= ultima["desde"]
+    # La evidencia de la cola apunta al documento más largo, y ese par existe de verdad.
+    doc_id, chunk_id = ultima["refs"][0]["doc_id"], ultima["refs"][0]["chunk_id"]
+    assert _existe(conexion, doc_id, chunk_id)
+    assert (
+        conexion.execute(
+            "SELECT n_fragmentos FROM documentos WHERE doc_id = ?", (doc_id,)
+        ).fetchone()[0]
+        == datos["resumen"]["maximo"]
+    )
+
+    # Alertas por municipio solo existen en F3: en F1 el componente lo dice, no inventa.
+    vacio = cliente.post(
+        "/api/componente",
+        json={
+            "componente": "distribucion",
+            "fenomeno": 1,
+            "filtros": {"variable": "alertas_por_municipio"},
+        },
+    ).json()
+    assert vacio["datos"]["total"] == 0 and vacio["datos"]["barras"] == []
+    assert "No hay sujetos" in vacio["nota_metodo"]
+
+    # Una variable inventada por quien pregunta se descarta y se informa; no rompe.
+    raro = cliente.post(
+        "/api/componente", json={"componente": "distribucion", "filtros": {"variable": "riesgo"}}
+    )
+    assert raro.status_code == 200 and "variable" in raro.json()["filtros_ignorados"]
 
 
 def test_geometrias(cliente) -> None:

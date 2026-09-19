@@ -103,9 +103,17 @@ class Filtros(FiltrosBase):
 
 def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salida, Filtros, list]:
     f, ignorados = resolver_filtros(Filtros, filtros)
-    f = normalizar_entidades(bd, f)
+    f, ignorados = normalizar_entidades(bd, f, ignorados)
     params = f.model_dump()
     filas = [fila["clave"] for fila in bd.consultar(FILAS[f.filas], params) if fila["clave"]]
+    # Dos filtros pueden ser válidos por separado e imposibles juntos: pedir países cuyo
+    # tipo de entidad sea «organizacion» no deja ni una fila. Antes eso pintaba una matriz
+    # vacía; ahora se suelta el tipo, se dice que no se aplicó, y se ve el cruce completo.
+    if not filas and f.tipo_entidad:
+        f = f.model_copy(update={"tipo_entidad": None})
+        ignorados = sorted({*ignorados, "tipo_entidad"})
+        params = f.model_dump()
+        filas = [fila["clave"] for fila in bd.consultar(FILAS[f.filas], params) if fila["clave"]]
     columnas = [fila["clave"] for fila in bd.consultar(COLUMNAS, params) if fila["clave"]]
     params["filas_json"] = json.dumps(filas, ensure_ascii=False)
     params["columnas_json"] = json.dumps(columnas, ensure_ascii=False)

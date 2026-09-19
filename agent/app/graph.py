@@ -59,6 +59,7 @@ class Estado(TypedDict, total=False):
     respuesta: str
     fragmentos: list
     visualizacion: dict[str, Any] | None
+    exigir_visualizacion: bool
 
 
 class Sistema:
@@ -234,24 +235,44 @@ class Sistema:
             lambda s: self._nodo_por_ruta(s["decision"].ruta),
         )
         g.add_edge("corpus", "verificador")
+        # El tablero siempre pasa por el nodo de visualización, cualquiera que fuese la
+        # ruta: allí la pregunta ya viene con la vista implícita.
         g.add_conditional_edges(
             "verificador",
-            lambda s: "visualizacion" if s["decision"].ruta in {"ambos", "visualizacion"} else END,
+            lambda s: (
+                "visualizacion"
+                if s["decision"].ruta in {"ambos", "visualizacion"} or s.get("exigir_visualizacion")
+                else END
+            ),
         )
         g.add_edge("visualizacion", END)
         if self._satelital_activo:
-            g.add_edge("satelital", END)
+            g.add_conditional_edges(
+                "satelital",
+                lambda s: "visualizacion" if s.get("exigir_visualizacion") else END,
+            )
         g.add_edge("fuera", END)
         return g.compile()
 
     # ------------------------------------------------------------------ API
     def responder(
-        self, pregunta: str, incluir_extras: bool = False, sesion: str | None = None
+        self,
+        pregunta: str,
+        incluir_extras: bool = False,
+        sesion: str | None = None,
+        exigir_visualizacion: bool = False,
     ) -> ChatResponse:
         tracker = Tracker()
         estado_final = "ok"
         try:
-            s = self._grafo.invoke({"pregunta": pregunta, "tracker": tracker, "sesion": sesion})
+            s = self._grafo.invoke(
+                {
+                    "pregunta": pregunta,
+                    "tracker": tracker,
+                    "sesion": sesion,
+                    "exigir_visualizacion": exigir_visualizacion,
+                }
+            )
             respuesta = sanear_salida(s.get("respuesta") or prompts.SIN_EVIDENCIA)
         except PresupuestoAgotado:
             estado_final, s = "error_presupuesto", {}

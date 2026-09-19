@@ -15,6 +15,7 @@ from ..evidencia import IndiceTextos
 from . import (
     composicion_corpus,
     cuadrante_priorizacion,
+    distribucion,
     linea_tiempo,
     mapa_colombia,
     mapa_mundo,
@@ -32,6 +33,10 @@ CATALOGO: dict[str, str] = {
     "mapa_mundo": "Menciones de países por fenómeno sobre un mapa mundial.",
     "cuadrante_priorizacion": "Intensidad (conteo) frente a tendencia (variación del conteo).",
     "panel_evidencia": "Fragmentos originales con doc_id y chunk_id que sustentan un hallazgo.",
+    # Accesible desde el selector del tablero. El catálogo del agente (agent/app/catalogo.py)
+    # quedó congelado al abrir la evaluación del Reto 1, así que el agente no lo propone.
+    "distribucion": "Histograma de una variable contada (fragmentos por documento, alertas "
+    "por municipio, menciones por entidad…): la tarea «distribución» del Anexo B.2.1.",
 }
 
 MODULOS: dict[str, ModuleType] = {
@@ -43,6 +48,7 @@ MODULOS: dict[str, ModuleType] = {
     "mapa_mundo": mapa_mundo,
     "cuadrante_priorizacion": cuadrante_priorizacion,
     "panel_evidencia": panel_evidencia,
+    "distribucion": distribucion,
 }
 
 

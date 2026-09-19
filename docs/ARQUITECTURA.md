@@ -528,7 +528,8 @@ El experto escribe una instrucción; el agente devuelve una especificación; el 
 ejecuta contra la base. El agente **solo puede elegir de un catálogo cerrado de ocho
 componentes** y rellenar sus filtros: no genera SQL ni código.
 
-Tres decisiones que hacen que esto funcione con preguntas que nadie escribió antes:
+Cuatro decisiones que hacen que esto funcione con preguntas que nadie escribió antes.
+Las tres primeras salieron del diseño; la cuarta, de medir:
 
 1. **Vocabularios cerrados en el prompt.** El agente recibe los valores admitidos de cada
    filtro enumerable, así que devuelve `economia: "Minería ilegal"` y no una invención.
@@ -541,6 +542,78 @@ Tres decisiones que hacen que esto funcione con preguntas que nadie escribió an
    ninguno de la base, el filtro se descarta, se informa en `filtros_ignorados` y se
    responde con los datos sin ese filtro. Un gráfico en blanco es indistinguible de un
    fallo para quien lo mira.
+
+   Esta regla se escribió antes de cumplirse del todo. Una batería de 24 instrucciones
+   contra el sistema real la midió: **3 de 24 vistas salían completamente en blanco**,
+   porque el descarte solo cubría los filtros enumerables de las alertas (`economia`,
+   `tipo_alerta`). Los tres casos y su arreglo:
+
+   | Caso medido | Qué pasaba | Qué hace ahora |
+   | --- | --- | --- |
+   | `entidad` o `tipo_entidad` que no está en el grafo | El texto crudo llegaba al `WHERE` y la red se dibujaba sin un solo nodo | Se descarta, se informa y se devuelve la red sin ese filtro |
+   | `panel_evidencia` con una búsqueda que no casa con entidad ni con título | La búsqueda no mira el texto del fragmento, así que «tala ilegal» —tema real del corpus— no devolvía nada | Cae a la búsqueda sobre el corpus y avisa de que cambió de estrategia |
+   | `matriz_calor` con `filas=pais` y `tipo_entidad=organizacion` | Dos filtros válidos por separado e imposibles juntos: la intersección es vacía por construcción | Se suelta el `tipo_entidad` y se informa |
+
+   La diferencia entre los tres casos y un fallo corriente es que aquí **el sistema no
+   sabía que estaba fallando**: devolvía 200 con cero filas. Por eso `filtros_ignorados`
+   viaja hasta la interfaz en vez de quedarse en un registro.
+
+   Repetida la batería con el arreglo dentro: **24 de 24 instrucciones producen
+   especificación, 24 de 24 mueven la interfaz, 0 vistas en blanco, 0 errores de consola.**
+   Son cifras medidas contra el sistema real —agente y tablero corriendo en contenedor, sin
+   simular la API—, no contra pruebas con respuestas simuladas. La distinción importa: la
+   suite E2E sí simula `/api/visualizar` a propósito, para poder correr sin modelo; esta
+   batería no simula nada, y por eso es la que puede desmentir al documento.
+
+4. **El fallo que ninguna comprobación automática ve.** Medir «¿salió vacío?» encuentra el
+   síntoma y esconde la causa. La misma batería destapó un modo de fallo peor: el agente
+   propone a veces un valor **fuera de la enumeración** del catálogo, el componente se
+   salva cayendo a sus valores por defecto, y la vista sale **con datos y bien formada,
+   pero respondiendo una pregunta distinta de la que se hizo**. El caso que lo ilustra es
+   «¿qué organización documenta qué tecnología?»: el agente invirtió los ejes de la matriz
+   —pidió las organizaciones en las filas y las tecnologías en las columnas— usando además
+   un valor inexistente en ambos. Un gráfico en blanco lo ve cualquiera; este no lo ve
+   nadie sin leer qué filtros pidió el agente.
+
+   Por eso el catálogo (`agent/app/catalogo.py`) no se limita a enumerar valores admitidos
+   sino que fija el **significado de cada eje**: en `matriz_calor`, las filas son siempre
+   lo que se menciona y las columnas siempre dónde se menciona, con ese caso como ejemplo.
+   Es la corrección de una descripción ambigua, no un arreglo del modo de fallo, y su
+   efecto queda por debajo de la variación entre corridas (ver abajo): no le atribuimos
+   una mejora medida. Un filtro omitido se informa; uno inventado se disfraza de respuesta,
+   y eso sigue siendo posible.
+
+   **Lo que la medición sí sostiene, y lo que no.** Tres corridas en frío —agente
+   reiniciado, caché vacía, las mismas 24 instrucciones— dan idéntico en las tres:
+   24/24 especificación, 24/24 la interfaz se mueve (el título del lienzo coincide con lo
+   que devolvió la API), 0 vistas en blanco, 0 errores de consola. El **acierto de
+   componente** —que el gráfico elegido sea el que un analista habría elegido— **no** es
+   estable: se mueve entre **20 y 22 de 24 según la corrida**, con el mismo prompt. Por
+   eso en este documento esa cifra va siempre con su rango, nunca sola.
+
+   Los desaciertos no son aleatorios: son **siempre los mismos tres casos**, corrida tras
+   corrida. Dos son discutibles —«grupos armados × territorios» admite red y admite
+   matriz, y la etiqueta esperada es tan defendible como la elección del agente—. El
+   tercero no: «¿qué países concentran las menciones de capacidades antisatélite?»
+   devuelve `matriz_calor` cuando la unidad de análisis es el país y la codificación
+   natural es `mapa_mundo`. Es un fallo real del bloque B, y queda **declarado, no
+   arreglado**, por decisión: la elección del componente la hace el agente, y el agente es
+   el mismo sistema que ADL evalúa en el Reto 1. Tocar sus prompts para ganar un caso del
+   tablero arriesgaba una nota que ya estaba en juego, así que `agent/` quedó congelado al
+   abrir la ventana de evaluación.
+
+   Probamos endurecer el prompt del agente de visualización para que no inventara valores
+   de filtro. La comparación **no permitió concluir nada**: el acierto de componente se
+   mueve entre 20 y 22 de 24 entre corridas con el mismo prompt, así que el efecto del
+   cambio quedó por debajo de la variación entre corridas. Se revirtió por eso —y porque
+   deja el Reto 1 sin tocar—, no por haber empeorado nada demostrable. Nuestra primera
+   lectura fue que había empeorado; medir una corrida contra una corrida no bastaba, y esa
+   conclusión inicial fue errónea.
+
+   Y una lección de método que salió de ahí: la primera comparación entre los dos prompts
+   dio **igual** porque el agente servía respuestas cacheadas de la corrida anterior (1,3 s
+   por caso, frente a ~9 s con el modelo de verdad). Toda comparación entre versiones del
+   agente exige **reiniciarlo entre medio**; si no, se compara el prompt viejo consigo mismo.
 
 ### 8.3 Propuesta de diseño por fenómeno
 
@@ -582,21 +655,73 @@ traen municipio y código DIVIPOLA.
 
 | Pregunta analítica | Tarea | Componente | Por qué |
 | --- | --- | --- | --- |
-| ¿Dónde se concentran las alertas tempranas? | Espacial | `mapa_colombia` | Coropleta por departamento o municipio, con capas por economía ilícita y agregación según el zoom (B.4.2) |
+| ¿Dónde se concentran las alertas tempranas? | Espacial | `mapa_colombia` | Coropleta por departamento o municipio, con capas por economía ilícita, agregación según el zoom y, al bajar a municipios, la capa de **fronteras departamentales** encima, activable (B.4.2) |
 | ¿Qué territorios priorizar? | Comparación bivariada | `cuadrante_priorizacion` | **Intensidad = conteo total; tendencia = variación del conteo.** Sin índice compuesto: B.2.5 prohíbe los puntajes de riesgo inventados |
 | ¿Qué grupos armados operan en qué territorios? | Relación | `red_entidades` | El control territorial es una red, no una tabla |
 | ¿Cómo evolucionan las alertas por año? | Tendencia | `linea_tiempo` | Solo con `fecha IS NOT NULL` y declarando cobertura |
 | ¿Qué dice la alerta original? | Detalle | `panel_evidencia` | La ficha de la Defensoría es la fuente |
 
-#### Coordinación entre vistas (B.6.3)
+#### Coordinación del tablero (B.6.3), y dónde nos apartamos del anexo
 
-- **Filtros globales** por fenómeno y rango de fechas, aplicados a todas las vistas.
-- ***Brushing and linking***: seleccionar una entidad, un país o un municipio en una vista
-  la resalta en las demás.
+El Anexo B.6.3 describe la coordinación para un tablero de **varias vistas simultáneas**:
+filtros globales con control propio y *brushing and linking* entre paneles. Nuestro tablero
+es de **una vista a la vez**, conducida por el agente, porque §3.3.2 exige que sea el agente
+—y no el usuario moviendo controles— quien decida qué componente activar y con qué filtros.
+Eso cambia la forma que toma la coordinación, y conviene decir exactamente cuál es:
+
+- **La ventana del agente nace abierta en escritorio.** Es la única puerta de entrada al
+  camino conversacional, que es lo que evalúa el bloque B; cerrada era un icono de 48 px sin
+  texto en una esquina, y un evaluador que no pasara el ratón por allí no encontraba cómo
+  preguntar. En móvil nace cerrada, porque abierta taparía el componente entero.
+- **Filtros globales, sí, pero declarados en lenguaje natural.** `fenomeno`, `desde` y
+  `hasta` viven en el estado global del tablero (`web/src/lib/filtros.ts`), no en la
+  especificación de un componente: se fijan cuando el experto los menciona («alertas en
+  Chocó desde 2022») y **siguen aplicándose a cada componente que se active después**,
+  hasta que otra instrucción los cambie. El cuerpo que sale hacia la API los lleva siempre
+  (`App.tsx:97`, `construirCuerpo`). Son globales por alcance y por persistencia; lo que no
+  tienen es un widget que los fije al margen del agente.
+- **Estado compartible y reversible.** El componente activo y sus filtros se reflejan en la
+  URL (`?componente=…&fenomeno=…`), así que cualquier vista del tablero es un enlace que
+  reproduce exactamente lo que el evaluador está viendo; «Copiar enlace», en la barra
+  superior, lo pone en el portapapeles. El hilo de la conversación permite
+  además volver a cualquier vista anterior sin repetir la instrucción.
+- **La decisión del agente, a la vista.** Bajo el título del componente se lee «Por qué esta
+  vista», con la justificación que devolvió el agente al elegir ese gráfico y esos filtros.
+  El bloque B del Reto 2 evalúa exactamente esa decisión; hasta hace poco solo se leía
+  dentro del hilo de la conversación. Se vacía al cambiar la vista a mano, porque entonces
+  la decisión ya no es del agente.
+- **Linking hacia la evidencia, no entre paneles.** Seleccionar un nodo, una arista, una
+  celda o un municipio actualiza el panel lateral con los `refs` (`doc_id`/`chunk_id`) que
+  sustentan **ese** dato, y desde allí se salta al fragmento y al archivo original. Es la
+  mitad de *brushing and linking* que nuestro layout permite: la vista fuente resalta y el
+  panel de detalle sigue.
+- ***Brushing* entre vistas simultáneas: no está, y es deliberado.** Con una vista a la vez
+  no hay panel hermano al que propagar la selección. La alternativa —mostrar los ocho
+  componentes en cuadrícula— habría contradicho el numeral 2 de §3.3, que pide activación
+  selectiva, no un tablero estático. Queda anotado en §10 como límite conocido.
 - **Panel de evidencia siempre a un clic**: cualquier dato clicable lleva sus `refs` con
   hasta 20 pares `doc_id`/`chunk_id`.
 - **Accesibilidad**: paleta apta para daltonismo, leyendas con unidades, zonas con nombre y
   acceso por teclado a la evidencia.
+
+#### Qué del Anexo B dejamos fuera, y por qué
+
+§3.3 dice explícitamente que **no existe un catálogo obligatorio de componentes** y que la
+decisión debe justificarse. El Anexo B es material de referencia, no una lista de la compra;
+el agente elige entre ocho componentes, el tablero ofrece nueve, y lo que descartamos lo
+descartamos por criterios, no por tiempo. Lo declaramos para que el jurado no tenga que
+adivinar si fue omisión o decisión:
+
+| Del Anexo B | Estado | Por qué |
+| --- | --- | --- |
+| Mapa de puntos (B.4.1) | Fuera, por B.2.5 | **Ninguna de nuestras fuentes trae coordenadas.** Las 1.082 alertas de la Defensoría vienen por municipio (DIVIPOLA) y las 1.409 filas de Amazonia por código administrativo `adm2_pcode`: la unidad de observación es el polígono, no el punto. Un marcador exige un centroide, y un centroide es una coordenada que nadie midió, presentada con la precisión visual de un dato observado. Es exactamente lo que B.2.5 prohíbe |
+| Mapa de densidad (B.4.1) | Fuera, por B.2.5 | Mismo problema, agravado: el gradiente se calcularía **sobre esos centroides inventados**, y el resultado —manchas de calor con forma— parecería una medición de concentración espacial que el dato no sostiene. El anexo lo reserva además para «número de puntos muy alto», que no es nuestro caso. La coropleta sobre 507 municipios de 33 departamentos ya es la lectura de concentración, con cada unidad clicable y trazable |
+| Histograma (B.2.1, tarea «distribución») | **Construido, solo en el selector** | `distribucion`: cinco variables contadas (fragmentos por documento, entidades por documento, países por documento, alertas por municipio, menciones por entidad), con la cola larga recogida en una última barra etiquetada «≥ X» y recortada en el percentil 99, seis cifras de resumen y evidencia por barra hacia los sujetos de mayor valor. Con ello quedan cubiertas las **seis** tareas analíticas de B.2.1. **El agente no lo propone**: su catálogo (`agent/app/catalogo.py`) quedó congelado al abrir la evaluación del Reto 1 (§8.2), así que se llega a él desde el selector del tablero o por URL, no preguntando. Lo decimos aquí para que el evaluador no lo busque en el camino conversacional |
+| Layouts jerárquico y radial (B.3.2) | **Construidos** | La red ofrece las tres disposiciones del anexo: **fuerzas** (la general, para comunidades), **radial** (anillos por distancia en saltos alrededor del nodo pulsado, o del más conectado si no se ha pulsado ninguno) y **niveles** (una fila por tipo de entidad en el único orden que este grafo justifica: quién —país, organización, persona— → dónde y cuándo —lugar, evento— → qué —tecnología—). El grafo no tiene contención real, así que «niveles» ordena por tipo y no finge una jerarquía de dependencia |
+| Expansión progresiva de nodos (B.3.3) | **Construida** | Pulsar un nodo abre en el panel de evidencia «Expandir la red alrededor de X»; el doble clic lo hace directo. El tablero vuelve a pedir `red_entidades` con `entidad=X` conservando los filtros que ya había, y el servidor devuelve el segundo salto. Cada expansión es una petición nueva y queda en la URL, así que se puede volver atrás o compartir |
+| Diagrama de caja (B.2.1) | Fuera | Con las mismas variables del histograma no aporta nada que las seis cifras de resumen (mínimo, mediana, media, P90, máximo, n) no digan ya, y su lectura es menos inmediata para quien no lo usa a diario |
+| Narrativa guiada (B.6.1) | **Construida, sin contradecir §3.3.2** | Una secuencia *fija* de vistas sería lo contrario de lo que pide §3.3.2. La salida: la secuencia **la escribe quien pregunta**. El botón «Presentar» de la ventana del agente recorre, con las flechas del teclado, cada turno de la conversación que produjo una vista —la pregunta, la respuesta del agente, por qué eligió ese gráfico y el gráfico con sus datos ya calculados—, sin volver a llamar al agente. Es la herramienta de la demostración ante el jurado (§5.3), construida con lo que el jurado mismo preguntó |
+| Cuadrícula de vistas simultáneas (B.6.1) | Fuera, por contradicción | §3.3.2 prohíbe explícitamente «mostrar todos los componentes a la vez». Nuestro layout es maestro-detalle: una vista activa más el panel de evidencia |
 
 ---
 
@@ -629,12 +754,36 @@ Documentarlas importa tanto como las que tomamos: son las que un jurado esperar�
   hoy fijo en 6). Es un intercambio conocido — más fragmentos suben cobertura y
   tokens — pendiente de una corrida específica del harness.
 - `FUERA_DE_ALCANCE` y `SIN_EVIDENCIA` no espejan el idioma de la pregunta (§5.4).
-- **Fechas.** 1.277 de 1.825 documentos (70,0 %) no tienen fecha completa y 980 (53,7 %) no
-- **Países.** 232 de 528 nodos de tipo país no reciben ISO3: ruido de extracción
+- **Fechas.** 1.277 de 1.825 documentos (70,0 %) no traen fecha completa y 980 (53,7 %) no
+  traen ni siquiera año. La línea de tiempo grafica solo los 845 que sí lo tienen —46 de 459
+  en F1, 270 de 478 en F2, 529 de 888 en F3, entre 2005 y 2026—. El eje de la vista dice
+  «documentos con fecha» y no «documentos», precisamente para que el hueco de F1 no se lea
+  como ausencia del fenómeno sino como ausencia de metadata temporal en sus fuentes.
+- **Países.** 232 de 528 nodos de tipo país no reciben ISO3: ruido de extracción —siglas,
+  gentilicios y trozos de frase que el extractor etiquetó como país—. El mapa mundial pinta
+  únicamente los 296 que sí resuelven, repartidos en 182 códigos ISO3 distintos, y descarta
+  el resto en lugar de adivinar a qué país pertenecen.
 - **Grafo.** El atributo `chunks` de cada nodo está truncado a 21 fragmentos, así que el
+  respaldo que un nodo declara es un **piso, no un total**: en las entidades más mencionadas
+  la lista de fragmentos se queda corta. Por eso los componentes que miden volumen cuentan
+  sobre `menciones` (190.445 filas) y el atributo del nodo se usa solo para trazar.
 - **Municipios.** 1 de 1.082 filas de alertas no empareja con DIVIPOLA («Santa Cruz de
+  Mompox», Bolívar, escrito de otra forma en la ficha de la Defensoría). Esa fila queda
+  fuera de la coropleta municipal en vez de asignarse a un municipio equivocado: preferimos
+  perder un dato a inventar su ubicación.
 - **Base SQL de ADL.** Cubre 19 de los 478 documentos de F2.
-- **La calidad de recuperación no está medida con etiquetas verificadas.** Las
+- **La calidad de recuperación no está medida con etiquetas verificadas.** Las 50 preguntas
+  del banco puntúan la **respuesta final** (relevancia y fidelidad juzgadas por modelo), no
+  el acierto del recuperador: no sabemos qué fracción de los fragmentos traídos es
+  realmente pertinente, solo que lo que el agente afirma está sostenido por lo que cita.
+- **`distribucion` no llega por el camino conversacional.** El agente elige entre los ocho
+  componentes de su catálogo, congelado con `agent/` al abrir la evaluación del Reto 1; el
+  noveno se alcanza desde el selector del tablero o por URL. Levantar esa congelación es una
+  línea en `agent/app/catalogo.py`, pendiente de decisión del equipo tras el cierre del Reto 1.
+- **El recorrido de vistas («Presentar») no vuelve a calcular nada.** Reproduce los resultados
+  que cada turno dejó guardados en el navegador, así que muestra lo que el jurado vio cuando
+  preguntó, no lo que la base devolvería ahora; con datos estáticos es lo mismo, y es lo que
+  hace que el recorrido no gaste ni una llamada al modelo.
 - El sistema es stateless de hecho (el contrato no tiene identificador de sesión);
   queda declarado aquí de forma explícita, como pedía el registro de decisiones
   pendientes del reparto de trabajo del equipo.
@@ -643,8 +792,11 @@ Documentarlas importa tanto como las que tomamos: son las que un jurado esperar�
 
 ## 11. Referencias
 
-- Especificación oficial: `docs/especificacion/CODEFEST_2026_Etapa2_FINAL.pdf`,
-  §1.3, §1.4, §2.3, §2.4, §2.5.1, §2.5.2, §2.5.3.
+- Especificación oficial: `docs/especificacion/CODEFEST_2026_Etapa2_FINAL.pdf`.
+  Reto 1: §1.3, §1.4, §2.3, §2.4, §2.5.1–§2.5.4. Reto 2: §3.3 (alcance funcional mínimo y
+  restricción de datos reales), §3.4 (metodología y pesos de evaluación), Anexo B (B.1
+  preparación de datos, B.2 principios de diseño y B.2.5 evidencia trazable, B.3 relaciones,
+  B.4 geoespacial, B.5 líneas de tiempo, B.6 dashboards).
 - Metodología y resultados de evaluación completos: `agent/eval/README.md`.
 - Despliegue, operación y seguridad, versión completa con diagramas y tablas de
   decisión: `docs/ARQUITECTURA_DESPLIEGUE_SEGURIDAD.md`.

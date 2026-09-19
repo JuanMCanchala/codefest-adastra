@@ -53,7 +53,16 @@ def resolver_filtros[F: FiltrosBase](
     """Construye los filtros ignorando claves desconocidas y valores inválidos."""
     admitidos = set(modelo.model_fields)
     ignorados = sorted(k for k in filtros if k not in admitidos)
-    candidatos = {k: v for k, v in filtros.items() if k in admitidos}
+    # Una cadena en blanco no es un filtro, es la ausencia de filtro. Se quita la clave en
+    # vez de ponerla a None para que valga igual con los campos que tienen valor por
+    # defecto. Sin esto, `entidad: ""` se comparaba contra la base, no casaba con nada y la
+    # red salía sin un solo nodo; y no se informa como descartado porque el usuario no pidió
+    # ningún valor que hubiera que descartar.
+    candidatos = {
+        k: v
+        for k, v in filtros.items()
+        if k in admitidos and not (isinstance(v, str) and not v.strip())
+    }
     for _ in range(len(candidatos) + 1):
         try:
             return modelo(**candidatos), ignorados
@@ -68,23 +77,39 @@ def resolver_filtros[F: FiltrosBase](
     return modelo(), ignorados
 
 
-def _resolver(bd: BaseDatos, sql: str, texto: str) -> str:
+def _resolver(bd: BaseDatos, sql: str, texto: str) -> str | None:
+    """El valor tal y como está guardado, o ``None`` si no hay nada que se le parezca."""
     limpio = texto.strip().lower()
     filas = bd.consultar(sql, {"exacta": limpio, "patron": f"%{limpio}%"})
-    return str(filas[0][0]) if filas else limpio
+    return str(filas[0][0]) if filas else None
 
 
-def normalizar_entidades[F: FiltrosBase](bd: BaseDatos, filtros: F) -> F:
-    """Lleva `entidad` y `tipo_entidad` al valor con el que están guardados en la base."""
-    cambios: dict[str, str] = {}
+def normalizar_entidades[F: FiltrosBase](
+    bd: BaseDatos, filtros: F, ignorados: list[str]
+) -> tuple[F, list[str]]:
+    """Lleva `entidad` y `tipo_entidad` al valor con el que están guardados en la base.
+
+    Si el nombre pedido no existe —el agente puede proponer «sistema espacial», que no es
+    ninguna entidad del grafo— el filtro se descarta y se informa en ``filtros_ignorados``,
+    igual que con el vocabulario de las alertas. Antes se conservaba el texto crudo y la
+    consulta no encontraba nada: la red salía sin un solo nodo, y un componente en blanco
+    es indistinguible de un fallo para quien lo está evaluando.
+    """
+    cambios: dict[str, str | None] = {}
+    fuera = list(ignorados)
     for campo, sql in (
         ("entidad", RESOLVER_ENTIDAD),
         ("tipo_entidad", RESOLVER_TIPO_ENTIDAD),
     ):
         valor = getattr(filtros, campo, None)
         if isinstance(valor, str) and valor.strip():
-            cambios[campo] = _resolver(bd, sql, valor)
-    return filtros.model_copy(update=cambios) if cambios else filtros
+            elegido = _resolver(bd, sql, valor)
+            cambios[campo] = elegido
+            if elegido is None:
+                fuera.append(campo)
+    if not cambios:
+        return filtros, ignorados
+    return filtros.model_copy(update=cambios), sorted(set(fuera))
 
 
 # Las fichas de alertas guardan su vocabulario tal y como lo escribe la Defensoría

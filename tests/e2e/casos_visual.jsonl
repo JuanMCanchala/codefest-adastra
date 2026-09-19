@@ -1,0 +1,24 @@
+{"query_id":"v01","esperado":"mapa_colombia","text":"¿Dónde se concentran las alertas tempranas por minería ilegal?"}
+{"query_id":"v02","esperado":"mapa_colombia","text":"Muéstrame los municipios con más alertas de inminencia"}
+{"query_id":"v03","esperado":"cuadrante_priorizacion","text":"¿Qué departamentos deberíamos priorizar según su intensidad y su tendencia?"}
+{"query_id":"v04","esperado":"linea_tiempo","text":"¿Cómo han evolucionado las alertas tempranas año por año?"}
+{"query_id":"v05","esperado":"red_entidades","text":"¿Qué grupos armados aparecen relacionados con qué territorios?"}
+{"query_id":"v06","esperado":"panel_evidencia","text":"Quiero leer el texto original de las alertas sobre el Chocó"}
+{"query_id":"v07","esperado":"mapa_mundo","text":"¿Qué países concentran las menciones de capacidades antisatélite?"}
+{"query_id":"v08","esperado":"matriz_calor","text":"Cruza los países con los fenómenos del reto"}
+{"query_id":"v09","esperado":"linea_tiempo","text":"¿Cómo se distribuyen en el tiempo los incidentes espaciales mencionados?"}
+{"query_id":"v10","esperado":"red_entidades","text":"¿Qué actores y sistemas espaciales aparecen conectados entre sí?"}
+{"query_id":"v11","esperado":"red_entidades","text":"¿Qué actores y tecnologías de inteligencia artificial aparecen conectados?"}
+{"query_id":"v12","esperado":"matriz_calor","text":"¿Qué organización documenta qué tecnología?"}
+{"query_id":"v13","esperado":"linea_tiempo","text":"¿Cómo evoluciona la atención sobre la inteligencia artificial militar?"}
+{"query_id":"v14","esperado":"composicion_corpus","text":"¿De qué fuentes y formatos se compone la evidencia disponible?"}
+{"query_id":"v15","esperado":"composicion_corpus","text":"¿Cómo se reparte el corpus por idioma?"}
+{"query_id":"v16","esperado":"panel_evidencia","text":"Enséñame los fragmentos que hablan del ELN"}
+{"query_id":"v17","esperado":"mapa_colombia","text":"Dame un mapa de Colombia con las alertas de narcotráfico"}
+{"query_id":"v18","esperado":"red_entidades","text":"¿Qué entidades están más conectadas con las FARC-EP?"}
+{"query_id":"v19","esperado":"composicion_corpus","text":"Compara el número de documentos por organización"}
+{"query_id":"v20","esperado":"cuadrante_priorizacion","text":"¿Qué territorios exigen atención más urgente?"}
+{"query_id":"v21","esperado":"linea_tiempo","text":"Muéstrame en qué años reaparece Venezuela en el corpus"}
+{"query_id":"v22","esperado":"mapa_mundo","text":"¿Qué países aparecen más mencionados en el corpus?"}
+{"query_id":"v23","esperado":"panel_evidencia","text":"Quiero ver la evidencia original sobre tala ilegal"}
+{"query_id":"v24","esperado":"red_entidades","text":"¿Cómo se relacionan China y sus programas espaciales?"}

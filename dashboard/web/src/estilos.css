@@ -84,6 +84,30 @@
   }
 }
 
+/*
+ * La ventana del agente sale de su burbuja: crece desde la esquina donde estaba el
+ * lanzador, en vez de aparecer de la nada en mitad de la pantalla.
+ */
+@keyframes brotar-burbuja {
+  from {
+    opacity: 0;
+    transform: scale(0.82) translate(8px, 16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility brota-de-la-burbuja {
+  transform-origin: bottom right;
+  animation: brotar-burbuja 180ms ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
 @utility barra-fina {
   scrollbar-width: thin;
   scrollbar-color: var(--color-control) transparent;

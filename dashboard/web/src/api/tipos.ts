@@ -24,7 +24,8 @@ export type NombreComponente =
   | "mapa_colombia"
   | "mapa_mundo"
   | "cuadrante_priorizacion"
-  | "panel_evidencia";
+  | "panel_evidencia"
+  | "distribucion";
 
 export type Filtros = Record<string, string | number | null>;
 
@@ -53,6 +54,8 @@ export interface Reaparicion {
 export interface DatosLineaTiempo {
   series: PuntoSerie[];
   reapariciones: Reaparicion[];
+  /** Cuántos documentos hay y cuántos no traen año: los segundos no entran en la serie. */
+  cobertura?: { documentos: number; sin_anio: number };
 }
 
 export interface CeldaMatriz {
@@ -110,6 +113,34 @@ export interface FilaCuadrante {
   refs?: Ref[];
 }
 
+/** Una barra del histograma: rango entero cerrado, o abierto (`hasta: null`) en la cola. */
+export interface BarraDistribucion {
+  desde: number;
+  hasta: number | null;
+  etiqueta: string;
+  cuenta: number;
+  /** Sujetos de mayor valor de la barra, para nombrarlos sin abrir la evidencia. */
+  ejemplos: string[];
+  refs?: Ref[];
+}
+
+export interface DatosDistribucion {
+  variable: string;
+  /** Qué se cuenta (documentos, municipios, entidades). */
+  sujetos: string;
+  /** Qué mide el valor (fragmentos, alertas, países distintos). */
+  unidad: string;
+  total: number;
+  resumen: {
+    minimo: number;
+    mediana: number;
+    media: number;
+    maximo: number;
+    p90: number;
+  } | null;
+  barras: BarraDistribucion[];
+}
+
 export interface FilaEvidencia {
   doc_id: string;
   chunk_id: IdChunk;
@@ -131,14 +162,33 @@ interface SobreComponente {
 }
 
 export type ResultadoComponente =
-  | (SobreComponente & { componente: "composicion_corpus"; datos: FilaComposicion[] })
+  | (SobreComponente & {
+      componente: "composicion_corpus";
+      datos: FilaComposicion[];
+    })
   | (SobreComponente & { componente: "linea_tiempo"; datos: DatosLineaTiempo })
   | (SobreComponente & { componente: "matriz_calor"; datos: DatosMatrizCalor })
-  | (SobreComponente & { componente: "red_entidades"; datos: DatosRedEntidades })
-  | (SobreComponente & { componente: "mapa_colombia"; datos: FilaMapaColombia[] })
+  | (SobreComponente & {
+      componente: "red_entidades";
+      datos: DatosRedEntidades;
+    })
+  | (SobreComponente & {
+      componente: "mapa_colombia";
+      datos: FilaMapaColombia[];
+    })
   | (SobreComponente & { componente: "mapa_mundo"; datos: FilaMapaMundo[] })
-  | (SobreComponente & { componente: "cuadrante_priorizacion"; datos: FilaCuadrante[] })
-  | (SobreComponente & { componente: "panel_evidencia"; datos: FilaEvidencia[] });
+  | (SobreComponente & {
+      componente: "cuadrante_priorizacion";
+      datos: FilaCuadrante[];
+    })
+  | (SobreComponente & {
+      componente: "panel_evidencia";
+      datos: FilaEvidencia[];
+    })
+  | (SobreComponente & {
+      componente: "distribucion";
+      datos: DatosDistribucion;
+    });
 
 export interface CuerpoComponente {
   componente: NombreComponente;
@@ -196,6 +246,8 @@ export interface Salud {
   vista_tecnica?: boolean;
   /** Lo fija `CONSOLA_URL` en el contenedor: a dónde va el enlace a la consola de chat. */
   consola_url?: string | null;
+  /** `true` si el despliegue montó el corpus original y la API puede servir los archivos. */
+  corpus_disponible?: boolean;
 }
 
 // --- GeoJSON de `/geo/*.geojson` ------------------------------------------------------

@@ -50,7 +50,7 @@ Todo se construye sobre la base de conocimiento vectorial de la Etapa 1
   agentes invocados, herramientas, tokens y latencia. Detrás hay tres agentes coordinados con
   LangGraph.
 - **Tablero (Reto 2).** El usuario escribe lo que quiere ver. El agente de visualización elige uno
-  de los 8 componentes del catálogo (mapa de Colombia, mapa mundial, línea de tiempo, red de
+  de los 9 componentes del tablero (8 del catálogo del agente más el histograma de distribución, manual) (mapa de Colombia, mapa mundial, línea de tiempo, red de
   entidades, matriz de calor, cuadrante de priorización, composición del corpus y panel de
   evidencia) y fija sus filtros. Después, el backend calcula los valores con conteos reales.
   Cualquier dato se abre hasta su `doc_id` y `chunk_id`.
@@ -201,6 +201,7 @@ Se declaran en **Configuration → Environment Variables**.
 | `AGENT_URL`       | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com` |
 | `AGENT_TIMEOUT_S` | No            | Tiempo límite de `POST /chat` en segundos. Por defecto, 90.       |
 | `CONSOLA_URL`     | No            | `https://frontagent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el enlace a la consola de chat. |
+| `CORPUS_DIR`      | No            | Raíz del corpus original montada en el contenedor (los archivos no viajan en la imagen). Si está, cada fragmento de evidencia enlaza al PDF, JSON o CSV del que salió (`GET /api/documento/{chunk_id}`); si no, el enlace no aparece. |
 
 `DB_PATH`, `METADATA_PATH`, `GEO_DIR` y `WEB_DIST` ya vienen con su valor en la imagen.
 

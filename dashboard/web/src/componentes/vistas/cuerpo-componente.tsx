@@ -1,18 +1,20 @@
 import type { ResultadoComponente } from "@/api/tipos";
 import { VistaComposicionCorpus } from "@/componentes/vistas/composicion-corpus";
 import { VistaCuadrantePriorizacion } from "@/componentes/vistas/cuadrante-priorizacion";
+import { VistaDistribucion } from "@/componentes/vistas/distribucion";
 import { VistaLineaTiempo } from "@/componentes/vistas/linea-tiempo";
 import { VistaMapaColombia, type NivelMapa } from "@/componentes/vistas/mapa-colombia";
 import { VistaMapaMundo } from "@/componentes/vistas/mapa-mundo";
 import { VistaMatrizCalor } from "@/componentes/vistas/matriz-calor";
 import { VistaPanelEvidencia } from "@/componentes/vistas/panel-evidencia";
 import { VistaRedEntidades } from "@/componentes/vistas/red-entidades";
-import type { Seleccion } from "@/lib/seleccion";
+import type { Accion, Seleccion } from "@/lib/seleccion";
 
 interface Props {
   resultado: ResultadoComponente;
   seleccion: Seleccion | null;
   onSeleccionar: (seleccion: Seleccion) => void;
+  onAccion?: ((accion: Accion) => void) | undefined;
   nivelColombia: NivelMapa;
   onCambiarNivelColombia: (nivel: NivelMapa) => void;
 }
@@ -27,6 +29,7 @@ export function CuerpoComponente({
   resultado,
   seleccion,
   onSeleccionar,
+  onAccion,
   nivelColombia,
   onCambiarNivelColombia,
 }: Props) {
@@ -47,6 +50,7 @@ export function CuerpoComponente({
     fenomeno: resultado.fenomeno,
     seleccion,
     onSeleccionar,
+    onAccion,
   };
 
   switch (resultado.componente) {
@@ -74,5 +78,7 @@ export function CuerpoComponente({
       return <VistaComposicionCorpus {...comunes} datos={resultado.datos} />;
     case "panel_evidencia":
       return <VistaPanelEvidencia {...comunes} datos={resultado.datos} />;
+    case "distribucion":
+      return <VistaDistribucion {...comunes} datos={resultado.datos} />;
   }
 }

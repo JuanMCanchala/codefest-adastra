@@ -2,3 +2,6 @@ node_modules/
 test-results/
 playwright-report/
 blob-report/
+# Resultados de la batería viva (tests/e2e/vivo-visual.mjs): son de cada corrida, no del repo.
+vivo-*.json
+smoke-vivo.json

@@ -22,21 +22,6 @@ const PREGUNTA =
   "¿Qué capacidades antisatélite se han demostrado y qué riesgos generan para la órbita baja?";
 
 /** Copia literal de `frontagent/lib/sugerencias.ts`. */
-const SUGERENCIAS: Record<"F1" | "F2" | "F3", [string, string]> = {
-  F1: [
-    "¿Qué capacidades estratégicas habilita la inteligencia artificial en entornos militares y qué riesgos se documentan?",
-    "¿Cómo avanza Colombia en la adopción de inteligencia artificial para la Defensa Nacional frente a la tendencia global?",
-  ],
-  F2: [
-    "¿Qué tan congestionada está la órbita baja terrestre y qué implica para Colombia?",
-    "¿Qué es el síndrome de Kessler y qué medidas de mitigación de basura espacial se están aplicando?",
-  ],
-  F3: [
-    "¿Cuáles son las principales amenazas a la gobernanza territorial en América Latina según el corpus?",
-    "¿Qué relación documentan las fuentes entre economías ilícitas, migración y violencia en Colombia?",
-  ],
-};
-
 const FENOMENOS = [
   { clave: "F1", nombre: "IA y capacidades estratégicas" },
   { clave: "F2", nombre: "Seguridad del entorno espacial" },
@@ -131,25 +116,20 @@ test.describe("Chat · carga inicial", () => {
       page.getByRole("status").filter({ hasText: /Agente/ }),
     ).toHaveText("Agente en línea");
 
-    // Sugerencias agrupadas por fenómeno.
+    // Estado inicial: una pregunta y una línea que nombra los tres fenómenos. La rejilla de
+    // consultas preparadas se retiró a propósito (components/chat/panel-sugerencias.tsx):
+    // llenaba la pantalla de texto antes de que nadie hubiera preguntado nada.
     await expect(
       page.getByRole("heading", { name: "¿Qué necesita verificar?" }),
     ).toBeVisible();
     for (const fenomeno of FENOMENOS) {
-      const encabezado = page.getByRole("heading", {
-        level: 3,
-        name: new RegExp(`${fenomeno.clave}\\s*${fenomeno.nombre}`),
-      });
-      await expect(encabezado).toBeVisible();
-      const grupo = page.getByRole("listitem").filter({ has: encabezado });
-      const preguntas = grupo.getByRole("list").getByRole("button");
-      await expect(preguntas).toHaveCount(2);
-      for (const pregunta of SUGERENCIAS[fenomeno.clave]) {
-        await expect(
-          grupo.getByRole("button", { name: pregunta }),
-        ).toBeEnabled();
-      }
+      await expect(
+        page.getByRole("heading", { level: 3, name: new RegExp(fenomeno.clave) }),
+      ).toHaveCount(0);
     }
+    await expect(page.getByRole("main")).toContainText("IA estratégica");
+    await expect(page.getByRole("main")).toContainText("entorno espacial");
+    await expect(page.getByRole("main")).toContainText("dinámicas territoriales");
 
     // Redactor: campo, contador y botón deshabilitado mientras está vacío.
     await expect(campo(page)).toBeVisible();
@@ -239,7 +219,8 @@ test.describe("Chat · consulta con respuesta citada", () => {
     await expect(espera).toBeVisible();
     await expect(campo(page)).toBeDisabled();
     await expect(botonEnviar(page)).toBeDisabled();
-    await expect(page.getByText(PREGUNTA, { exact: true })).toBeVisible(); // burbuja del usuario
+    // La burbuja del usuario antepone «Consulta:» solo para lectores de pantalla.
+    await expect(page.getByText(`Consulta: ${PREGUNTA}`, { exact: true })).toBeVisible();
     await expect.poll(() => chat.peticiones.length).toBe(1);
     expect(chat.cuerpos()).toEqual([{ pregunta: PREGUNTA }]);
 
@@ -381,18 +362,21 @@ test.describe("Chat · consulta con respuesta citada", () => {
     expect(chat.peticiones).toHaveLength(1);
   });
 
-  test("una pregunta sugerida se envía al hacer clic", async ({
+  test("el encabezado inicial se retira con la primera consulta", async ({
     page,
     guardia,
   }) => {
     const chat = await guardia.simular(page, "**/api/chat", { json: R });
     await abrirConsola(page);
 
-    const sugerida = SUGERENCIAS.F2[0];
-    await page.getByRole("button", { name: sugerida }).click();
+    await expect(
+      page.getByRole("heading", { name: "¿Qué necesita verificar?" }),
+    ).toBeVisible();
+    await campo(page).fill(PREGUNTA);
+    await botonEnviar(page).click();
     await expect(respuestas(page)).toHaveCount(1);
-    expect(chat.cuerpos()).toEqual([{ pregunta: sugerida }]);
-    await expect(page.getByText(sugerida, { exact: true })).toBeVisible(); // burbuja del usuario
+    expect(chat.cuerpos()).toEqual([{ pregunta: PREGUNTA }]);
+    await expect(page.getByText(`Consulta: ${PREGUNTA}`, { exact: true })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "¿Qué necesita verificar?" }),
     ).toHaveCount(0);

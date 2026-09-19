@@ -1,4 +1,4 @@
-import { Layers3, Maximize2, Minimize2, TriangleAlert } from "lucide-react";
+import { Layers3, Maximize2, Minimize2, Sparkles, TriangleAlert } from "lucide-react";
 import { useEffect, type CSSProperties } from "react";
 
 import type { NombreComponente, ResultadoComponente } from "@/api/tipos";
@@ -10,14 +10,17 @@ import { SelectorComponente } from "@/componentes/vistas/selector-componente";
 import type { NivelMapa } from "@/componentes/vistas/mapa-colombia";
 import { definicionDe, etiquetaFiltro, valorFiltro } from "@/lib/catalogo";
 import { fenomenoPorId } from "@/lib/fenomenos";
-import type { Seleccion } from "@/lib/seleccion";
+import type { Accion, Seleccion } from "@/lib/seleccion";
 import { useVistaTecnica } from "@/lib/vista-tecnica";
 import { cn } from "@/lib/utils";
 
 interface Props {
   resultado: ResultadoComponente;
+  /** Por qué el agente eligió esta vista; `null` cuando la eligió una persona. */
+  motivo: string | null;
   seleccion: Seleccion | null;
   onSeleccionar: (seleccion: Seleccion) => void;
+  onAccion: (accion: Accion) => void;
   nivelColombia: NivelMapa;
   onCambiarNivelColombia: (nivel: NivelMapa) => void;
   onCambiarComponente: (componente: NombreComponente) => void;
@@ -73,8 +76,10 @@ function filtrosLegibles(resultado: ResultadoComponente): { clave: string; texto
  */
 export function LienzoComponente({
   resultado,
+  motivo,
   seleccion,
   onSeleccionar,
+  onAccion,
   nivelColombia,
   onCambiarNivelColombia,
   onCambiarComponente,
@@ -106,9 +111,10 @@ export function LienzoComponente({
     <section
       aria-labelledby="titulo-componente"
       className={cn(
-        // `overflow-hidden` es lo que impide que una tabla ancha empuje la página a lo
-        // ancho en móvil: antes lo daba la tarjeta que envolvía el componente.
-        "flex min-h-0 flex-col overflow-hidden bg-panel",
+        // Recortar a lo ancho es lo que impide que una tabla ancha empuje la página en
+        // móvil; `clip` en vez de `hidden` porque el eje vertical se queda visible y el
+        // menú del selector puede caer fuera del lienzo sin que le corten la mitad.
+        "flex min-h-0 flex-col overflow-x-clip bg-panel",
         pantallaCompleta && "fixed inset-0 z-40",
       )}
       // Las vistas con alto propio (mapas y red) crecen hasta llenar el espacio disponible.
@@ -174,6 +180,18 @@ export function LienzoComponente({
         </div>
       </header>
 
+      {/* La decisión del agente, a la vista (§3.3.2): qué componente eligió y por qué. Es lo
+          que el bloque B del Reto 2 evalúa, y hasta ahora solo se leía dentro del hilo. */}
+      {motivo ? (
+        <p className="flex items-start gap-1.5 border-b border-borde px-4 py-2 text-sm text-apagado">
+          <Sparkles aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-senal" />
+          <span>
+            <span className="font-semibold text-texto">Por qué esta vista: </span>
+            {motivo}
+          </span>
+        </p>
+      ) : null}
+
       {/* Un filtro descartado cambia lo que el gráfico responde: se avisa siempre, porque
           ver el conjunto completo creyendo que está filtrado es peor que no filtrar. */}
       {resultado.filtros_ignorados && resultado.filtros_ignorados.length > 0 ? (
@@ -198,6 +216,7 @@ export function LienzoComponente({
           resultado={resultado}
           seleccion={seleccion}
           onSeleccionar={onSeleccionar}
+          onAccion={onAccion}
           nivelColombia={nivelColombia}
           onCambiarNivelColombia={onCambiarNivelColombia}
         />

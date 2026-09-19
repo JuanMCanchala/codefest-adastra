@@ -35,7 +35,14 @@ async def preguntar_al_agente(url: str, instruccion: str, timeout_s: float) -> d
     try:
         async with httpx.AsyncClient(timeout=timeout_s) as cliente:
             respuesta = await cliente.post(
-                destino, json={"pregunta": instruccion, "incluir_extras": True}
+                destino,
+                json={
+                    "pregunta": instruccion,
+                    "incluir_extras": True,
+                    # En el tablero la vista no es opcional: quien pregunta está mirando
+                    # un tablero, no un chat.
+                    "exigir_visualizacion": True,
+                },
             )
     except httpx.TimeoutException as exc:
         raise HTTPException(

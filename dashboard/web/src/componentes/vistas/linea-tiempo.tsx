@@ -1,4 +1,5 @@
 import type { EChartsOption } from "echarts";
+import { CalendarOff } from "lucide-react";
 import { useMemo } from "react";
 
 import type { DatosLineaTiempo } from "@/api/tipos";
@@ -63,10 +64,7 @@ export function VistaLineaTiempo({ datos, onSeleccionar }: PropsVista<DatosLinea
               symbolSize: 26,
               itemStyle: { color: TEMA.senal, borderColor: TEMA.fondo, borderWidth: 1 },
               z: 5,
-              data: marcas.map((marca) => [
-                String(marca.anio),
-                totalPorAnio.get(marca.anio) ?? 0,
-              ]),
+              data: marcas.map((marca) => [String(marca.anio), totalPorAnio.get(marca.anio) ?? 0]),
             },
           ]
         : [];
@@ -133,14 +131,40 @@ export function VistaLineaTiempo({ datos, onSeleccionar }: PropsVista<DatosLinea
     });
   };
 
+  const cobertura = datos.cobertura;
+  const conAnio = cobertura ? cobertura.documentos - cobertura.sin_anio : null;
+  const porcentaje =
+    cobertura && cobertura.documentos > 0 && conAnio !== null
+      ? Math.round((conAnio / cobertura.documentos) * 100)
+      : null;
+
   return (
-    <Grafico
-      opcion={opcion}
-      altura={380}
-      descripcion={`Serie anual de documentos por fenómeno entre ${String(anios[0])} y ${String(
-        anios[anios.length - 1],
-      )}, con ${String(marcas.length)} marcas de reaparición.`}
-      onClic={alClic}
-    />
+    <div className="flex flex-col">
+      {/* La cobertura se declara en la propia vista (Anexo B.2.5): el 70 % del corpus no
+          trae fecha, y sin este aviso un hueco en F1 se lee como ausencia del fenómeno. */}
+      {cobertura && conAnio !== null && cobertura.sin_anio > 0 ? (
+        <p
+          role="note"
+          className="flex items-start gap-1.5 border-b border-borde px-4 py-2 text-xs text-apagado"
+        >
+          <CalendarOff aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+          <span>
+            La serie cubre <span className="text-texto">{formatearEntero(conAnio)}</span> de{" "}
+            {formatearEntero(cobertura.documentos)} documentos
+            {porcentaje !== null ? ` (${String(porcentaje)} %)` : ""}: los{" "}
+            {formatearEntero(cobertura.sin_anio)} sin año en su metadata no entran. Un hueco puede
+            ser falta de fecha en las fuentes, no ausencia del fenómeno.
+          </span>
+        </p>
+      ) : null}
+      <Grafico
+        opcion={opcion}
+        altura={380}
+        descripcion={`Serie anual de documentos por fenómeno entre ${String(anios[0])} y ${String(
+          anios[anios.length - 1],
+        )}, con ${String(marcas.length)} marcas de reaparición.`}
+        onClic={alClic}
+      />
+    </div>
   );
 }

@@ -28,23 +28,32 @@ export const TEMA = {
   acento: "#fafafa",
   senal: "#3291ff",
   mapaFondo: "#0a0a0a",
+  /** Espacio alrededor del globo: distinto del mar, o la esfera no se recorta. */
+  mapaEspacio: "#050505",
   sinDato: "#1c1c1c",
   /** Filas alternas de las matrices: un solo paso entre superficie y elevada. */
   franjaA: "#111111",
   franjaB: "#161616",
 };
 
-const DERIVADOS: Record<Modo, Pick<typeof TEMA, "mapaFondo" | "sinDato" | "franjaA" | "franjaB">> =
+const DERIVADOS: Record<
+  Modo,
+  Pick<typeof TEMA, "mapaFondo" | "mapaEspacio" | "sinDato" | "franjaA" | "franjaB">
+> =
   {
     oscuro: {
       mapaFondo: "#0a0a0a",
+      mapaEspacio: "#050505",
       sinDato: "#1c1c1c",
       franjaA: "#111111",
       franjaB: "#161616",
     },
     claro: {
-      mapaFondo: "#ffffff",
-      sinDato: "#e8e8e8",
+      // Mar de un azul muy pálido: con el lienzo blanco, el globo se perdía contra la
+      // página y los países sin dato no se distinguían del vacío.
+      mapaFondo: "#e9eff5",
+      mapaEspacio: "#f7f9fb",
+      sinDato: "#dcdfe3",
       franjaA: "#fafafa",
       franjaB: "#f3f3f3",
     },

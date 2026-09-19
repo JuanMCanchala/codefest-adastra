@@ -25,6 +25,11 @@ class ChatRequest(BaseModel):
     # el sistema es sin estado, que es como lo evalúa ADL (el contrato de §2.4 no tiene
     # este campo). Ver app/memoria.py.
     sesion: str | None = Field(default=None, max_length=128)
+    # Lo manda el tablero del Reto 2, donde una respuesta sin gráfico no sirve de nada:
+    # el experto escribe su pregunta contra un tablero, no contra un chat. Sin esto el
+    # enrutador mandaba «¿dónde se concentran las alertas?» a la ruta de corpus —es una
+    # pregunta legítima del corpus— y el tablero se quedaba con el texto y sin vista.
+    exigir_visualizacion: bool = False
 
     @field_validator("pregunta")
     @classmethod

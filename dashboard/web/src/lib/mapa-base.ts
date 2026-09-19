@@ -25,6 +25,27 @@ export interface MapaBase {
   opacidadRelleno: number;
 }
 
+/**
+ * Callejero, un juego por modo: uno oscuro bajo el tablero oscuro y otro claro bajo el
+ * claro, porque el contrario se lee como un error y no como un mapa.
+ *
+ * Los dos son de Esri —el mismo proveedor que la imagen satelital— y no piden llave.
+ * Antes eran de CARTO, que desde entonces exige una y devuelve teselas con la marca
+ * «API KEY REQUIRED» estampada encima del territorio.
+ */
+const CALLEJERO = {
+  oscuro: {
+    teselas:
+      "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+    zoomMaximo: 16,
+  },
+  claro: {
+    teselas:
+      "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+    zoomMaximo: 19,
+  },
+} as const;
+
 export const BASES: readonly MapaBase[] = [
   {
     clave: "analitico",
@@ -38,12 +59,11 @@ export const BASES: readonly MapaBase[] = [
   {
     clave: "callejero",
     etiqueta: "Callejero",
-    descripcion: "Mapa base con vías y topónimos (CARTO, requiere conexión)",
-    // El juego de teselas sigue al modo: un callejero oscuro bajo el tablero claro
-    // (o al revés) se lee como un error, no como un mapa.
-    teselas: ["https://basemaps.cartocdn.com/{estilo}/{z}/{x}/{y}.png"],
-    atribucion: "© OpenStreetMap, © CARTO",
-    zoomMaximoTeselas: 20,
+    descripcion: "Mapa base con vías y topónimos (Esri, requiere conexión)",
+    // Las teselas reales las pone `CALLEJERO`, que elige juego según el modo.
+    teselas: [CALLEJERO.oscuro.teselas],
+    atribucion: "Esri, HERE, Garmin, © OpenStreetMap",
+    zoomMaximoTeselas: CALLEJERO.oscuro.zoomMaximo,
     opacidadRelleno: 0.6,
   },
   {
@@ -89,8 +109,12 @@ export function teselasDe(base: MapaBase): readonly string[] {
   if (base.teselas === null) {
     return [];
   }
-  const estilo = TEMA.modo === "claro" ? "light_all" : "dark_all";
-  return base.teselas.map((plantilla) => plantilla.replace("{estilo}", estilo));
+  return base.clave === "callejero" ? [CALLEJERO[TEMA.modo].teselas] : base.teselas;
+}
+
+/** Zoom máximo servido por esas teselas: los dos callejeros no llegan igual de lejos. */
+export function zoomMaximoTeselasDe(base: MapaBase): number {
+  return base.clave === "callejero" ? CALLEJERO[TEMA.modo].zoomMaximo : base.zoomMaximoTeselas;
 }
 
 export function baseDe(clave: ClaveBase): MapaBase {

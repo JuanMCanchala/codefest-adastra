@@ -123,6 +123,27 @@ function chunkIdsDe(refs: readonly Ref[]): string[] {
   return salida.slice(0, MAX_PANEL);
 }
 
+/**
+ * La ventana del agente nace cerrada —el tablero es lo primero que hay que ver— y estas
+ * pruebas hablan con el agente casi todas: si la burbuja está cerrada, se abre.
+ */
+async function abrirAgente(page: Page): Promise<void> {
+  const boton = page.getByRole("button", { name: "Abrir el agente" });
+  if ((await boton.count()) > 0) {
+    await boton.click();
+  }
+  await expect(campoInstruccion(page)).toBeVisible();
+}
+
+/** En móvil la ventana abierta tapa el panel de evidencia: se cierra cuando no hace falta. */
+async function cerrarAgente(page: Page): Promise<void> {
+  const boton = page.getByRole("button", { name: "Cerrar el agente" });
+  if ((await boton.count()) > 0) {
+    await boton.click();
+    await expect(page.getByRole("button", { name: "Abrir el agente" })).toBeVisible();
+  }
+}
+
 /** Abre el tablero y devuelve el resultado del primer `POST /api/componente`. */
 async function abrirTablero(page: Page): Promise<Resultado> {
   const salud = page.waitForResponse((r) => r.url().includes("/api/salud"));
@@ -131,7 +152,9 @@ async function abrirTablero(page: Page): Promise<Resultado> {
   );
   await page.goto(TABLERO_URL);
   await salud;
-  return (await (await componente).json()) as Resultado;
+  const resultado = (await (await componente).json()) as Resultado;
+  await abrirAgente(page);
+  return resultado;
 }
 
 /** Espera el siguiente `POST /api/componente` provocado por `accion`. */
@@ -183,6 +206,7 @@ async function abrirTableroEn(
   );
   await page.goto(`${TABLERO_URL}/?${consulta.toString()}`);
   const respuesta = await componente;
+  await abrirAgente(page);
   return {
     cuerpo: respuesta.request().postDataJSON() as CuerpoComponente,
     resultado: (await respuesta.json()) as Resultado,
@@ -227,7 +251,9 @@ test.describe("Tablero · carga inicial", () => {
       await expect(enlaceConsola).toHaveCount(0);
     }
 
-    // El agente abre listo para preguntar: no hay modos en la barra superior.
+    // El agente nace como burbuja en la esquina: se abre y queda listo para preguntar, sin
+    // modos en la barra superior.
+    await abrirAgente(page);
     await expect(page.getByRole("navigation", { name: "Modo de trabajo" })).toHaveCount(0);
     await expect(agente(page).getByRole("tab")).toHaveCount(0);
     await expect(campoInstruccion(page)).toBeEditable();
@@ -291,8 +317,8 @@ test.describe("Tablero · carga inicial", () => {
     await expect(panel(page).getByRole("listitem")).toHaveCount(enPanel);
     await expect(panel(page)).not.toContainText("fragmentos en total");
 
-    // El agente arranca sin conversación: una línea y nada más.
-    await expect(agente(page)).toContainText("Pida lo que quiere ver");
+    // El agente arranca sin conversación: una pregunta, una línea y nada más.
+    await expect(agente(page)).toContainText("¿Qué quiere ver?");
     await expect(agente(page).getByRole("listitem")).toHaveCount(0);
   });
 
@@ -383,6 +409,7 @@ test.describe("Tablero · trazabilidad", () => {
     page,
   }) => {
     const resultado = await abrirTablero(page);
+    await cerrarAgente(page);
     const filas = resultado.datos as FilaMapa[];
     const fila = [...filas]
       .sort((a, b) => b.alertas - a.alertas)
@@ -503,6 +530,7 @@ test.describe("Tablero · mandos de la vista", () => {
 
   test("la evidencia se oculta y se vuelve a mostrar desde el componente", async ({ page }) => {
     await abrirTablero(page);
+    await cerrarAgente(page);
     await expect(panel(page)).toBeVisible();
 
     await panel(page).getByRole("button", { name: "Ocultar la evidencia" }).click();
@@ -613,15 +641,21 @@ test.describe("Tablero · componentes y filtros", () => {
     await expect(page.getByRole("img", { name: /^Matriz de \d+ filas por \d+ columnas/ })).toBeVisible();
   });
 
-  test("un filtro sin resultados muestra el vacío honesto, no un error", async ({ page }) => {
+  test("un filtro sin resultados se descarta, se avisa y se muestra el corpus", async ({
+    page,
+  }) => {
+    // Antes esto devolvía un panel en blanco. Un componente vacío es indistinguible de un
+    // fallo para quien evalúa, así que la API descarta el filtro que no casa con nada, lo
+    // declara en `filtros_ignorados` y responde con el corpus completo (ARQUITECTURA §8.2).
     const { resultado } = await abrirTableroEn(page, {
       componente: "panel_evidencia",
       doc_id: "DOC-QUE-NO-EXISTE",
     });
-    expect(resultado.datos).toEqual([]);
-    await expect(page.getByText("Ningún fragmento coincide")).toBeVisible();
+    expect((resultado.datos as unknown[]).length).toBeGreaterThan(0);
+    expect(resultado.filtros_ignorados).toContain("doc_id");
+    await expect(lienzo(page).getByRole("status")).toContainText("Sin filtrar por documento");
     await expect(page.getByRole("alert")).toHaveCount(0);
-    await expect(panel(page)).toContainText("Sin fragmentos que mostrar");
+    await expect(lienzo(page)).toContainText("Fragmentos del corpus completo");
   });
 
   test("un filtro que la API descarta se avisa sin encender la vista técnica", async ({
@@ -717,10 +751,13 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await expect(campoInstruccion(page)).toBeEnabled();
     await expect(campoInstruccion(page)).toHaveValue("");
 
-    // Y la instrucción queda en el historial, marcada como activa.
+    // Y la instrucción queda en el historial —detrás del reloj de la cabecera—, marcada
+    // como activa.
+    await agente(page).getByRole("button", { name: "Consultas anteriores" }).click();
     const entrada = agente(page).getByRole("listitem").first();
     await expect(entrada).toContainText(INSTRUCCION);
     await expect(entrada.getByRole("button")).toHaveAttribute("aria-current", "true");
+    await agente(page).getByRole("button", { name: "Consultas anteriores" }).click();
 
     // El rango que decidió el agente queda declarado en la cabecera del componente.
     await expect(lienzo(page)).toContainText(
@@ -753,6 +790,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     ).toBeVisible();
 
     // …y el historial lo devuelve tal como lo entregó el agente, sin volver a preguntar.
+    await agente(page).getByRole("button", { name: "Consultas anteriores" }).click();
     await agente(page).getByRole("listitem").first().getByRole("button").click();
     await expect(page.getByRole("heading", { level: 2, name: V.resultado.titulo })).toBeVisible();
     await expect(agente(page)).toContainText(V.respuesta_agente);
@@ -778,7 +816,9 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await expect(alerta).toContainText("no se pudo contactar al agente");
     // El componente que ya estaba no se pierde.
     await expect(page.getByRole("heading", { level: 2, name: inicial.titulo })).toBeVisible();
+    await agente(page).getByRole("button", { name: "Consultas anteriores" }).click();
     await expect(agente(page).getByRole("listitem").first()).toContainText("error");
+    await agente(page).getByRole("button", { name: "Consultas anteriores" }).click();
 
     // Se puede volver a intentar.
     await campoInstruccion(page).fill(INSTRUCCION);
@@ -810,6 +850,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     );
     await expect(agente(page)).toContainText("No propuso ninguna visualización");
     await expect(page.getByRole("heading", { level: 2, name: inicial.titulo })).toBeVisible();
+    await agente(page).getByRole("button", { name: "Consultas anteriores" }).click();
     await expect(agente(page).getByRole("listitem").first()).toContainText(
       "¿Qué dice el corpus sobre la minería ilegal?",
     );

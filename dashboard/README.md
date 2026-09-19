@@ -43,7 +43,7 @@ dashboard/
 | Método | Ruta | Respuesta |
 | --- | --- | --- |
 | GET | `/api/salud` | `{estado, tablas: {...conteos}, textos: {disponible, indexado}}` |
-| GET | `/api/catalogo` | los 8 componentes con sus filtros, opciones y valores por defecto |
+| GET | `/api/catalogo` | los 9 componentes (los 8 del agente más `distribucion`) con sus filtros, opciones y valores por defecto |
 | POST | `/api/componente` | `{componente, fenomeno?, filtros?}` → datos, `evidencia`, `nota_metodo`, `total_evidencia`, `filtros_ignorados` |
 | POST | `/api/visualizar` | `{instruccion}` → agente del Reto 1 → especificación ejecutada |
 | GET | `/api/evidencia/{chunk_id}` | fragmento con `doc_id`, fuente, metadatos del documento y texto |
@@ -52,7 +52,9 @@ dashboard/
 
 Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `composicion_corpus`,
 `linea_tiempo`, `matriz_calor`, `red_entidades`, `mapa_colombia`, `mapa_mundo`,
-`cuadrante_priorizacion`, `panel_evidencia`. Límites: `evidencia` ≤ 200 elementos (con
+`cuadrante_priorizacion`, `panel_evidencia`; más `distribucion` (histograma, Anexo B.2.1), que
+solo se alcanza desde el selector del tablero o por URL porque el catálogo del agente quedó
+congelado con la evaluación del Reto 1. Límites: `evidencia` ≤ 200 elementos (con
 `total_evidencia`), `refs` ≤ 20 por elemento cliqueable, `top` ≤ 30 (≤ 60 nodos en la red),
 `limite` ≤ 20 en `panel_evidencia`.
 
@@ -68,6 +70,7 @@ Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `compos
 | `WEB_DIST` | `/app/web` | SPA compilada |
 | `CORS_ORIGINS` | `*` | Orígenes permitidos, separados por coma |
 | `CONSOLA_URL` | _(vacía)_ | Base de la consola de chat del Reto 1. Si está, el encabezado enlaza a ella; si no, el enlace no aparece |
+| `CORPUS_DIR` | _(vacía)_ | Raíz del corpus original de la Etapa 0, montada en el contenedor. Si está, cada fragmento de evidencia enlaza al archivo del que salió (`GET /api/documento/{chunk_id}`); si no, el enlace no aparece |
 | `VISTA_TECNICA` | `0` | Detalles internos en la interfaz: identificadores del catálogo, claves crudas de los filtros, consumo de tokens y rutas del corpus. El tablero que revisa el jurado va limpio |
 
 ## Desarrollo y pruebas

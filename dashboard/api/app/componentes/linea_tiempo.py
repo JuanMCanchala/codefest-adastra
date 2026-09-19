@@ -73,7 +73,7 @@ def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salid
     f, ignorados = resolver_filtros(Filtros, filtros)
     if f.desde > f.hasta:
         f = f.model_copy(update={"desde": f.hasta, "hasta": f.desde})
-    f = normalizar_entidades(bd, f)
+    f, ignorados = normalizar_entidades(bd, f, ignorados)
     params = f.model_dump()
 
     series = [dict(fila) for fila in bd.consultar(SERIES, params)]

@@ -4,6 +4,7 @@ import {
   Loader2,
   Maximize2,
   Minimize2,
+  Presentation,
   Sparkles,
   Trash2,
   X,
@@ -27,7 +28,7 @@ import type { NivelMapa } from "@/componentes/vistas/mapa-colombia";
 import type { EntradaHistorial } from "@/lib/historial";
 import { useEscritorio } from "@/lib/medios";
 import { metricasDe } from "@/lib/metricas";
-import type { Seleccion } from "@/lib/seleccion";
+import type { Accion, Seleccion } from "@/lib/seleccion";
 import { cn } from "@/lib/utils";
 
 const ANCHO = 400;
@@ -42,9 +43,12 @@ interface Props {
   idActivo: string | null;
   onRecuperar: (id: string) => void;
   onLimpiar: () => void;
+  /** Recorre las vistas de la conversación como presentación (Anexo B.6.1). */
+  onPresentar: () => void;
   resultado: ResultadoComponente | null;
   seleccion: Seleccion | null;
   onSeleccionar: (seleccion: Seleccion) => void;
+  onAccion: (accion: Accion) => void;
   nivelColombia: NivelMapa;
   onCambiarNivelColombia: (nivel: NivelMapa) => void;
 }
@@ -78,18 +82,26 @@ export function BurbujaAgente({
   idActivo,
   onRecuperar,
   onLimpiar,
+  onPresentar,
   resultado,
   seleccion,
   onSeleccionar,
+  onAccion,
   nivelColombia,
   onCambiarNivelColombia,
 }: Props) {
   const escritorio = useEscritorio();
-  // Nace cerrada: el tablero es lo primero que hay que ver, y la burbuja de la esquina
-  // basta para llamar al agente cuando haga falta.
-  const [abierta, setAbierta] = useState(false);
+  // En escritorio nace abierta: es la única puerta de entrada al agente, que es lo que se
+  // evalúa, y cerrada era un icono de 48 px sin texto en la esquina. En móvil nace cerrada,
+  // porque abierta taparía el componente entero. Se lee del medio una sola vez, al montar.
+  const [abierta, setAbierta] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches,
+  );
   const [ampliada, setAmpliada] = useState(false);
   const [verHistorial, setVerHistorial] = useState(false);
+  // La animación de aparición responde a un clic en la burbuja; en la carga inicial, con la
+  // ventana ya abierta, sería una ventana haciendo «pop» sin que nadie la haya llamado.
+  const abiertaPorClic = useRef(false);
   const [izquierda, setIzquierda] = useState<number | null>(null);
   const arrastre = useRef<number | null>(null);
   const ventana = useRef<HTMLElement | null>(null);
@@ -206,7 +218,10 @@ export function BurbujaAgente({
     return (
       <button
         type="button"
-        onClick={() => setAbierta(true)}
+        onClick={() => {
+          abiertaPorClic.current = true;
+          setAbierta(true);
+        }}
         aria-label="Abrir el agente"
         className="group fixed bottom-4 right-4 z-50 inline-flex size-12 items-center justify-center rounded-full border border-borde bg-panel text-texto shadow-[0_8px_24px_rgb(0_0_0/0.45)] transition-colors hover:border-control"
       >
@@ -264,8 +279,11 @@ export function BurbujaAgente({
               // Medida fija y borde inferior fijo: el hilo crece hacia dentro, no la ventana.
               "bottom-4 rounded-xl",
               flotante && "max-h-[calc(100dvh-5rem)]",
-              // Mientras nadie la mueve va a la derecha; al arrastrarla manda `izquierda`.
+              // A la izquierda del panel de evidencia (380 px + margen), para no taparlo:
+              // preguntar y comprobar la fuente van juntos. Al arrastrarla manda `izquierda`.
               flotante && izquierda === null && "right-[396px]",
+              // Crece desde su esquina inferior derecha, la más cercana a la burbuja que la abrió.
+              flotante && abiertaPorClic.current && "brota-de-la-burbuja",
               !flotante && "inset-x-3 h-[70dvh] max-h-[calc(100dvh-5rem)]",
             ),
       )}
@@ -299,6 +317,17 @@ export function BurbujaAgente({
           Agente
         </h2>
 
+        {historial.some((entrada) => entrada.respuesta?.resultado) ? (
+          <BotonCabecera
+            onClick={() => {
+              setAmpliada(false);
+              onPresentar();
+            }}
+            etiqueta="Presentar el recorrido de vistas"
+          >
+            <Presentation aria-hidden="true" className="size-4" />
+          </BotonCabecera>
+        ) : null}
         <BotonCabecera
           activo={verHistorial}
           onClick={() => setVerHistorial((previa) => !previa)}
@@ -342,13 +371,23 @@ export function BurbujaAgente({
         // leer la respuesta y comprobarla sin salir del agente.
         <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
           <div className="flex min-h-0 flex-col border-borde lg:w-[420px] lg:shrink-0 lg:border-r">
-            <div className="barra-fina min-h-0 flex-1 overflow-y-auto">{conversacion}</div>
+            <div
+              className="barra-fina min-h-0 flex-1 overflow-y-auto"
+              tabIndex={0}
+              role="region"
+              aria-label="Hilo de la conversación"
+            >
+              {conversacion}
+            </div>
             {redactor}
           </div>
 
           <div
             className="barra-fina min-h-0 flex-1 overflow-y-auto"
             style={{ "--alto-vista": "calc(100dvh - 12rem)" } as CSSProperties}
+            tabIndex={0}
+            role="region"
+            aria-label="Gráfico del turno activo"
           >
             {resultado ? (
               <>
@@ -357,6 +396,7 @@ export function BurbujaAgente({
                   resultado={resultado}
                   seleccion={seleccion}
                   onSeleccionar={onSeleccionar}
+                  onAccion={onAccion}
                   nivelColombia={nivelColombia}
                   onCambiarNivelColombia={onCambiarNivelColombia}
                 />
@@ -370,7 +410,14 @@ export function BurbujaAgente({
         </div>
       ) : (
         <>
-          <div className="barra-fina min-h-0 flex-1 overflow-y-auto">{conversacion}</div>
+          <div
+            className="barra-fina min-h-0 flex-1 overflow-y-auto"
+            tabIndex={0}
+            role="region"
+            aria-label="Hilo de la conversación"
+          >
+            {conversacion}
+          </div>
           {redactor}
         </>
       )}
@@ -410,9 +457,7 @@ function MetricasEnLinea({ resultado }: { resultado: ResultadoComponente }) {
       <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
         {metricasDe(resultado).map((metrica) => (
           <div key={metrica.etiqueta}>
-            <dt className="text-xs uppercase tracking-[0.06em] text-apagado">
-              {metrica.etiqueta}
-            </dt>
+            <dt className="text-xs uppercase tracking-[0.06em] text-apagado">{metrica.etiqueta}</dt>
             <dd className="font-mono text-sm text-texto">{metrica.valor}</dd>
           </div>
         ))}

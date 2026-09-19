@@ -1,12 +1,13 @@
-import { PanelRightClose, X } from "lucide-react";
+import { ArrowUpRight, Expand, PanelRightClose, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { obtenerEvidencia } from "@/api/cliente";
 import type { Ref } from "@/api/tipos";
 import { AvisoError, Cargando, Vacio } from "@/componentes/ui/estados";
 import { Boton } from "@/componentes/ui/boton";
+import { enlaceDocumento, useCorpusDisponible } from "@/lib/corpus";
 import { fenomenoPorId } from "@/lib/fenomenos";
-import type { Seleccion } from "@/lib/seleccion";
+import type { Accion, Seleccion } from "@/lib/seleccion";
 import { useRecurso } from "@/lib/usar-recurso";
 import { useVistaTecnica } from "@/lib/vista-tecnica";
 import { chunkIdsDe, cn, etiquetaDocumento } from "@/lib/utils";
@@ -22,6 +23,8 @@ interface Props {
   onOcultar: () => void;
   /** Abre todos los fragmentos del documento: el enlace de la cita a su referencia. */
   onVerDocumento: (docId: string) => void;
+  /** Ejecuta el salto que propone la selección (p. ej. expandir la red en un nodo). */
+  onAccion: (accion: Accion) => void;
 }
 
 /**
@@ -38,8 +41,10 @@ export function PanelLateralEvidencia({
   onCerrar,
   onOcultar,
   onVerDocumento,
+  onAccion,
 }: Props) {
   const tecnica = useVistaTecnica();
+  const conCorpus = useCorpusDisponible();
   const propias = seleccion?.refs ?? [];
   const usaGlobal = propias.length === 0;
   const refs = useMemo(
@@ -81,6 +86,21 @@ export function PanelLateralEvidencia({
         </Boton>
       </header>
 
+      {seleccion?.accion ? (
+        // El salto va arriba, antes de los fragmentos: es lo que se hace con la selección,
+        // no una nota al pie. Un solo botón, con el nombre completo de lo que va a pasar.
+        <div className="border-b border-borde px-4 py-2">
+          <button
+            type="button"
+            onClick={() => onAccion(seleccion.accion as Accion)}
+            className="inline-flex w-full items-center gap-2 rounded-md border border-borde bg-elevado px-3 py-2 text-left text-sm text-texto transition-colors hover:border-control"
+          >
+            <Expand aria-hidden="true" className="size-4 shrink-0 text-apagado" />
+            <span className="min-w-0 flex-1 truncate">{seleccion.accion.etiqueta}</span>
+          </button>
+        </div>
+      ) : null}
+
       {/* La lista se desplaza y sus fragmentos no son enfocables: sin tabIndex no hay
           forma de leerla con el teclado (WCAG 2.1.1, axe scrollable-region-focusable). */}
       <div
@@ -116,15 +136,35 @@ export function PanelLateralEvidencia({
                   >
                     {etiquetaDocumento(fragmento.titulo, fragmento.fuente)}
                   </button>
-                  <p className="mt-0.5 truncate text-xs text-tenue">
-                    {[
-                      fragmento.organizacion,
-                      fragmento.fecha,
-                      fenomeno?.clave,
-                      `fragmento ${String(fragmento.chunk_id)} de ${fragmento.doc_id}`,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
+                  {/* La ficha se parte en varias líneas si hace falta: recortarla dejaba
+                      sin ver de qué documento venía el fragmento, que es el dato que se
+                      necesita para ir a la fuente. */}
+                  <p className="mt-0.5 text-xs leading-relaxed text-tenue">
+                    <span className="break-words">
+                      {[
+                        fragmento.organizacion,
+                        fragmento.fecha,
+                        fenomeno?.clave,
+                        `fragmento ${String(fragmento.chunk_id)} de ${fragmento.doc_id}`,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                    {conCorpus ? (
+                      <>
+                        {" · "}
+                        <a
+                          href={enlaceDocumento(fragmento.chunk_id)}
+                          target="_blank"
+                          rel="noreferrer"
+                          title={fragmento.fuente}
+                          className="inline-flex items-center gap-0.5 whitespace-nowrap text-senal underline decoration-dotted underline-offset-4 hover:text-texto"
+                        >
+                          {etiquetaArchivo(fragmento.fuente)}
+                          <ArrowUpRight aria-hidden="true" className="size-3" />
+                        </a>
+                      </>
+                    ) : null}
                   </p>
                   {tecnica ? (
                     <p className="mt-0.5 break-all font-mono text-xs text-tenue">
@@ -140,6 +180,21 @@ export function PanelLateralEvidencia({
       </div>
     </aside>
   );
+}
+
+/**
+ * Cómo nombrar el enlace al archivo de origen. El corpus no es solo PDF: hay JSON de
+ * alertas y volcados CSV, y llamarlos «PDF» sería mentir sobre lo que se va a abrir.
+ */
+function etiquetaArchivo(fuente: string): string {
+  const extension = fuente.split(".").pop()?.toLowerCase() ?? "";
+  if (extension === "pdf") {
+    return "abrir el PDF";
+  }
+  if (extension === "") {
+    return "abrir el archivo original";
+  }
+  return `abrir el ${extension.toUpperCase()} original`;
 }
 
 /**

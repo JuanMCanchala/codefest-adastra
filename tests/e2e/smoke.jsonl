@@ -1,0 +1,3 @@
+{"query_id":"v01","esperado":"mapa_colombia","text":"¿Dónde se concentran las alertas tempranas por minería ilegal?"}
+{"query_id":"v02","esperado":"mapa_colombia","text":"Muéstrame los municipios con más alertas de inminencia"}
+{"query_id":"v03","esperado":"cuadrante_priorizacion","text":"¿Qué departamentos deberíamos priorizar según su intensidad y su tendencia?"}

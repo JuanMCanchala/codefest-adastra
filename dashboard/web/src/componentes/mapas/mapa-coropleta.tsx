@@ -26,6 +26,7 @@ import {
   leerOrbitasGuardadas,
   leerVolumenGuardado,
   teselasDe,
+  zoomMaximoTeselasDe,
 } from "@/lib/mapa-base";
 import type { ClaveMision, EstadoSatelite } from "@/lib/satelites";
 import { usarPasadas } from "@/lib/usar-pasadas";
@@ -49,7 +50,7 @@ function construirEstilo(globo: boolean): StyleSpecification {
       type: "raster",
       tiles: [...teselasDe(base)],
       tileSize: 256,
-      maxzoom: base.zoomMaximoTeselas,
+      maxzoom: zoomMaximoTeselasDe(base),
       attribution: base.atribucion,
     };
     estilo.layers.push({
@@ -71,9 +72,9 @@ function construirEstilo(globo: boolean): StyleSpecification {
   if (globo) {
     estilo.projection = { type: "globe" };
     estilo.sky = {
-      "sky-color": TEMA.mapaFondo,
+      "sky-color": TEMA.mapaEspacio,
       "horizon-color": TEMA.control,
-      "fog-color": TEMA.fondo,
+      "fog-color": TEMA.mapaEspacio,
       "sky-horizon-blend": 0.6,
       "horizon-fog-blend": 0.5,
       "atmosphere-blend": 0.75,
@@ -87,6 +88,9 @@ const CAPA_RELLENO = "regiones-relleno";
 const CAPA_BORDE = "regiones-borde";
 const CAPA_FOCO = "regiones-foco";
 const CAPA_VOLUMEN = "regiones-volumen";
+/** Fronteras del nivel administrativo superior, dibujadas encima de la coropleta. */
+const FUENTE_CONTORNO = "contorno";
+const CAPA_CONTORNO = "contorno-linea";
 
 /** Inclinación de la cámara con el volumen encendido: sin ella las columnas no se leen. */
 const PITCH_VOLUMEN = 52;
@@ -119,6 +123,11 @@ export interface Props {
   zoomMaximoEnfoque?: number;
   /** Altura en metros de la columna del valor máximo con el volumen 3D encendido. */
   escalaAltura?: number;
+  /**
+   * Capa de fronteras administrativas del nivel superior (Anexo B.4.2): al ver municipios,
+   * los límites departamentales encima, para no perder la referencia. Se puede apagar.
+   */
+  contorno?: FeatureCollection | null;
   /**
    * Adornos de la vista que van sobre el lienzo —leyenda, nota de nivel— dibujados dentro
    * del contenedor del mapa. Van aquí y no como hermanos del componente porque en pantalla
@@ -311,6 +320,7 @@ export function MapaCoropleta({
   globo = false,
   enfoque,
   zoomMaximoEnfoque,
+  contorno = null,
   escalaAltura = 150_000,
   superposicion,
 }: Props) {
@@ -338,6 +348,7 @@ export function MapaCoropleta({
   // La cámara y el destello necesitan las capas ya añadidas; el estilo carga después del
   // primer render y la vista se vuelve a montar al cambiar de modo, así que no basta un ref.
   const [capasListas, setCapasListas] = useState(false);
+  const [fronteras, setFronteras] = useState(true);
   const [telemetria, setTelemetria] = useState<Telemetria>({
     lng: centro[0],
     lat: centro[1],
@@ -362,9 +373,7 @@ export function MapaCoropleta({
     if (clave !== baseVigente.current) return;
     setBase("analitico");
     guardarBase("analitico");
-    setAvisoBase(
-      `No se pudo descargar «${baseDe(clave).etiqueta}»: se volvió al fondo analítico.`,
-    );
+    setAvisoBase(`No se pudo descargar «${baseDe(clave).etiqueta}»: se volvió al fondo analítico.`);
   };
 
   const cambiarVolumen = (activo: boolean) => {
@@ -522,9 +531,7 @@ export function MapaCoropleta({
           const valor = valoresVigentes.current.get(clave) ?? 0;
           globoEmergente.current
             .setLngLat(evento.lngLat)
-            .setHTML(
-              `<strong>${nombre}</strong><br/>${formatearEntero(valor)} ${unidad}`,
-            )
+            .setHTML(`<strong>${nombre}</strong><br/>${formatearEntero(valor)} ${unidad}`)
             .addTo(instancia);
         });
         instancia.on("mouseleave", CAPA_RELLENO, () => {
@@ -564,6 +571,40 @@ export function MapaCoropleta({
     }
     instancia.setFilter(CAPA_FOCO, ["==", ["get", claveGeo], seleccionada ?? ""]);
   }, [claveGeo, seleccionada]);
+
+  // Fronteras superiores: fuente y capa propias, por encima del relleno y del borde fino.
+  useEffect(() => {
+    const instancia = mapa.current;
+    if (!instancia || !capasListas) {
+      return;
+    }
+    const visible = Boolean(contorno) && fronteras;
+    if (contorno) {
+      const fuente = instancia.getSource(FUENTE_CONTORNO);
+      if (fuente) {
+        (fuente as maplibregl.GeoJSONSource).setData(contorno);
+      } else {
+        instancia.addSource(FUENTE_CONTORNO, { type: "geojson", data: contorno });
+      }
+      if (!instancia.getLayer(CAPA_CONTORNO)) {
+        instancia.addLayer({
+          id: CAPA_CONTORNO,
+          type: "line",
+          source: FUENTE_CONTORNO,
+          layout: { "line-join": "round" },
+          paint: {
+            "line-color": TEMA.texto,
+            "line-width": 1.4,
+            "line-opacity": 0.75,
+            "line-dasharray": [3, 2],
+          },
+        });
+      }
+    }
+    if (instancia.getLayer(CAPA_CONTORNO)) {
+      instancia.setLayoutProperty(CAPA_CONTORNO, "visibility", visible ? "visible" : "none");
+    }
+  }, [capasListas, contorno, fronteras]);
 
   // Cámara dirigida por la consulta: cada respuesta encuadra el mapa sobre las regiones que
   // tienen dato. Solo se mueve al cambiar la consulta, nunca mientras el usuario navega a
@@ -655,17 +696,13 @@ export function MapaCoropleta({
 
   const caja = useMemo(() => {
     if (!seleccionada) return null;
-    const rasgo = geojson.features.find(
-      (f) => leerTexto(f.properties, claveGeo) === seleccionada,
-    );
+    const rasgo = geojson.features.find((f) => leerTexto(f.properties, claveGeo) === seleccionada);
     return cajaDe(rasgo?.geometry ?? null);
   }, [claveGeo, geojson, seleccionada]);
 
   const nombreSeleccion = useMemo(() => {
     if (!seleccionada) return null;
-    const rasgo = geojson.features.find(
-      (f) => leerTexto(f.properties, claveGeo) === seleccionada,
-    );
+    const rasgo = geojson.features.find((f) => leerTexto(f.properties, claveGeo) === seleccionada);
     return rasgo ? leerTexto(rasgo.properties, claveNombre) || seleccionada : null;
   }, [claveGeo, claveNombre, geojson, seleccionada]);
 
@@ -817,6 +854,9 @@ export function MapaCoropleta({
         }}
         orbitas={orbitas}
         onCambiarOrbitas={cambiarOrbitas}
+        mostrarFronteras={Boolean(contorno)}
+        fronteras={fronteras}
+        onCambiarFronteras={setFronteras}
         pantallaCompleta={pantallaCompleta}
         onCambiarPantallaCompleta={setPantallaCompleta}
       />

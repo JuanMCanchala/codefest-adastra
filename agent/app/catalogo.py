@@ -24,6 +24,9 @@ CATALOGO: dict[str, str] = {
     ),
     "matriz_calor": (
         "Cruce de dos categóricas, p. ej. entidad × organización o país × fenómeno. "
+        "Las filas son SIEMPRE lo mencionado y las columnas SIEMPRE dónde se menciona; "
+        "para «qué organización documenta qué tecnología» va filas=entidad y "
+        "columnas=organizacion, no al revés. "
         "Filtros: filas=entidad|pais, columnas=organizacion|fenomeno|documento, "
         "tipo_entidad=persona|organizacion|pais|tecnologia|evento|lugar, top."
     ),

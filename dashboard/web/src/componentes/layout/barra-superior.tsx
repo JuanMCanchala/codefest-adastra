@@ -1,4 +1,5 @@
-import { ArrowUpRight, Moon, Sun } from "lucide-react";
+import { ArrowUpRight, Check, Link2, Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { obtenerSalud } from "@/api/cliente";
 import { alternarTema, useModoTema } from "@/lib/tema";
@@ -14,6 +15,28 @@ import { useRecurso } from "@/lib/usar-recurso";
 export function BarraSuperior() {
   const salud = useRecurso("salud", (senal) => obtenerSalud(senal));
   const modo = useModoTema();
+  const [copiado, setCopiado] = useState(false);
+
+  useEffect(() => {
+    if (!copiado) {
+      return;
+    }
+    const temporizador = window.setTimeout(() => setCopiado(false), 1800);
+    return () => window.clearTimeout(temporizador);
+  }, [copiado]);
+
+  /**
+   * La barra de direcciones ya lleva el componente activo y sus filtros (`sincronizarUrl`);
+   * esto solo la pone en el portapapeles, para que la vista que el experto está mirando
+   * viaje tal cual a otra pestaña, a un compañero o al informe.
+   */
+  const copiarEnlace = () => {
+    const url = window.location.href;
+    void navigator.clipboard
+      .writeText(url)
+      .then(() => setCopiado(true))
+      .catch(() => window.prompt("Copie el enlace a esta vista:", url));
+  };
   const urlConsola = salud.fase === "listo" ? (salud.dato.consola_url ?? null) : null;
 
   return (
@@ -33,6 +56,21 @@ export function BarraSuperior() {
             Corpus no disponible
           </p>
         ) : null}
+
+        <button
+          type="button"
+          onClick={copiarEnlace}
+          aria-live="polite"
+          title="Copiar el enlace a esta vista, con sus filtros"
+          className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-sm text-apagado transition-colors hover:bg-elevado hover:text-texto"
+        >
+          {copiado ? (
+            <Check aria-hidden="true" className="size-4 text-senal" />
+          ) : (
+            <Link2 aria-hidden="true" className="size-4" />
+          )}
+          <span className="hidden sm:inline">{copiado ? "Enlace copiado" : "Copiar enlace"}</span>
+        </button>
 
         <button
           type="button"

@@ -165,6 +165,36 @@ def test_ruta_ambos_invoca_tres_agentes_y_devuelve_spec():
     assert r.extras["citas"][0]["doc_id"] == "F2-SWF-102"
 
 
+def test_el_tablero_recibe_vista_aunque_la_ruta_sea_corpus():
+    """Una pregunta del corpus escrita contra el tablero también trae gráfico.
+
+    El experto del Reto 2 escribe preguntas, no órdenes de dibujo: «¿dónde se concentran
+    las alertas?» es legítima del corpus y ahí se quedaba, dejando el tablero con texto y
+    sin vista. Con la bandera, el nodo de visualización corre igual.
+    """
+    s, llm = sistema(
+        {
+            "orquestador": ruta("corpus"),
+            "agente_corpus": "Se concentran en el Ariari [1].",
+            "agente_visualizacion": VIZ,
+        }
+    )
+    r = s.responder(
+        "¿Dónde se concentran las alertas?", incluir_extras=True, exigir_visualizacion=True
+    )
+    assert "agente_visualizacion" in llm.llamadas
+    assert r.extras["visualizacion"]["componente"] == "linea_tiempo"
+    # El texto de la ruta de corpus se conserva: la vista se suma, no sustituye.
+    assert "Ariari" in r.respuesta
+
+
+def test_sin_la_bandera_la_ruta_corpus_no_gasta_el_agente_de_visualizacion():
+    s, llm = sistema({"orquestador": ruta("corpus"), "agente_corpus": "Texto [1]."})
+    r = s.responder("¿Dónde se concentran las alertas?", incluir_extras=True)
+    assert "agente_visualizacion" not in llm.llamadas
+    assert r.extras["visualizacion"] is None
+
+
 def test_componente_fuera_del_catalogo_se_descarta():
     malo = VIZ.replace("linea_tiempo", "puntaje_de_amenaza")
     s, _ = sistema(

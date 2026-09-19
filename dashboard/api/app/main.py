@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 import threading
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -105,6 +106,7 @@ def salud(request: Request) -> dict[str, Any]:
         "textos": {"disponible": textos.disponible, "indexado": textos.listo},
         "vista_tecnica": cfg.vista_tecnica,
         "consola_url": cfg.consola_url.rstrip("/") or None,
+        "corpus_disponible": _raiz_corpus(cfg) is not None,
     }
 
 
@@ -171,6 +173,33 @@ def _fragmento(bd: BaseDatos, textos: IndiceTextos, chunk_id: int) -> dict[str, 
         "fecha": doc["fecha"],
         "texto": str(registro.get("texto", "")),
     }
+
+
+def _raiz_corpus(cfg: Settings) -> Path | None:
+    """Raíz del corpus original, si el despliegue la montó."""
+    if str(cfg.corpus_dir) in {"", "."}:
+        return None
+    raiz = cfg.corpus_dir.resolve()
+    return raiz if raiz.is_dir() else None
+
+
+@app.get("/api/documento/{chunk_id}")
+def documento(chunk_id: int, request: Request) -> FileResponse:
+    """El archivo del que salió el fragmento: el PDF, el JSON o el CSV de la Etapa 0."""
+    cfg: Settings = request.app.state.cfg
+    raiz = _raiz_corpus(cfg)
+    if raiz is None:
+        raise HTTPException(status_code=404, detail="este despliegue no publica el corpus original")
+    fragmento = _fragmento(request.app.state.bd, request.app.state.textos, chunk_id)
+    relativa = str(fragmento["fuente"]).strip()
+    if not relativa:
+        raise HTTPException(status_code=404, detail="el fragmento no registra archivo fuente")
+    # La ruta viene del corpus, no del navegador, pero se comprueba igual: un `..` en
+    # metadata.jsonl no puede acabar sirviendo un archivo de fuera del corpus.
+    destino = (raiz / relativa).resolve()
+    if not destino.is_relative_to(raiz) or not destino.is_file():
+        raise HTTPException(status_code=404, detail=f"no se encuentra el archivo {relativa}")
+    return FileResponse(destino, filename=destino.name, content_disposition_type="inline")
 
 
 @app.get("/api/evidencia")

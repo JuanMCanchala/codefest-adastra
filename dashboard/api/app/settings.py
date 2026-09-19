@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     # revisa el jurado va limpio y el del equipo se enciende con VISTA_TECNICA=1.
     vista_tecnica: bool = False
 
+    # Corpus original (PDF, JSON, CSV de la Etapa 0). No viaja en la imagen —son gigas—:
+    # si el despliegue lo monta aquí, la evidencia enlaza al archivo del que salió cada
+    # fragmento; si no, el panel sigue funcionando sin el enlace.
+    corpus_dir: Path = Path("")
+
     # Consola de inteligencia (Reto 1). Si el despliegue la publica, el tablero enlaza a ella
     # para poder ir y volver entre preguntar y explorar.
     consola_url: str = ""

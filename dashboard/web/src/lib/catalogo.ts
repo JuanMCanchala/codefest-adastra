@@ -6,6 +6,7 @@
 
 import {
   Activity,
+  BarChart3,
   Crosshair,
   Globe2,
   Grid3x3,
@@ -40,7 +41,7 @@ export interface DefinicionComponente {
   componente: NombreComponente;
   etiqueta: string;
   descripcion: string;
-  familia: "espacial" | "temporal" | "relacional" | "composicion" | "evidencia";
+  familia: "espacial" | "temporal" | "relacional" | "composicion" | "distribucion" | "evidencia";
   icono: LucideIcon;
   /** Acepta los filtros `desde`/`hasta` del rango de años global. */
   usaAnios: boolean;
@@ -67,7 +68,12 @@ export const CATALOGO: readonly DefinicionComponente[] = [
           { valor: "municipio", etiqueta: "Municipio" },
         ],
       },
-      { clave: "economia", etiqueta: "Economía ilícita", tipo: "texto", ayuda: "p. ej. minería" },
+      {
+        clave: "economia",
+        etiqueta: "Economía ilícita",
+        tipo: "texto",
+        ayuda: "p. ej. minería",
+      },
       { clave: "tipo_alerta", etiqueta: "Tipo de alerta", tipo: "texto" },
     ],
   },
@@ -97,7 +103,12 @@ export const CATALOGO: readonly DefinicionComponente[] = [
     icono: Activity,
     usaAnios: true,
     filtros: [
-      { clave: "entidad", etiqueta: "Entidad a rastrear", tipo: "texto", ayuda: "p. ej. ELN" },
+      {
+        clave: "entidad",
+        etiqueta: "Entidad a rastrear",
+        tipo: "texto",
+        ayuda: "p. ej. ELN",
+      },
     ],
   },
   {
@@ -143,7 +154,8 @@ export const CATALOGO: readonly DefinicionComponente[] = [
   {
     componente: "red_entidades",
     etiqueta: "Red de entidades",
-    descripcion: "Entidades y sus relaciones; al hacer clic se exploran los vecinos.",
+    descripcion:
+      "Entidades y sus relaciones. Clic: vecinos y evidencia; doble clic: expandir la red alrededor del nodo. Tres disposiciones: fuerzas, radial y niveles.",
     familia: "relacional",
     icono: Share2,
     usaAnios: false,
@@ -158,7 +170,13 @@ export const CATALOGO: readonly DefinicionComponente[] = [
         maximo: 60,
         predeterminado: 40,
       },
-      { clave: "min_peso", etiqueta: "Peso mínimo", tipo: "numero", minimo: 1, maximo: 50 },
+      {
+        clave: "min_peso",
+        etiqueta: "Peso mínimo",
+        tipo: "numero",
+        minimo: 1,
+        maximo: 50,
+      },
     ],
   },
   {
@@ -208,6 +226,44 @@ export const CATALOGO: readonly DefinicionComponente[] = [
           { valor: "formato", etiqueta: "Formato" },
           { valor: "idioma", etiqueta: "Idioma" },
         ],
+      },
+    ],
+  },
+  {
+    componente: "distribucion",
+    etiqueta: "Distribución",
+    descripcion:
+      "Histograma de una variable contada: cuántos documentos son cortos o larguísimos, si las alertas se concentran en pocos municipios, cuán larga es la cola de entidades. Solo conteos.",
+    familia: "distribucion",
+    icono: BarChart3,
+    usaAnios: false,
+    filtros: [
+      {
+        clave: "variable",
+        etiqueta: "Variable",
+        tipo: "opciones",
+        predeterminado: "fragmentos_por_documento",
+        opciones: [
+          {
+            valor: "fragmentos_por_documento",
+            etiqueta: "Fragmentos por documento",
+          },
+          {
+            valor: "entidades_por_documento",
+            etiqueta: "Entidades por documento",
+          },
+          { valor: "paises_por_documento", etiqueta: "Países por documento" },
+          { valor: "alertas_por_municipio", etiqueta: "Alertas por municipio" },
+          { valor: "menciones_por_entidad", etiqueta: "Menciones por entidad" },
+        ],
+      },
+      {
+        clave: "barras",
+        etiqueta: "Barras",
+        tipo: "numero",
+        minimo: 4,
+        maximo: 30,
+        predeterminado: 12,
       },
     ],
   },
@@ -266,11 +322,7 @@ export function etiquetaFiltro(componente: NombreComponente, clave: string): str
 }
 
 /** Valor legible de un filtro: la etiqueta de la opción elegida y, si no, el valor tal cual. */
-export function valorFiltro(
-  componente: NombreComponente,
-  clave: string,
-  valor: unknown,
-): string {
+export function valorFiltro(componente: NombreComponente, clave: string, valor: unknown): string {
   if (valor === null || valor === undefined || valor === "") {
     return "—";
   }
@@ -287,5 +339,6 @@ export const ETIQUETAS_FAMILIA: Record<DefinicionComponente["familia"], string> 
   temporal: "Temporal",
   relacional: "Relacional",
   composicion: "Composición",
+  distribucion: "Distribución",
   evidencia: "Evidencia",
 };

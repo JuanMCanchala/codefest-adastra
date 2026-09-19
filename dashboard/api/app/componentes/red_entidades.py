@@ -63,7 +63,7 @@ class Filtros(FiltrosBase):
 
 def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salida, Filtros, list]:
     f, ignorados = resolver_filtros(Filtros, filtros)
-    f = normalizar_entidades(bd, f)
+    f, ignorados = normalizar_entidades(bd, f, ignorados)
     params = {**f.model_dump(), "limite": f.top * 6}
 
     seleccion: list[str] = []

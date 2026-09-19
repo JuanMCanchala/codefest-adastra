@@ -38,6 +38,9 @@ export function VistaMapaColombia({
   const geo = useRecurso(`geo-${nivel}`, (senal) =>
     nivel === "municipio" ? obtenerGeoMunicipios(senal) : obtenerGeoDepartamentos(senal),
   );
+  // Los departamentos siempre a mano: en el nivel municipal se dibujan como fronteras
+  // encima (Anexo B.4.2), y ya están descargados de la vista anterior.
+  const departamentos = useRecurso("geo-departamento", (senal) => obtenerGeoDepartamentos(senal));
 
   /**
    * Geometría dibujada. Al cruzar el umbral municipal hay que bajar el otro GeoJSON, y si
@@ -141,6 +144,9 @@ export function VistaMapaColombia({
           seleccionada={seleccionada}
           onClicRegion={seleccionarDivipola}
           enfoque={enfoque}
+          contorno={
+            nivel === "municipio" && departamentos.fase === "listo" ? departamentos.dato : null
+          }
           // El reencuadre no cruza solo el umbral municipal: ese salto lo decide el usuario.
           zoomMaximoEnfoque={ZOOM_MUNICIPIO - 0.2}
           onZoom={(zoom) => {
