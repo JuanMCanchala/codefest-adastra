@@ -12,7 +12,7 @@ interface Props {
 
 function Encabezado({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-apagado">
+    <h3 className="mb-2 text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
       {children}
     </h3>
   );
@@ -23,7 +23,7 @@ export function PanelTraza({ datos }: Props) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 px-6 py-10 text-center">
         <Activity aria-hidden="true" className="size-6 text-apagado" />
-        <p className="text-xs leading-relaxed text-apagado">
+        <p className="max-w-xs text-sm leading-relaxed text-apagado">
           Aquí se registran los agentes invocados, las herramientas llamadas, los tokens por agente,
           la latencia y el estado de cada consulta.
         </p>
@@ -60,10 +60,10 @@ export function PanelTraza({ datos }: Props) {
           <ol className="space-y-2">
             {metadata.agentes_invocados.map((agente, indice) => (
               <li key={`${agente}-${indice}`} className="flex items-center gap-2">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-acento/40 bg-acento/10 font-mono text-[10px] text-acento">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-control bg-elevado font-mono text-xs text-texto">
                   {indice + 1}
                 </span>
-                <span className="font-mono text-xs text-texto">{agente}</span>
+                <span className="font-mono text-sm text-texto">{agente}</span>
               </li>
             ))}
           </ol>
@@ -82,12 +82,12 @@ export function PanelTraza({ datos }: Props) {
                 className="rounded border border-borde bg-elevado p-2"
               >
                 <p className="flex items-center gap-1.5 font-mono text-xs text-texto">
-                  <Wrench aria-hidden="true" className="size-3 text-acento" />
+                  <Wrench aria-hidden="true" className="size-3.5 text-apagado" />
                   {herramienta.name}
                 </p>
                 <dl className="mt-1.5 space-y-0.5">
                   {Object.entries(herramienta.input_parameters).map(([clave, valor]) => (
-                    <div key={clave} className="flex gap-2 font-mono text-[11px]">
+                    <div key={clave} className="flex gap-2 font-mono text-xs">
                       <dt className="shrink-0 text-apagado">{clave}:</dt>
                       <dd className="min-w-0 break-words text-texto">
                         {typeof valor === "object" ? JSON.stringify(valor) : String(valor)}
@@ -95,7 +95,7 @@ export function PanelTraza({ datos }: Props) {
                     </div>
                   ))}
                 </dl>
-                <p className="mt-1.5 line-clamp-3 text-[11px] leading-relaxed text-apagado">
+                <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-apagado">
                   {herramienta.output}
                 </p>
               </li>
@@ -106,7 +106,7 @@ export function PanelTraza({ datos }: Props) {
 
       <section>
         <Encabezado>Consumo de tokens</Encabezado>
-        <table className="w-full border-collapse font-mono text-[11px]">
+        <table className="w-full border-collapse font-mono text-xs">
           <thead>
             <tr className="text-apagado">
               <th className="border-b border-borde py-1 text-left font-normal">Agente</th>
@@ -120,7 +120,7 @@ export function PanelTraza({ datos }: Props) {
               <tr key={`${fila.agente}-${indice}`}>
                 <td className="border-b border-borde/60 py-1 pr-2">
                   <span className="block truncate text-texto">{fila.agente}</span>
-                  <span className="block truncate text-[10px] text-apagado">{fila.modelo}</span>
+                  <span className="block truncate text-xs text-apagado">{fila.modelo}</span>
                 </td>
                 <td className="border-b border-borde/60 py-1 text-right text-apagado">
                   {formatearEntero(fila.input)}
@@ -136,7 +136,7 @@ export function PanelTraza({ datos }: Props) {
             <tr className={cn("font-semibold", metadata.tokens_por_agente.length > 0 && "pt-1")}>
               <td className="py-1.5 pr-2 text-texto">
                 <span className="flex items-center gap-1.5">
-                  <Cpu aria-hidden="true" className="size-3 text-acento" />
+                  <Cpu aria-hidden="true" className="size-3.5 text-apagado" />
                   Total
                 </span>
               </td>
@@ -146,7 +146,7 @@ export function PanelTraza({ datos }: Props) {
               <td className="py-1.5 text-right text-texto">
                 {formatearEntero(metadata.tokens.output)}
               </td>
-              <td className="py-1.5 text-right text-acento">
+              <td className="py-1.5 text-right text-texto">
                 {formatearEntero(metadata.tokens.total)}
               </td>
             </tr>

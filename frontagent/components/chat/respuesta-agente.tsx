@@ -33,14 +33,14 @@ export function RespuestaAgente({
   const ruta = datos.extras?.ruta ?? null;
 
   return (
-    <article className="rounded-lg border border-borde bg-panel p-4">
+    <article className="rounded-md border border-borde bg-panel p-4 sm:p-5">
       <header className="mb-3 flex flex-wrap items-center gap-2 border-b border-borde pb-3">
-        <span className="flex size-7 items-center justify-center rounded border border-borde bg-elevado text-acento">
+        <span className="flex size-7 items-center justify-center rounded border border-borde bg-elevado text-apagado">
           <Bot aria-hidden="true" className="size-4" />
         </span>
-        <span className="mr-auto text-xs font-medium uppercase tracking-wider text-apagado">
+        <h2 className="mr-auto text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
           Respuesta del sistema
-        </span>
+        </h2>
         {ruta ? (
           <Insignia>
             <Route aria-hidden="true" className="size-3" />
@@ -81,7 +81,7 @@ export function RespuestaAgente({
           <GitBranch aria-hidden="true" className="size-3.5" />
           Ver traza del sistema
         </Boton>
-        <span className="font-mono text-[11px] text-apagado">
+        <span className="font-mono text-xs text-apagado">
           {datos.metadata.agentes_invocados.join(" → ") || "sin agentes registrados"}
         </span>
       </footer>

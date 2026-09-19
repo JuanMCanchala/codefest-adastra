@@ -19,7 +19,7 @@ export function TextoConCitas({ texto, citas, nActiva, onSeleccionar, onPrevisua
   const disponibles = new Set(citas.map((cita) => cita.n));
 
   return (
-    <div className="space-y-3 text-sm leading-relaxed text-texto">
+    <div className="max-w-[75ch] space-y-4 text-base leading-[1.65] text-texto">
       {parrafos.map((segmentos, indiceParrafo) => (
         <p key={indiceParrafo}>
           {segmentos.map((segmento, indice) => {
@@ -36,10 +36,10 @@ export function TextoConCitas({ texto, citas, nActiva, onSeleccionar, onPrevisua
                 type="button"
                 aria-label={`Ver evidencia de la cita ${segmento.n}`}
                 className={cn(
-                  "mx-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded border px-1 align-super font-mono text-[10px] transition-colors",
+                  "mx-0.5 inline-flex h-[22px] min-w-[22px] -translate-y-px items-center justify-center rounded border px-1 align-middle font-mono text-xs font-medium transition-colors",
                   activa
                     ? "border-acento bg-acento text-fondo"
-                    : "border-acento/40 bg-acento/10 text-acento hover:bg-acento/25",
+                    : "border-senal/50 bg-elevado text-senal hover:border-senal hover:bg-senal/15",
                 )}
                 onClick={() => onSeleccionar(segmento.n)}
                 onMouseEnter={() => onPrevisualizar(segmento.n)}

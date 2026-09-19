@@ -4,7 +4,7 @@ import { FileSearch, Hash, Quote } from "lucide-react";
 
 import { Insignia } from "@/components/ui/insignia";
 import type { RespuestaAgente } from "@/lib/tipos";
-import { cn } from "@/lib/utils";
+import { cn, etiquetaDocumento } from "@/lib/utils";
 
 interface Props {
   datos: RespuestaAgente | null;
@@ -16,7 +16,7 @@ function Vacio({ mensaje }: { mensaje: string }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 px-6 py-10 text-center">
       <FileSearch aria-hidden="true" className="size-6 text-apagado" />
-      <p className="text-xs leading-relaxed text-apagado">{mensaje}</p>
+      <p className="max-w-xs text-sm leading-relaxed text-apagado">{mensaje}</p>
     </div>
   );
 }
@@ -47,7 +47,7 @@ export function PanelEvidencia({ datos, nActiva, onSeleccionar }: Props) {
               id={`evidencia-${cita.n}`}
               className={cn(
                 "scroll-mt-2 px-4 py-3 transition-colors",
-                activa ? "bg-acento/10" : "hover:bg-elevado/60",
+                activa ? "bg-elevado" : "hover:bg-elevado/60",
               )}
             >
               <button
@@ -59,19 +59,19 @@ export function PanelEvidencia({ datos, nActiva, onSeleccionar }: Props) {
                 <div className="flex items-start gap-2">
                   <span
                     className={cn(
-                      "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border font-mono text-[10px]",
+                      "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded border font-mono text-xs font-medium",
                       activa
                         ? "border-acento bg-acento text-fondo"
-                        : "border-acento/40 bg-acento/10 text-acento",
+                        : "border-senal/50 bg-elevado text-senal",
                     )}
                   >
                     {cita.n}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium leading-snug text-texto">
-                      {cita.titulo || "Documento sin título"}
+                    <p className="text-sm font-medium leading-snug text-texto">
+                      {etiquetaDocumento(cita.titulo, cita.fuente)}
                     </p>
-                    <p className="mt-0.5 truncate font-mono text-[10px] text-apagado">
+                    <p className="mt-0.5 truncate font-mono text-xs text-tenue">
                       {cita.fuente}
                     </p>
                   </div>
@@ -90,8 +90,8 @@ export function PanelEvidencia({ datos, nActiva, onSeleccionar }: Props) {
               </div>
 
               {activa ? (
-                <blockquote className="mt-2 border-l-2 border-acento/60 bg-fondo/60 px-3 py-2 text-xs leading-relaxed text-texto">
-                  <Quote aria-hidden="true" className="mb-1 size-3 text-apagado" />
+                <blockquote className="mt-3 rounded border border-borde bg-fondo px-3 py-2.5 text-sm leading-relaxed text-texto">
+                  <Quote aria-hidden="true" className="mb-1 size-3.5 text-senal" />
                   {fragmento ?? "El agente no devolvió el texto de este fragmento."}
                 </blockquote>
               ) : null}

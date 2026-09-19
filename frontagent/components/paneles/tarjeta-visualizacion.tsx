@@ -2,12 +2,11 @@
 
 import { ArrowUpRight, ChartNoAxesColumn } from "lucide-react";
 
-import { Boton } from "@/components/ui/boton";
 import { Insignia } from "@/components/ui/insignia";
+import { SimboloFenomeno } from "@/components/ui/simbolo-fenomeno";
 import { Tarjeta, TarjetaCuerpo, TarjetaEncabezado, TarjetaTitulo } from "@/components/ui/tarjeta";
 import { fenomenoPorId } from "@/lib/fenomenos";
 import type { SpecVisualizacion } from "@/lib/tipos";
-import { cn } from "@/lib/utils";
 
 interface Props {
   spec: SpecVisualizacion;
@@ -32,17 +31,18 @@ export function TarjetaVisualizacion({ spec, urlTablero }: Props) {
   const filtros = Object.entries(spec.filtros);
 
   return (
-    <Tarjeta className={cn("mt-4 bg-elevado", fenomeno?.borde)}>
+    <Tarjeta className="mt-4 bg-elevado">
       <TarjetaEncabezado>
-        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded border border-borde bg-panel text-acento">
+        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded border border-borde bg-panel text-apagado">
           <ChartNoAxesColumn aria-hidden="true" className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
           <TarjetaTitulo>{spec.titulo || "Visualización propuesta"}</TarjetaTitulo>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            <Insignia className="text-acento">{spec.componente}</Insignia>
+            <Insignia className="text-texto">{spec.componente}</Insignia>
             {fenomeno ? (
-              <Insignia className={fenomeno.texto}>
+              <Insignia className="text-texto">
+                <SimboloFenomeno fenomeno={fenomeno} />
                 {fenomeno.clave} · {fenomeno.nombre}
               </Insignia>
             ) : null}
@@ -53,7 +53,7 @@ export function TarjetaVisualizacion({ spec, urlTablero }: Props) {
         {spec.justificacion ? <p className="text-apagado">{spec.justificacion}</p> : null}
 
         {filtros.length > 0 ? (
-          <dl className="grid gap-x-4 gap-y-1 font-mono text-xs sm:grid-cols-2">
+          <dl className="grid grid-cols-[minmax(0,1fr)] gap-x-4 gap-y-1 font-mono text-xs sm:grid-cols-2">
             {filtros.map(([clave, valor]) => (
               <div key={clave} className="flex gap-2 truncate">
                 <dt className="text-apagado">{clave}:</dt>
@@ -67,14 +67,17 @@ export function TarjetaVisualizacion({ spec, urlTablero }: Props) {
 
         <div className="flex items-center gap-3">
           {urlTablero ? (
-            <a href={enlaceTablero(urlTablero, spec)} target="_blank" rel="noreferrer">
-              <Boton tamano="sm" variante="primario" type="button">
-                Abrir en el tablero
-                <ArrowUpRight aria-hidden="true" className="size-3.5" />
-              </Boton>
+            <a
+              href={enlaceTablero(urlTablero, spec)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-acento px-3.5 text-sm font-semibold text-fondo transition-colors hover:bg-acento-claro"
+            >
+              Abrir en el tablero
+              <ArrowUpRight aria-hidden="true" className="size-4" />
             </a>
           ) : (
-            <p className="text-xs text-apagado">
+            <p className="text-sm text-apagado">
               El render se hace en el tablero del Reto 2. Configure <code>DASHBOARD_URL</code> para
               habilitar el enlace.
             </p>

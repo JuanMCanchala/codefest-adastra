@@ -12,6 +12,8 @@ export interface Fenomeno {
   borde: string;
   fondo: string;
   punto: string;
+  /** Forma del marcador: el fenómeno no depende solo del color (WCAG 1.4.1). */
+  simbolo: "circle" | "triangle" | "diamond";
 }
 
 export const FENOMENOS: readonly Fenomeno[] = [
@@ -24,6 +26,7 @@ export const FENOMENOS: readonly Fenomeno[] = [
     borde: "border-f1/40",
     fondo: "bg-f1/10",
     punto: "bg-f1",
+    simbolo: "circle",
   },
   {
     id: 2,
@@ -34,6 +37,7 @@ export const FENOMENOS: readonly Fenomeno[] = [
     borde: "border-f2/40",
     fondo: "bg-f2/10",
     punto: "bg-f2",
+    simbolo: "triangle",
   },
   {
     id: 3,
@@ -45,6 +49,7 @@ export const FENOMENOS: readonly Fenomeno[] = [
     borde: "border-f3/40",
     fondo: "bg-f3/10",
     punto: "bg-f3",
+    simbolo: "diamond",
   },
 ] as const;
 
