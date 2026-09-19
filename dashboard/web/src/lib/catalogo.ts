@@ -312,6 +312,29 @@ export const CATALOGO: readonly DefinicionComponente[] = [
       },
     ],
   },
+  {
+    componente: "evidencia_satelital",
+    etiqueta: "Evidencia satelital",
+    descripcion:
+      "El recorte del ortomosaico, la segmentación del modelo y la anotación humana, uno al lado del otro: la imagen de la que salen las hectáreas de minería y de bosque del agente satelital.",
+    familia: "evidencia",
+    icono: Satellite,
+    usaAnios: false,
+    filtros: [
+      { clave: "sitio", etiqueta: "Sitio", tipo: "texto" },
+      {
+        clave: "encuadre",
+        etiqueta: "Encuadre",
+        tipo: "opciones",
+        predeterminado: "frontera",
+        opciones: [
+          { valor: "frontera", etiqueta: "Frontera bosque/mina" },
+          { valor: "mineria", etiqueta: "Mayor actividad minera" },
+          { valor: "bosque", etiqueta: "Frente de deforestación" },
+        ],
+      },
+    ],
+  },
 ] as const;
 
 export function definicionDe(componente: NombreComponente): DefinicionComponente {

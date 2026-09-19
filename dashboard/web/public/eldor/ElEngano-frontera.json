@@ -1,0 +1,56 @@
+{
+ "sitio": "ElEngano",
+ "imagen": "/eldor/ElEngano-frontera.png",
+ "encuadre": "frontera bosque/mina",
+ "con_anotacion": true,
+ "recorte_px": [
+  10240,
+  1280,
+  2560,
+  2560
+ ],
+ "fecha_captura": "2022-03-03",
+ "resolucion_m_px": 0.057233,
+ "crs": "EPSG:32719",
+ "modelo": "SegFormer MiT-B2 - segformer_b2_baseline2_augv2_weighted_ce_dice",
+ "huella_minera_ha": 0.91,
+ "bosque_ha": 0.45,
+ "clases": [
+  {
+   "clase": "Suelo desnudo",
+   "porcentaje": 42.23,
+   "minera": true,
+   "color": "#e8c48c"
+  },
+  {
+   "clase": "Regeneración natural tipo 1",
+   "porcentaje": 31.35,
+   "minera": false,
+   "color": "#60b080"
+  },
+  {
+   "clase": "Bosque primario",
+   "porcentaje": 20.82,
+   "minera": false,
+   "color": "#167a3f"
+  },
+  {
+   "clase": "Cultivo agrícola",
+   "porcentaje": 4.43,
+   "minera": false,
+   "color": "#a8de6a"
+  },
+  {
+   "clase": "Cuerpos de agua",
+   "porcentaje": 1.13,
+   "minera": false,
+   "color": "#3884ff"
+  },
+  {
+   "clase": "Montículos de cascajo",
+   "porcentaje": 0.03,
+   "minera": true,
+   "color": "#f0963c"
+  }
+ ]
+}

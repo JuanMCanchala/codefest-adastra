@@ -16,6 +16,7 @@ from . import (
     composicion_corpus,
     cuadrante_priorizacion,
     distribucion,
+    evidencia_satelital,
     linea_tiempo,
     mapa_colombia,
     mapa_mundo,
@@ -41,6 +42,8 @@ CATALOGO: dict[str, str] = {
     "orden_observacion": "Ficha de un municipio que cierra el ciclo mención → territorio → "
     "sobrevuelo: alertas, presencia armada, minería detectada por satélite y el punto de "
     "referencia para calcular cuándo lo mira cada satélite.",
+    "evidencia_satelital": "Ortomosaico, segmentación del modelo y anotación humana del "
+    "sitio minero: la imagen de la que salen las hectáreas del agente satelital.",
 }
 
 MODULOS: dict[str, ModuleType] = {
@@ -54,6 +57,7 @@ MODULOS: dict[str, ModuleType] = {
     "panel_evidencia": panel_evidencia,
     "distribucion": distribucion,
     "orden_observacion": orden_observacion,
+    "evidencia_satelital": evidencia_satelital,
 }
 
 

@@ -50,8 +50,8 @@ Todo se construye sobre la base de conocimiento vectorial de la Etapa 1
   agentes invocados, herramientas, tokens y latencia. Detrás hay tres agentes coordinados con
   LangGraph.
 - **Tablero (Reto 2).** El usuario escribe lo que quiere ver. El agente de visualización elige uno
-  de los 10 componentes del tablero (8 del catálogo del agente más dos manuales: el histograma
-  de distribución y la orden de observación) (mapa de Colombia, mapa mundial, línea de tiempo,
+  de los 11 componentes del tablero (8 del catálogo del agente más tres manuales: el histograma
+  de distribución, la evidencia satelital y la orden de observación) (mapa de Colombia, mapa mundial, línea de tiempo,
   red de entidades, matriz de calor, cuadrante de priorización, composición del corpus y panel
   de evidencia) y fija sus filtros. Después, el backend calcula los valores con conteos reales.
   Cualquier dato se abre hasta su `doc_id` y `chunk_id`.

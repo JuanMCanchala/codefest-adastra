@@ -121,6 +121,11 @@ export interface Props {
   enfoque?: string;
   /** Tope de zoom del reencuadre: evita que la cámara cruce sola un umbral de la vista. */
   zoomMaximoEnfoque?: number;
+  /**
+   * Orden de cámara de la vista: llevar el zoom a un valor concreto. `marca` distingue dos
+   * órdenes seguidas al mismo zoom, para que un botón pulsado dos veces obedezca las dos.
+   */
+  ordenZoom?: { zoom: number; marca: number } | null;
   /** Altura en metros de la columna del valor máximo con el volumen 3D encendido. */
   escalaAltura?: number;
   /**
@@ -320,6 +325,7 @@ export function MapaCoropleta({
   globo = false,
   enfoque,
   zoomMaximoEnfoque,
+  ordenZoom = null,
   contorno = null,
   escalaAltura = 150_000,
   superposicion,
@@ -664,6 +670,23 @@ export function MapaCoropleta({
       });
     }
   }, [base, capasListas, volumenActivo]);
+
+  // Orden de zoom pedida con un botón (p. ej. «Municipios»): la cámara va al zoom pedido
+  // sobre su centro actual, y es `zoomend` quien luego confirma el nivel a la vista.
+  //
+  // Solo obedece a la marca: si además dependiera de `capasListas`, al cambiar la geometría
+  // se relanzaría el mismo easeTo, MapLibre cortaría el que estaba en curso y `zoomend`
+  // saltaría a medio camino, por debajo del umbral, devolviendo el nivel anterior un instante.
+  const zoomPedido = ordenZoom?.zoom;
+  const marcaPedida = ordenZoom?.marca;
+  useEffect(() => {
+    const instancia = mapa.current;
+    if (!instancia || zoomPedido === undefined || marcaPedida === undefined) {
+      return;
+    }
+    instancia.easeTo({ zoom: zoomPedido, duration: prefiereMenosMovimiento() ? 0 : 600 });
+    // `zoomPedido` cambia siempre con la marca; la marca es la única orden nueva.
+  }, [marcaPedida]);
 
   // Encendido del mapa base: la coropleta se aclara para dejar ver la imagen de abajo.
   useEffect(() => {
