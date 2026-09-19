@@ -81,7 +81,7 @@ export function LienzoComponente({
   };
 
   return (
-    <Tarjeta className="overflow-hidden">
+    <Tarjeta como="section" aria-labelledby="titulo-componente" className="overflow-hidden">
       <header className="flex flex-wrap items-start gap-3 border-b border-borde px-4 py-3">
         <span
           className={cn(
@@ -92,7 +92,7 @@ export function LienzoComponente({
           <Icono aria-hidden="true" className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold">
+          <h2 id="titulo-componente" className="text-base font-semibold">
             {resultado.titulo || definicion.etiqueta}
           </h2>
           <p className="mt-0.5 text-sm text-apagado">{definicion.descripcion}</p>

@@ -85,7 +85,14 @@ export function PanelLateralEvidencia({
         </p>
       </div>
 
-      <div className="barra-fina min-h-0 flex-1 overflow-y-auto">
+      {/* La lista se desplaza y sus fragmentos no son enfocables: sin tabIndex no hay
+          forma de leerla con el teclado (WCAG 2.1.1, axe scrollable-region-focusable). */}
+      <div
+        className="barra-fina min-h-0 flex-1 overflow-y-auto"
+        tabIndex={0}
+        role="region"
+        aria-label="Fragmentos de evidencia"
+      >
         {chunkIds.length === 0 ? (
           <Vacio
             titulo="Sin fragmentos que mostrar"

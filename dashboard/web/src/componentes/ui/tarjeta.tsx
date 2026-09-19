@@ -2,9 +2,14 @@ import type { HTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
-export function Tarjeta({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+interface PropsTarjeta extends HTMLAttributes<HTMLElement> {
+  /** `section` cuando la tarjeta es una zona con título propio (landmark con nombre). */
+  como?: "div" | "section";
+}
+
+export function Tarjeta({ className, como: Como = "div", ...props }: PropsTarjeta) {
   return (
-    <div
+    <Como
       className={cn(
         "rounded-md border border-borde bg-panel",
         className,

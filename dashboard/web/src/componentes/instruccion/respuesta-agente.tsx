@@ -20,13 +20,16 @@ export function RespuestaAgente({ respuesta }: Props) {
     tokens["total"] ?? (tokens["input"] ?? 0) + (tokens["output"] ?? 0);
 
   return (
-    <Tarjeta className="overflow-hidden">
+    <Tarjeta como="section" aria-labelledby="titulo-respuesta-agente" className="overflow-hidden">
       <div className="flex items-start gap-3 px-4 py-3">
         <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-borde bg-elevado text-apagado">
           <Bot aria-hidden="true" className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
+          <h2
+            id="titulo-respuesta-agente"
+            className="text-xs font-semibold uppercase tracking-[0.06em] text-apagado"
+          >
             Respuesta del agente
           </h2>
           <p className="mt-1 max-w-[75ch] whitespace-pre-wrap text-base leading-relaxed text-texto">
