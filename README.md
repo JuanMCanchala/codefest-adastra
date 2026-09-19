@@ -80,6 +80,7 @@ flowchart LR
 | `orquestador`          | Qwen3-Next-80B         | `filtro_seguridad`       | Siempre: filtra ataques, clasifica la intención y reformula la consulta. |
 | `agente_corpus`        | Llama 3.3 70B Instruct | `buscar_corpus`          | Preguntas que se responden con documentos.                               |
 | `agente_visualizacion` | Qwen3-Next-80B         | `seleccionar_componente` | Pedidos de gráficos, mapas, redes o líneas de tiempo.                    |
+| `agente_satelital`     | Qwen3-Next-80B         | `medir_cobertura_satelital` | Áreas de minería ilegal medidas sobre imágenes: Colombia (Sentinel-2) y Perú (dron). |
 
 La ruta típica hace **2 llamadas al modelo**. Por ejemplo, una pregunta de F2 usó 2.867 tokens y
 tardó 6,2 s. Una guarda sin LLM (patrones de alta precisión y un clasificador multilingüe en CPU)
@@ -148,7 +149,7 @@ Para cada recurso, sigue **+ New → Private Repository (with Deploy Key)** y co
 
 | Campo                    | `agent`                                                                                    | `frontagent`                                                           | `dashboard`                                                           |
 | ------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Repository URL (SSH)     | `git@github.com:JuanMCanchala/codefest-adastra-final.git`                                  | ídem                                                                   | ídem                                                                  |
+| Repository URL (SSH)     | `git@github.com:fesamu06/codefest-adastra-final.git`                                  | ídem                                                                   | ídem                                                                  |
 | Branch                   | `main`                                                                                     | `main`                                                                 | `main`                                                                |
 | Build Pack               | Dockerfile                                                                                 | Dockerfile                                                             | Dockerfile                                                            |
 | **Base Directory**       | `/agent`                                                                                   | `/frontagent`                                                          | `/dashboard`                                                          |
@@ -191,6 +192,7 @@ Se declaran en **Configuration → Environment Variables**.
 | --------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `AGENT_URL`     | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Sin ella, el valor por defecto `localhost:8000` rompe el chat. |
 | `DASHBOARD_URL` | No            | `https://dashboard.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el botón "abrir en el tablero".                     |
+| `VISTA_TECNICA` | No            | Por defecto apagada. Con `1` la consola muestra la ruta del orquestador, los modelos y los tokens. La que revisa el jurado va limpia; la del equipo se enciende aquí. |
 
 **`dashboard`**
 
@@ -201,6 +203,12 @@ Se declaran en **Configuration → Environment Variables**.
 | `CONSOLA_URL`     | No            | `https://frontagent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el enlace a la consola de chat. |
 
 `DB_PATH`, `METADATA_PATH`, `GEO_DIR` y `WEB_DIST` ya vienen con su valor en la imagen.
+
+> **Atajo.** `scripts/desplegar_coolify.py` crea las tres aplicaciones con esta misma
+> configuración por la API de Coolify y sincroniza las variables, sin escribir ningún
+> secreto en el repositorio. Es idempotente: se puede correr de nuevo para corregir un
+> valor. Necesita un token de API **con permiso de escritura** y la llave de despliegue ya
+> registrada en Coolify.
 
 ### 3. Orden de despliegue y verificación
 
@@ -366,16 +374,19 @@ cd frontagent && npm run lint
 cd dashboard/web && npm run lint
 ```
 
-**CI** (`.github/workflows/ci.yml`): en cada _push_ a `main` y en cada _pull request_ se ejecuta el
-trabajo "Agente (Reto 1)" con Python 3.12:
+**CI** (`.github/workflows/ci.yml`): en cada _push_ a `main` y en cada _pull request_ corren cuatro
+trabajos en paralelo. El análisis estático se puntúa (25 % del bloque de Seguridad del Reto 1 y 5 %
+del Reto 2), así que cubre los cuatro paquetes, no solo el agente.
 
-- `ruff check`;
-- `ruff format --check`;
-- `bandit`;
-- `pytest`, con dependencias ligeras (sin torch ni FAISS, gracias a los dobles de prueba).
+| Trabajo                    | Qué ejecuta                                                                 |
+| -------------------------- | --------------------------------------------------------------------------- |
+| **Agente (Reto 1)**        | `ruff check`, `ruff format --check`, `bandit` y `pytest` con dependencias ligeras (sin torch ni FAISS, gracias a los dobles de prueba) |
+| **API del tablero (Reto 2)** | `ruff`, `bandit` y `pytest` contra la base real (`dashboard.db` está versionada) |
+| **Datos del tablero**      | `ruff`. Sin pruebas: `preparar.py` necesita el corpus original de ADL, que no está en el repositorio |
+| **Frontends (eslint)**     | `npm ci` y `npm run lint` en `frontagent` y en `dashboard/web`               |
 
-Las suites del tablero y el _lint_ de las interfaces se ejecutan en local con los comandos de
-arriba.
+`metadata.jsonl` (1,4 GB) no está versionado: el trabajo de la API apunta `METADATA_PATH` a una
+ruta inexistente y la única prueba que necesita el texto original se salta sola.
 
 ## Investigación
 

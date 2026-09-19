@@ -17,8 +17,8 @@ fragmentos) en CPU, no estimaciones. El procedimiento está en [§7](#7-cómo-re
 ## 1. Veredicto en una página
 
 **La arquitectura de diseño es correcta y va por delante de lo que pide la
-especificación. La implementación tiene cinco defectos concretos, todos medidos, y
-cuatro se arreglan en menos de una hora cada uno.**
+especificación. La implementación tenía cinco defectos concretos, todos medidos; los cinco
+están cerrados y ninguno costó más de una hora.**
 
 Lo primero que conviene fijar es que **"vanguardia" aquí no significa más agentes.** La
 rúbrica premia eficiencia (20 %) comparándonos con los demás equipos en tokens, número
@@ -42,12 +42,12 @@ Añade **una capa de verificación que no consume tokens** y quita trabajo inút
 | **H1** | El reranker era el **95–97,5 %** de la latencia de recuperación                                                        | Eficiencia 20 %                   | Medido · **resuelto** en `d0b335f` (12×)  |
 | **H2** | El `Dockerfile` descargaba un reranker **distinto** del que declaraba `config.retrieval.yaml`                          | Despliegue, riesgo de caída       | **Resuelto** en `d0b335f`                 |
 | **H3** | El filtro de inyección bloqueaba preguntas legítimas: `\bDAN\b` con `IGNORECASE` matchea el verbo español "dan"        | Calidad 40 %                      | **Resuelto**; queda un residual (§4.3)    |
-| **H4** | La consulta se codifica **dos veces** con BGE-M3 (denso y disperso en pasadas separadas)                                | Eficiencia 20 %                   | Medido · **abierto**                      |
-| **H5** | Los filtros del agente de visualización no se resuelven contra el vocabulario real: **`entidades` está en minúsculas**  | Ejecución dinámica **55 %** (R2)  | **Abierto y crítico** (§4.5)              |
+| **H4** | La consulta se codificaba **dos veces** con BGE-M3 (denso y disperso en pasadas separadas)                             | Eficiencia 20 %                   | **Resuelto** (−174 ms/pregunta)           |
+| **H5** | Los filtros del agente de visualización no se resolvían contra el vocabulario real de la base                          | Ejecución dinámica **55 %** (R2)  | **Resuelto** (§4.5)                       |
 
-Ninguno es un error de diseño. Los cinco son deuda de integración de las últimas horas, y
-tres ya se cerraron en las dos horas siguientes a la primera versión de este documento.
-**El que queda abierto y duele es H5.**
+Ninguno es un error de diseño. Los cinco son deuda de integración de las últimas horas y
+**los cinco están cerrados**. Lo que queda no es deuda: es `docs/ARQUITECTURA.md`, que vale
+el 20 % del Reto 1 más el 40 % del Reto 2 y hoy no existe.
 
 ---
 
@@ -91,8 +91,8 @@ Lo que está **bien resuelto** y no hay que tocar:
 
 | Bloque             | Peso | Dónde estamos                                                                                                                                                                                       | Riesgo                                                                                                                                                                            |
 | ------------------ | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A · Calidad**    | 40 % | Citas obligatorias por fragmento, abstención, prompts con tono explícito. Redactor (Llama 3.3 70B) elegido por ser el único estable en las dos versiones de Vectara (4,0 % / 4,1 %)                 | **H3**: una pregunta legítima bloqueada cuenta como respuesta irrelevante. Además, en la ruta `visualizacion` el `retrieval_context` va vacío y el `actual_output` no está anclado |
-| **B · Eficiencia** | 20 % | 2 llamadas en la ruta típica, contexto de 6 fragmentos, `max_tokens` cortos                                                                                                                         | **H1 y H4**: la latencia la domina la recuperación, no el modelo. 25–29 s medidos en contenedor frente a un objetivo de menos de 3 s                                              |
+| **A · Calidad**    | 40 % | Citas obligatorias por fragmento, abstención, prompts con tono explícito. Redactor (Llama 3.3 70B) elegido por ser el único estable en las dos versiones de Vectara (4,0 % / 4,1 %)                 | H3 cerrado. **Queda abierto**: en la ruta `visualizacion` el `retrieval_context` va vacío y el `actual_output` no está anclado a nada, lo que penaliza la fidelidad |
+| **B · Eficiencia** | 20 % | 2 llamadas en la ruta típica, contexto de 6 fragmentos, `max_tokens` cortos                                                                                                                         | H1 y H4 cerrados: la recuperación bajó de 25–29 s a ~1,6–2,1 s. **Queda por medir** la latencia real de los modelos en el gateway de ADL |
 | **C · Seguridad**  | 20 % | Tres capas (patrones, separación instrucción/datos, saneo de salida), ruff + bandit + eslint en CI                                                                                                  | La **inyección indirecta** (ataque escondido en un fragmento recuperado) no está cubierta. La especificación no la exige, pero ADL puede probarla                                 |
 | **D · Diseño**     | 20 % | Ficha del agente completa, tres agentes con roles claros                                                                                                                                            | `docs/ARQUITECTURA.md` **todavía no existe**. Es el 20 % completo y hoy vale cero                                                                                                 |
 
@@ -322,6 +322,25 @@ Medido: 1.562 ms + 168 ms en la primera consulta, 135 ms + 145 ms en las siguien
 150–300 ms regalados por pregunta. Poco al lado de H1, pero es la mitad del presupuesto
 de latencia una vez arreglado H1.
 
+**Estado: resuelto.** `BGEM3Encoder.encode_query()` devuelve el denso y los pesos léxicos
+del mismo forward, y `Retriever.retrieve()` codifica la consulta una sola vez por encoder.
+Si el encoder no sabe hacerlo (cualquier `STEncoder`), se pide solo el denso y el disperso
+queda en `None`, igual que antes.
+
+Lo importante de un cambio así no es que sea más rápido, sino que **no cambie el
+resultado**. Verificado sobre 20 consultas reales, comparando contra una reimplementación
+de la ruta anterior:
+
+| Comprobación                                | Resultado                          |
+| ------------------------------------------- | ---------------------------------- |
+| Vector denso                                | Diferencia absoluta máxima **0,0** |
+| Pesos léxicos (claves y valores)            | Idénticos en **20/20**             |
+| Orden fusionado, top-50                     | Idéntico en **20/20**              |
+| Latencia de codificar la consulta           | 330 ms → **155 ms** (−174 ms, 53 %)|
+
+Las pruebas del agente usan dobles del recuperador, así que no cubren esta ruta: la
+verificación es el script de equivalencia, no la suite.
+
 ### H5 · Los filtros del agente de visualización no se resuelven contra la base
 
 Este es el 55 % del Reto 2 y hoy es el punto más frágil del sistema.
@@ -368,6 +387,37 @@ nunca devolver un componente en blanco.
 Nota aparte: incluso escribiendo `farc` en minúscula se recuperan 47 menciones de 253,
 porque `farc` y `farc-ep` son entidades distintas. Conviene que la coincidencia por
 subcadena sume las variantes y lo declare en `nota_metodo`.
+
+#### Estado: resuelto
+
+En dos partes:
+
+1. **`entidad` y `tipo_entidad`** (`base.normalizar_entidades`): se bajan a minúsculas y,
+   si no hay coincidencia exacta, se toma el candidato más mencionado que contenga el
+   texto. Verificado: las 9 pruebas de la tabla devuelven ahora 40 nodos y entre 44 y 145
+   aristas. Lo usan `red_entidades`, `linea_tiempo`, `matriz_calor` y `panel_evidencia`.
+2. **`economia` y `tipo_alerta` de `mapa_colombia`** (`base.normalizar_vocabulario`):
+   faltaban, y fallaban igual porque `LIKE` de SQLite solo ignora el caso en ASCII y `=`
+   distingue mayúsculas. Se resuelven contra el vocabulario real comparando sin tildes y
+   en minúsculas:
+
+   | Escrito           | Aplicado                | Filas |
+   | ----------------- | ----------------------- | ----- |
+   | `mineria ilegal`  | `Minería ilegal`        | 18    |
+   | `MINERIA ILEGAL`  | `Minería ilegal`        | 18    |
+   | `mineria`         | `Minería ilegal`        | 18    |
+   | `narcotrafico`    | `Narcotráfico`          | 26    |
+   | `gota a gota`     | `Préstamos gota a gota` | 17    |
+   | `tala`            | `Tala ilegal`           | 8     |
+   | `inminencia`      | `Inminencia`            | 29    |
+   | `pesca ilegal`    | *(descartado)*          | 33    |
+
+   La última fila es la regla de producto: un valor que no existe en la base **se descarta
+   y se informa en `filtros_ignorados`**, y el mapa se devuelve completo. Un gráfico en
+   blanco es indistinguible de un fallo para quien lo evalúa.
+
+Cubierto con 15 pruebas nuevas en `dashboard/api/tests/test_api.py`, incluidas las seis
+entidades de la tabla de arriba. Suite de la API: 41 pruebas en verde.
 
 ### Otros dos, menores
 
@@ -471,8 +521,8 @@ Ordenado por puntos en juego ÷ horas. Los tiempos son de implementación, no de
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | -------- | -------------------------------------------------- |
 | ~~1~~ | ~~Unificar el reranker~~ — **hecho** en `d0b335f`                                                                                                                   | —                                           | —        | Evitada la caída a las 08:00 · H2                  |
 | ~~3~~ | ~~Arreglar los patrones del filtro~~ — **hecho**; queda el residual de "token de acceso"                                                                            | `app/guard.py`                              | 5 min    | Calidad 40 % · H3                                  |
-| **1** | **Normalizar los filtros de entidad en la API del tablero** (minúsculas, sin tildes, `LIKE` de respaldo) y no devolver nunca un componente vacío                    | `dashboard/api/app/componentes/`            | 30 min   | **55 % del Reto 2** · H5. Hoy falla 9 de 9 nombres |
-| **2** | **Escribir `docs/ARQUITECTURA.md`** con las decisiones de este documento y la propuesta por fenómeno                                                                | `docs/`                                     | 2–3 h    | **20 % del Reto 1 + 40 % del Reto 2**, hoy en cero |
+| ~~1~~ | ~~Normalizar los filtros de la API del tablero~~ — **hecho** (§4.5): entidades, economías y tipos de alerta, más el descarte informado                              | `dashboard/api/`                            | —        | **55 % del Reto 2** · H5                           |
+| **1** | **Escribir `docs/ARQUITECTURA.md`** con las decisiones de este documento y la propuesta por fenómeno                                                                | `docs/`                                     | 2–3 h    | **20 % del Reto 1 + 40 % del Reto 2**, hoy en cero |
 | ~~3~~ | ~~Confirmar que el reranker ligero no costó recuperación~~ — **hecho**: no costó nada medible (§4.1). No tocar más el reranker                                       | —                                           | —        | Cambio validado                                    |
 
 ### Bloque 2 — Antes de las 04:00 · lo que sube la nota
@@ -481,7 +531,7 @@ Ordenado por puntos en juego ÷ horas. Los tiempos son de implementación, no de
 | --- | ------------------------------------------------------------------------------------------ | ---------------------------------- | -------- | ------------------------------------------------- |
 | 5   | **Resolutor de filtros** contra el vocabulario real + nunca devolver componente vacío     | `dashboard/api`                    | 1,5 h    | **55 % del Reto 2** · H5                          |
 | 6   | **Structured outputs** con `enum` de rutas y de componentes                                | `app/llm.py`, `app/agents.py`      | 45 min   | Acierto del enrutado y del catálogo               |
-| 7   | **Una sola pasada de BGE-M3**, `meta_by_id` cacheado y sin el top-3 de documentos          | `etapa1/retrieval/pipeline.py`     | 45 min   | 200–400 ms por pregunta · H4                      |
+| ~~7~~ | ~~Una sola pasada de BGE-M3~~ — **hecho** (−174 ms, resultado idéntico). Quedan `meta_by_id` cacheado y quitar el top-3 de documentos | `etapa1/retrieval/pipeline.py` | 15 min | ~20 ms más por pregunta |
 | 8   | **Verificador con el cross-encoder ya cargado**, declarado como cuarto agente sin modelo   | `app/agents.py`, `agent_card.json` | 1,5 h    | Fidelidad 30 % + diseño 20 %, a coste cero de tokens |
 
 ### Bloque 3 — Antes de las 06:00 · si sobra tiempo

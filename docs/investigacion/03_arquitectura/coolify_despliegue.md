@@ -22,7 +22,7 @@ Leyenda: **[DOC]** = documentación oficial, **[CÓDIGO]** = leído en el códig
 | dashboard  | `/dashboard`   | `/Dockerfile`       | el puerto del Dockerfile (p. ej. `8080`) | `https://dashboard.aerocode.codefest2026.augusta.avaldigitallabs.com`  |
 
 - Los tres recursos son **Private Repository (with Deploy Key)**, con la **misma** llave ED25519,
-  el mismo repo SSH `git@github.com:JuanMCanchala/codefest-adastra-final.git`, la rama `main` y el build pack **Dockerfile**.
+  el mismo repo SSH `git@github.com:fesamu06/codefest-adastra-final.git`, la rama `main` y el build pack **Dockerfile**.
 - www redirect: **No redirect** (su valor interno es `both`).
 - Healthcheck: el `HEALTHCHECK` del Dockerfile **manda** si el healthcheck del panel está desactivado. En los recursos Dockerfile nuevos viene desactivado por defecto.
 - `frontagent → agent`: usar el **dominio público https** (lo más robusto). La red interna también sirve, pero solo con un _Network alias_ fijo (ver §5).
@@ -47,7 +47,7 @@ En el proyecto: **+ New → Private Repository (with deploy key)**. [DOC]
 
 1. Elige el **servidor/destino** (red Docker `coolify` por defecto).
 2. Elige la **Private Key** creada antes.
-3. **Repository URL**: la URL SSH `git@github.com:JuanMCanchala/codefest-adastra-final.git`.
+3. **Repository URL**: la URL SSH `git@github.com:fesamu06/codefest-adastra-final.git`.
    _No uses la URL HTTPS con este tipo de recurso_ [DOC].
 4. **Branch**: `main` (o la rama congelada para la evaluación, ver §7).
 5. **Build Pack**: `Dockerfile`.
