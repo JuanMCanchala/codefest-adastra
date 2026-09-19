@@ -176,7 +176,7 @@ async function irAExploracion(page: Page): Promise<void> {
  * ------------------------------------------------------------------------------------- */
 
 test.describe("Tablero · carga inicial", () => {
-  test("muestra marca, estado de la API, modo instrucción y el mapa de Colombia por defecto", async ({
+  test("muestra marca, enlace a la consola, modo instrucción y el mapa de Colombia por defecto", async ({
     page,
   }, testInfo) => {
     const salud = page.waitForResponse((r) => r.url().includes("/api/salud"));
@@ -190,15 +190,24 @@ test.describe("Tablero · carga inicial", () => {
       /AeroCode.*Analítica visual/,
     );
 
-    // Estado de la API leído en vivo de /api/salud.
+    // Con la API sana el encabezado no anuncia nada: el recuento de fragmentos no le
+    // sirve a quien revisa y competía con la vista.
     const cuerpoSalud = (await (await salud).json()) as {
       estado: string;
       tablas: Record<string, number>;
+      consola_url?: string | null;
     };
     expect(cuerpoSalud.estado).toBe("ok");
-    await expect(estadoApi(page)).toHaveText(
-      `Corpus en línea · ${entero(cuerpoSalud.tablas["fragmentos"] ?? 0)} fragmentos`,
-    );
+    await expect(estadoApi(page)).toHaveCount(0);
+    await expect(page.getByRole("banner")).not.toContainText("fragmentos");
+
+    // El enlace a la consola de chat solo existe si el despliegue la publicó (CONSOLA_URL).
+    const enlaceConsola = page.getByRole("banner").getByRole("link", { name: "Consola de chat" });
+    if (cuerpoSalud.consola_url) {
+      await expect(enlaceConsola).toHaveAttribute("href", cuerpoSalud.consola_url);
+    } else {
+      await expect(enlaceConsola).toHaveCount(0);
+    }
 
     // El modo de instrucción es el predeterminado.
     await expect(modo(page).getByRole("button", { name: "Instrucción" })).toHaveAttribute(

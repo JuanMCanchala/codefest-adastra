@@ -161,11 +161,39 @@ test.describe("Chat · carga inicial", () => {
     ).toBeVisible();
     await expect(botonEnviar(page)).toBeDisabled();
 
-    // Enlace al tablero (DASHBOARD_URL del contenedor) en pestaña nueva.
-    const enlace = page.getByRole("link", { name: /Tablero de analítica/ });
+    // Enlace al tablero (DASHBOARD_URL del contenedor). Va en la misma pestaña: es la
+    // otra mitad del sistema, no un destino externo, y desde el tablero se vuelve igual.
+    const enlace = page.getByRole("banner").getByRole("link", {
+      name: /Tablero de analítica/,
+    });
     await expect(enlace).toBeVisible();
     await expect(enlace).toHaveAttribute("href", TABLERO_URL);
-    await expect(enlace).toHaveAttribute("target", "_blank");
+    await expect(enlace).not.toHaveAttribute("target", "_blank");
+  });
+
+  test("se va y se vuelve entre la consola y el tablero sin abrir pestañas", async ({
+    page,
+  }) => {
+    await page.goto(CHAT_URL);
+
+    await page
+      .getByRole("banner")
+      .getByRole("link", { name: /Tablero de analítica/ })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`^${TABLERO_URL}/?`));
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      /AeroCode.*Analítica visual/,
+    );
+
+    // El tablero sabe volver: lo fija CONSOLA_URL en su contenedor.
+    await page
+      .getByRole("banner")
+      .getByRole("link", { name: "Consola de chat" })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`^${CHAT_URL}/?`));
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      /AeroCode.*Consola de inteligencia/,
+    );
   });
 
   test("el indicador informa si el agente no es alcanzable", async ({
