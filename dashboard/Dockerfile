@@ -52,6 +52,8 @@ COPY --chown=tablero datos/dashboard.db ./datos/dashboard.db
 COPY --chown=tablero datos/geo ./datos/geo
 # Pérdida de bosque del Chocó, precalculada por `scripts/deforestacion_choco.py`.
 COPY --chown=tablero datos/deforestacion ./datos/deforestacion
+# Población orbital, ensayos ASAT e inspectores (GCAT), precalculada por `scripts/gcat_orbita.py`.
+COPY --chown=tablero datos/orbita ./datos/orbita
 COPY --from=web --chown=tablero /web/dist ./web
 
 EXPOSE 8080

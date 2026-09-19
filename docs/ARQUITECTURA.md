@@ -647,6 +647,16 @@ capacidades antisatélite, maniobras, incidentes.
 | ¿Cómo se distribuyen en el tiempo las pruebas e incidentes mencionados? | Tendencia | `linea_tiempo` | Declarando la cobertura de fechas (ver limitaciones) |
 | ¿Qué actores y sistemas aparecen juntos? | Relación | `red_entidades` | Vincula operadores, satélites y programas |
 | ¿Qué dice la base curada de ADL? | Detalle | `panel_evidencia` | `sql_entidades` aporta 157 pares entidad-documento revisados |
+| ¿Cuántos objetos hay en órbita y de qué están hechos? | Tendencia/composición | `poblacion_orbital` (`vista=crecimiento`) | El corpus cita ensayos ASAT y Kessler en prosa, pero ningún componente contaba objetos: dato duro externo (Anexo B.1.1) sobre GCAT, no un índice propio |
+| ¿Cuánta basura dejaron los ensayos antisatélite y cuánta sigue arriba? | Comparación | `poblacion_orbital` (`vista=asat`) | Catalogados vs. en-órbita por ensayo; enlaza a los fragmentos reales de Feng Yun 1C, Kosmos-1408 y Mission Shakti |
+| ¿Qué ha puesto Colombia en órbita? | Detalle/evento | `poblacion_orbital` (`vista=colombia`) | Los tres objetos del país (Libertad, FACSAT, FACSAT-2) |
+| ¿Qué satélites espían o interceptan otras señales? | Relación/evento | `poblacion_orbital` (`vista=inspectores`) | Lista curada (Luch/Olymp-K, GSSAP, TJS-3, Kosmos-2542/2543/2576/2588) con referencia pública por entrada; no afirma intención, resume lo que documentan las fuentes citadas |
+
+`poblacion_orbital` es F2 · GCAT no incluye objetos menores a 10 cm, así que el conteo ASAT es
+un piso, no el total real de fragmentos generados por cada ensayo. La reentrada de FACSAT-2
+Chiribiquete que declara GCAT (2025-10-27) conviene confirmarla con la FAC antes de citarla en
+vivo. Es el único componente propio de F2; antes solo reutilizaba los genéricos (`mapa_mundo`,
+`linea_tiempo`, `red_entidades`).
 
 #### F3 · Dinámicas territoriales (888 documentos)
 

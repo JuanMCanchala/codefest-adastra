@@ -23,6 +23,7 @@ from . import (
     mapa_mundo,
     matriz_calor,
     panel_evidencia,
+    poblacion_orbital,
     red_entidades,
 )
 
@@ -43,6 +44,9 @@ CATALOGO: dict[str, str] = {
     "sitio minero: la imagen de la que salen las hectáreas del agente satelital.",
     "deforestacion": "Hectáreas de bosque perdidas en el Chocó por municipio y por causa "
     "declarada (minería, incendio, cultivo), donde Amazon Mining Watch no llega.",
+    "poblacion_orbital": "Objetos en órbita según GCAT: crecimiento por tipo y país, "
+    "desechos de ensayos antisatélite, satélites de inspección y proximidad, y los tres "
+    "objetos de Colombia. Solo en el selector del tablero.",
 }
 
 MODULOS: dict[str, ModuleType] = {
@@ -57,6 +61,7 @@ MODULOS: dict[str, ModuleType] = {
     "distribucion": distribucion,
     "evidencia_satelital": evidencia_satelital,
     "deforestacion": deforestacion,
+    "poblacion_orbital": poblacion_orbital,
 }
 
 

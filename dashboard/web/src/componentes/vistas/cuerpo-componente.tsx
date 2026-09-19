@@ -9,6 +9,7 @@ import { VistaMapaColombia, type NivelMapa } from "@/componentes/vistas/mapa-col
 import { VistaMapaMundo } from "@/componentes/vistas/mapa-mundo";
 import { VistaMatrizCalor } from "@/componentes/vistas/matriz-calor";
 import { VistaPanelEvidencia } from "@/componentes/vistas/panel-evidencia";
+import { VistaPoblacionOrbital } from "@/componentes/vistas/poblacion-orbital";
 import { VistaRedEntidades } from "@/componentes/vistas/red-entidades";
 import type { Accion, Seleccion } from "@/lib/seleccion";
 
@@ -87,5 +88,7 @@ export function CuerpoComponente({
       return <VistaEvidenciaSatelital {...comunes} datos={resultado.datos} />;
     case "deforestacion":
       return <VistaDeforestacion {...comunes} datos={resultado.datos} />;
+    case "poblacion_orbital":
+      return <VistaPoblacionOrbital {...comunes} datos={resultado.datos} />;
   }
 }

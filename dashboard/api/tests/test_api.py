@@ -60,12 +60,14 @@ def test_catalogo(cliente) -> None:
         assert componente["filtros"]
 
 
-# Estos dos no salen del corpus, así que no pueden citar `doc_id`/`chunk_id`:
-# `evidencia_satelital` es una medición sobre imagen y cita sitio, CRS, ventana del
-# recorte, vuelo y checkpoint; `deforestacion` lee un conjunto oficial y cita su
-# identificador, método, periodo y el DIVIPOLA de cada municipio. Cada uno tiene su
-# propia prueba de trazabilidad más abajo, tan exigente como la que se salta.
-SIN_CORPUS = {"evidencia_satelital", "deforestacion"}
+# Estos tres no salen del corpus por defecto, así que no pueden citar `doc_id`/`chunk_id`
+# con los filtros de fábrica: `evidencia_satelital` es una medición sobre imagen y cita
+# sitio, CRS, ventana del recorte, vuelo y checkpoint; `deforestacion` lee un conjunto
+# oficial y cita su identificador, método, periodo y el DIVIPOLA de cada municipio;
+# `poblacion_orbital` arranca en `vista=crecimiento`, que cita el catálogo GCAT
+# (`jcat`/`satcat`/`cospar`), no el corpus — sus vistas `asat` e `inspectores` sí citan
+# fragmentos reales y tienen su propia prueba, tan exigente como la que se salta aquí.
+SIN_CORPUS = {"evidencia_satelital", "deforestacion", "poblacion_orbital"}
 
 
 @pytest.mark.parametrize("componente", [c for c in CATALOGO if c not in SIN_CORPUS])
@@ -173,6 +175,118 @@ def test_deforestacion_ignora_una_causa_que_no_existe(cliente) -> None:
         pytest.skip("no hay datos de deforestación en este árbol")
     assert cuerpo["filtros_ignorados"] == ["causa"]
     assert cuerpo["datos"]["municipios"]
+
+
+def test_poblacion_orbital_es_trazable_a_gcat(cliente) -> None:
+    """La vista por defecto cita el catálogo GCAT: fuente, licencia y fecha reales."""
+    inicio = time.perf_counter()
+    respuesta = cliente.post("/api/componente", json={"componente": "poblacion_orbital"})
+    LATENCIAS["poblacion_orbital"] = (time.perf_counter() - inicio) * 1000
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    assert cuerpo["titulo"]
+    assert cuerpo["nota_metodo"]
+    assert cuerpo["filtros_ignorados"] == []
+
+    datos = cuerpo["datos"]
+    if datos["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    for clave in ("fuente", "url", "licencia", "actualizado"):
+        assert datos["procedencia"][clave], f"la procedencia no declara «{clave}»"
+    assert datos["serie"], "la serie de lanzamientos viene vacía"
+    assert datos["en_orbita_por_regimen"], "el desglose por régimen viene vacío"
+    assert datos["total_en_orbita"] > 0
+
+
+def test_asat_cita_fragmentos_reales(cliente, conexion) -> None:
+    """La vista `asat` cita fragmentos reales del corpus para los ensayos que lo tienen."""
+    respuesta = cliente.post(
+        "/api/componente", json={"componente": "poblacion_orbital", "filtros": {"vista": "asat"}}
+    )
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+
+    pares = _pares(cuerpo["datos"], []) + _pares(cuerpo["evidencia"], [])
+    assert pares, "la vista asat no citó ningún fragmento del corpus"
+    for doc_id, chunk_id in list(dict.fromkeys(pares)):
+        assert isinstance(chunk_id, int)
+        assert _existe(conexion, doc_id, chunk_id), f"asat: {doc_id}/{chunk_id} no existe"
+
+
+def test_asat_fengyun_domina_en_orbita(cliente) -> None:
+    """Feng Yun 1C es, con mucho, el ensayo con más desechos que siguen en órbita."""
+    respuesta = cliente.post(
+        "/api/componente", json={"componente": "poblacion_orbital", "filtros": {"vista": "asat"}}
+    )
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    ensayos = cuerpo["datos"]["asat"]
+    assert ensayos, "la vista asat no trajo ensayos"
+    primero = ensayos[0]
+    assert "fengyun" in primero["nombre"].lower().replace(" ", "")
+    assert primero["en_orbita"] == max(e["en_orbita"] for e in ensayos)
+
+
+def test_pais_desconocido_se_ignora(cliente) -> None:
+    """Un país inventado se descarta y se avisa, en vez de devolver el lienzo vacío."""
+    respuesta = cliente.post(
+        "/api/componente",
+        json={"componente": "poblacion_orbital", "filtros": {"pais": "MARCIANOS"}},
+    )
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    assert cuerpo["filtros_ignorados"] == ["pais"]
+    assert cuerpo["datos"]["serie"], "el filtro descartado no debería dejar la serie vacía"
+
+
+def test_colombia_tiene_tres_objetos(cliente) -> None:
+    """GCAT solo atribuye tres objetos a Colombia: Libertad-1, FACSAT y FACSAT-2."""
+    respuesta = cliente.post(
+        "/api/componente",
+        json={"componente": "poblacion_orbital", "filtros": {"vista": "colombia"}},
+    )
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    assert len(cuerpo["datos"]["colombia"]) == 3
+    assert cuerpo["filtros_ignorados"] == []
+
+
+def test_inspectores_citan_fragmentos_reales(cliente, conexion) -> None:
+    """La vista `inspectores` cita fragmentos reales para las entradas con alias en el corpus."""
+    respuesta = cliente.post(
+        "/api/componente",
+        json={"componente": "poblacion_orbital", "filtros": {"vista": "inspectores"}},
+    )
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+
+    pares = _pares(cuerpo["datos"], []) + _pares(cuerpo["evidencia"], [])
+    assert pares, "la vista inspectores no citó ningún fragmento del corpus"
+    for doc_id, chunk_id in list(dict.fromkeys(pares)):
+        assert isinstance(chunk_id, int)
+        assert _existe(conexion, doc_id, chunk_id), f"inspectores: {doc_id}/{chunk_id} no existe"
+
+
+def test_inspectores_es_lista_curada(cliente) -> None:
+    """Cada entrada de la lista curada declara la referencia pública que la justifica."""
+    respuesta = cliente.post(
+        "/api/componente",
+        json={"componente": "poblacion_orbital", "filtros": {"vista": "inspectores"}},
+    )
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    entradas = cuerpo["datos"]["inspectores"]
+    assert entradas, "la vista inspectores no trajo entradas"
+    for entrada in entradas:
+        assert entrada["referencia"], f"{entrada['nombre']} no declara referencia"
 
 
 def test_evidencia_satelital_ignora_un_sitio_que_no_existe(cliente) -> None:

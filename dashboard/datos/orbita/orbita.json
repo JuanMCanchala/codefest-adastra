@@ -1,0 +1,9508 @@
+{
+ "procedencia": {
+  "fuente": "GCAT — General Catalog of Artificial Space Objects (Jonathan C. McDowell)",
+  "url": "https://planet4589.org/space/gcat/tsv/cat/satcat.tsv",
+  "licencia": "CC BY 4.0",
+  "cita": "McDowell, J. C., General Catalog of Artificial Space Objects, https://planet4589.org/space/gcat",
+  "actualizado": "2026-09-18",
+  "descargado": "2026-09-19",
+  "filas": 69999
+ },
+ "serie": [
+  {
+   "anio": 1957,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 2
+  },
+  {
+   "anio": 1957,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1958,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 2
+  },
+  {
+   "anio": 1958,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1958,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 7
+  },
+  {
+   "anio": 1958,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1958,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 1
+  },
+  {
+   "anio": 1959,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 5
+  },
+  {
+   "anio": 1959,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 3
+  },
+  {
+   "anio": 1959,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 12
+  },
+  {
+   "anio": 1959,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 3
+  },
+  {
+   "anio": 1960,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 7
+  },
+  {
+   "anio": 1960,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 1960,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 1
+  },
+  {
+   "anio": 1960,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 3
+  },
+  {
+   "anio": 1960,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 18
+  },
+  {
+   "anio": 1960,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 3
+  },
+  {
+   "anio": 1960,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 7
+  },
+  {
+   "anio": 1961,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 5
+  },
+  {
+   "anio": 1961,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 32
+  },
+  {
+   "anio": 1961,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1961,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 327
+  },
+  {
+   "anio": 1961,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 6
+  },
+  {
+   "anio": 1961,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 37
+  },
+  {
+   "anio": 1961,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 6
+  },
+  {
+   "anio": 1961,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 7
+  },
+  {
+   "anio": 1962,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 9
+  },
+  {
+   "anio": 1962,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 34
+  },
+  {
+   "anio": 1962,
+   "tipo": "D",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1962,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 38
+  },
+  {
+   "anio": 1962,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1962,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 20
+  },
+  {
+   "anio": 1962,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1962,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 60
+  },
+  {
+   "anio": 1962,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 21
+  },
+  {
+   "anio": 1962,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 19
+  },
+  {
+   "anio": 1963,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1963,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 169
+  },
+  {
+   "anio": 1963,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 10
+  },
+  {
+   "anio": 1963,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 56
+  },
+  {
+   "anio": 1963,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 17
+  },
+  {
+   "anio": 1963,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 58
+  },
+  {
+   "anio": 1963,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 16
+  },
+  {
+   "anio": 1963,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 15
+  },
+  {
+   "anio": 1964,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1964,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 10
+  },
+  {
+   "anio": 1964,
+   "tipo": "C",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1964,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 25
+  },
+  {
+   "anio": 1964,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 14
+  },
+  {
+   "anio": 1964,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 149
+  },
+  {
+   "anio": 1964,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 39
+  },
+  {
+   "anio": 1964,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1964,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 35
+  },
+  {
+   "anio": 1964,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1964,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 70
+  },
+  {
+   "anio": 1964,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 30
+  },
+  {
+   "anio": 1964,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 23
+  },
+  {
+   "anio": 1965,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1965,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 19
+  },
+  {
+   "anio": 1965,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 65
+  },
+  {
+   "anio": 1965,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1965,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 392
+  },
+  {
+   "anio": 1965,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 848
+  },
+  {
+   "anio": 1965,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1965,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1965,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1965,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 64
+  },
+  {
+   "anio": 1965,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 93
+  },
+  {
+   "anio": 1965,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1965,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 50
+  },
+  {
+   "anio": 1965,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 37
+  },
+  {
+   "anio": 1966,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1966,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 26
+  },
+  {
+   "anio": 1966,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 86
+  },
+  {
+   "anio": 1966,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 11
+  },
+  {
+   "anio": 1966,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 109
+  },
+  {
+   "anio": 1966,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 326
+  },
+  {
+   "anio": 1966,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1966,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1966,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 44
+  },
+  {
+   "anio": 1966,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 95
+  },
+  {
+   "anio": 1966,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1966,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 46
+  },
+  {
+   "anio": 1966,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 50
+  },
+  {
+   "anio": 1967,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 1967,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 50
+  },
+  {
+   "anio": 1967,
+   "tipo": "C",
+   "pais": "UK",
+   "lanzados": 2
+  },
+  {
+   "anio": 1967,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 29
+  },
+  {
+   "anio": 1967,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 18
+  },
+  {
+   "anio": 1967,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 3
+  },
+  {
+   "anio": 1967,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 50
+  },
+  {
+   "anio": 1967,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 25
+  },
+  {
+   "anio": 1967,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1967,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 1967,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 66
+  },
+  {
+   "anio": 1967,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1967,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 82
+  },
+  {
+   "anio": 1967,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1967,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 68
+  },
+  {
+   "anio": 1967,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 40
+  },
+  {
+   "anio": 1968,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 3
+  },
+  {
+   "anio": 1968,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 32
+  },
+  {
+   "anio": 1968,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 32
+  },
+  {
+   "anio": 1968,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 289
+  },
+  {
+   "anio": 1968,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 103
+  },
+  {
+   "anio": 1968,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 4
+  },
+  {
+   "anio": 1968,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 76
+  },
+  {
+   "anio": 1968,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 62
+  },
+  {
+   "anio": 1968,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 71
+  },
+  {
+   "anio": 1968,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 24
+  },
+  {
+   "anio": 1969,
+   "tipo": "C",
+   "pais": "D",
+   "lanzados": 4
+  },
+  {
+   "anio": 1969,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 1969,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 29
+  },
+  {
+   "anio": 1969,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 14
+  },
+  {
+   "anio": 1969,
+   "tipo": "D",
+   "pais": "CA",
+   "lanzados": 3
+  },
+  {
+   "anio": 1969,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 64
+  },
+  {
+   "anio": 1969,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 298
+  },
+  {
+   "anio": 1969,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1969,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1969,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 4
+  },
+  {
+   "anio": 1969,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 70
+  },
+  {
+   "anio": 1969,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1969,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 59
+  },
+  {
+   "anio": 1969,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 69
+  },
+  {
+   "anio": 1969,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 25
+  },
+  {
+   "anio": 1970,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1970,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 1970,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 56
+  },
+  {
+   "anio": 1970,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 9
+  },
+  {
+   "anio": 1970,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 4
+  },
+  {
+   "anio": 1970,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 162
+  },
+  {
+   "anio": 1970,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 444
+  },
+  {
+   "anio": 1970,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1970,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1970,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1970,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1970,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 1970,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 91
+  },
+  {
+   "anio": 1970,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1970,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 31
+  },
+  {
+   "anio": 1970,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1970,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1970,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 80
+  },
+  {
+   "anio": 1970,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 1971,
+   "tipo": "C",
+   "pais": "CA",
+   "lanzados": 7
+  },
+  {
+   "anio": 1971,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 9
+  },
+  {
+   "anio": 1971,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1971,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 123
+  },
+  {
+   "anio": 1971,
+   "tipo": "C",
+   "pais": "UK",
+   "lanzados": 3
+  },
+  {
+   "anio": 1971,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 15
+  },
+  {
+   "anio": 1971,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 16
+  },
+  {
+   "anio": 1971,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 196
+  },
+  {
+   "anio": 1971,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 17
+  },
+  {
+   "anio": 1971,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1971,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1971,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1971,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1971,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 4
+  },
+  {
+   "anio": 1971,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 102
+  },
+  {
+   "anio": 1971,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 2
+  },
+  {
+   "anio": 1971,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 44
+  },
+  {
+   "anio": 1971,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1971,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1971,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1971,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 81
+  },
+  {
+   "anio": 1971,
+   "tipo": "R",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1971,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 23
+  },
+  {
+   "anio": 1972,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 3
+  },
+  {
+   "anio": 1972,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 115
+  },
+  {
+   "anio": 1972,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 15
+  },
+  {
+   "anio": 1972,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1972,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 33
+  },
+  {
+   "anio": 1972,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 248
+  },
+  {
+   "anio": 1972,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1972,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1972,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1972,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1972,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 1972,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 95
+  },
+  {
+   "anio": 1972,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 32
+  },
+  {
+   "anio": 1972,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1972,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 81
+  },
+  {
+   "anio": 1972,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 29
+  },
+  {
+   "anio": 1973,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 142
+  },
+  {
+   "anio": 1973,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 33
+  },
+  {
+   "anio": 1973,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 229
+  },
+  {
+   "anio": 1973,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 223
+  },
+  {
+   "anio": 1973,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1973,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1973,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 112
+  },
+  {
+   "anio": 1973,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 24
+  },
+  {
+   "anio": 1973,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 89
+  },
+  {
+   "anio": 1973,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 24
+  },
+  {
+   "anio": 1974,
+   "tipo": "C",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1974,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 3
+  },
+  {
+   "anio": 1974,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 181
+  },
+  {
+   "anio": 1974,
+   "tipo": "C",
+   "pais": "UK",
+   "lanzados": 2
+  },
+  {
+   "anio": 1974,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 17
+  },
+  {
+   "anio": 1974,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 2
+  },
+  {
+   "anio": 1974,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 93
+  },
+  {
+   "anio": 1974,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 191
+  },
+  {
+   "anio": 1974,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 3
+  },
+  {
+   "anio": 1974,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1974,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 4
+  },
+  {
+   "anio": 1974,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 97
+  },
+  {
+   "anio": 1974,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 4
+  },
+  {
+   "anio": 1974,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 18
+  },
+  {
+   "anio": 1974,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1974,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 86
+  },
+  {
+   "anio": 1974,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 27
+  },
+  {
+   "anio": 1975,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1975,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 12
+  },
+  {
+   "anio": 1975,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 180
+  },
+  {
+   "anio": 1975,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 1975,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 3
+  },
+  {
+   "anio": 1975,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 143
+  },
+  {
+   "anio": 1975,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 517
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 118
+  },
+  {
+   "anio": 1975,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 29
+  },
+  {
+   "anio": 1975,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1975,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1975,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1975,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 97
+  },
+  {
+   "anio": 1975,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 32
+  },
+  {
+   "anio": 1976,
+   "tipo": "C",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1976,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1976,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 169
+  },
+  {
+   "anio": 1976,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 37
+  },
+  {
+   "anio": 1976,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 4
+  },
+  {
+   "anio": 1976,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 521
+  },
+  {
+   "anio": 1976,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 186
+  },
+  {
+   "anio": 1976,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1976,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1976,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1976,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1976,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 3
+  },
+  {
+   "anio": 1976,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 166
+  },
+  {
+   "anio": 1976,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 29
+  },
+  {
+   "anio": 1976,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1976,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1976,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 108
+  },
+  {
+   "anio": 1976,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 30
+  },
+  {
+   "anio": 1977,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1977,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 5
+  },
+  {
+   "anio": 1977,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 235
+  },
+  {
+   "anio": 1977,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 32
+  },
+  {
+   "anio": 1977,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 5
+  },
+  {
+   "anio": 1977,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 29
+  },
+  {
+   "anio": 1977,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 144
+  },
+  {
+   "anio": 1977,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 180
+  },
+  {
+   "anio": 1977,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1977,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 1977,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1977,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 4
+  },
+  {
+   "anio": 1977,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 151
+  },
+  {
+   "anio": 1977,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 20
+  },
+  {
+   "anio": 1977,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1977,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1977,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 104
+  },
+  {
+   "anio": 1977,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 30
+  },
+  {
+   "anio": 1978,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 7
+  },
+  {
+   "anio": 1978,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 103
+  },
+  {
+   "anio": 1978,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 1978,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1978,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 23
+  },
+  {
+   "anio": 1978,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 46
+  },
+  {
+   "anio": 1978,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 281
+  },
+  {
+   "anio": 1978,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1978,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1978,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1978,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1978,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 4
+  },
+  {
+   "anio": 1978,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 131
+  },
+  {
+   "anio": 1978,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 33
+  },
+  {
+   "anio": 1978,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1978,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1978,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 96
+  },
+  {
+   "anio": 1978,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 34
+  },
+  {
+   "anio": 1979,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1979,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 123
+  },
+  {
+   "anio": 1979,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 14
+  },
+  {
+   "anio": 1979,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 9
+  },
+  {
+   "anio": 1979,
+   "tipo": "D",
+   "pais": "I-ESA",
+   "lanzados": 25
+  },
+  {
+   "anio": 1979,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1979,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 108
+  },
+  {
+   "anio": 1979,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 8
+  },
+  {
+   "anio": 1979,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 313
+  },
+  {
+   "anio": 1979,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1979,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1979,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1979,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 130
+  },
+  {
+   "anio": 1979,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1979,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 17
+  },
+  {
+   "anio": 1979,
+   "tipo": "R",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1979,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1979,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 99
+  },
+  {
+   "anio": 1979,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 15
+  },
+  {
+   "anio": 1980,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1980,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 139
+  },
+  {
+   "anio": 1980,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 14
+  },
+  {
+   "anio": 1980,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1980,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 38
+  },
+  {
+   "anio": 1980,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 157
+  },
+  {
+   "anio": 1980,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1980,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1980,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1980,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 156
+  },
+  {
+   "anio": 1980,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 1980,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1980,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1980,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 103
+  },
+  {
+   "anio": 1980,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 10
+  },
+  {
+   "anio": 1981,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 1981,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1981,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1981,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 164
+  },
+  {
+   "anio": 1981,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 11
+  },
+  {
+   "anio": 1981,
+   "tipo": "D",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1981,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 258
+  },
+  {
+   "anio": 1981,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 412
+  },
+  {
+   "anio": 1981,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 14
+  },
+  {
+   "anio": 1981,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1981,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 4
+  },
+  {
+   "anio": 1981,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1981,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1981,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 1981,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 150
+  },
+  {
+   "anio": 1981,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1981,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 17
+  },
+  {
+   "anio": 1981,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1981,
+   "tipo": "R",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1981,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1981,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 5
+  },
+  {
+   "anio": 1981,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 111
+  },
+  {
+   "anio": 1981,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 18
+  },
+  {
+   "anio": 1982,
+   "tipo": "C",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1982,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1982,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1982,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 2
+  },
+  {
+   "anio": 1982,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 350
+  },
+  {
+   "anio": 1982,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 9
+  },
+  {
+   "anio": 1982,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 19
+  },
+  {
+   "anio": 1982,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 2012
+  },
+  {
+   "anio": 1982,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 7
+  },
+  {
+   "anio": 1982,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1982,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1982,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1982,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1982,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 1982,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 187
+  },
+  {
+   "anio": 1982,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 18
+  },
+  {
+   "anio": 1982,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1982,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1982,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 115
+  },
+  {
+   "anio": 1982,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 5
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 2
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 191
+  },
+  {
+   "anio": 1983,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 30
+  },
+  {
+   "anio": 1983,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 1983,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 49
+  },
+  {
+   "anio": 1983,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 213
+  },
+  {
+   "anio": 1983,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 17
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 2
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 3
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 190
+  },
+  {
+   "anio": 1983,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 29
+  },
+  {
+   "anio": 1983,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1983,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1983,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1983,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1983,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 114
+  },
+  {
+   "anio": 1983,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 19
+  },
+  {
+   "anio": 1984,
+   "tipo": "C",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1984,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1984,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1984,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1984,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1984,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 235
+  },
+  {
+   "anio": 1984,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 23
+  },
+  {
+   "anio": 1984,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1984,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 12
+  },
+  {
+   "anio": 1984,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1984,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 80
+  },
+  {
+   "anio": 1984,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 45
+  },
+  {
+   "anio": 1984,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 17
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 143
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 2
+  },
+  {
+   "anio": 1984,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 34
+  },
+  {
+   "anio": 1984,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1984,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 1984,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 5
+  },
+  {
+   "anio": 1984,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 117
+  },
+  {
+   "anio": 1984,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 19
+  },
+  {
+   "anio": 1985,
+   "tipo": "C",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1985,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1985,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1985,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1985,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 1985,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 251
+  },
+  {
+   "anio": 1985,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 1985,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 13
+  },
+  {
+   "anio": 1985,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 81
+  },
+  {
+   "anio": 1985,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 100
+  },
+  {
+   "anio": 1985,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 3
+  },
+  {
+   "anio": 1985,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1985,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1985,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1985,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1985,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1985,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 10
+  },
+  {
+   "anio": 1985,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 142
+  },
+  {
+   "anio": 1985,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 31
+  },
+  {
+   "anio": 1985,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1985,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1985,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1985,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 119
+  },
+  {
+   "anio": 1985,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 7
+  },
+  {
+   "anio": 1986,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1986,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1986,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1986,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1986,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 160
+  },
+  {
+   "anio": 1986,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 337
+  },
+  {
+   "anio": 1986,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 15
+  },
+  {
+   "anio": 1986,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 1986,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 499
+  },
+  {
+   "anio": 1986,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 42
+  },
+  {
+   "anio": 1986,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 18
+  },
+  {
+   "anio": 1986,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1986,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1986,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1986,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 1986,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 139
+  },
+  {
+   "anio": 1986,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 12
+  },
+  {
+   "anio": 1986,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1986,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1986,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1986,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 110
+  },
+  {
+   "anio": 1986,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 2
+  },
+  {
+   "anio": 1987,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1987,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1987,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 8
+  },
+  {
+   "anio": 1987,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 210
+  },
+  {
+   "anio": 1987,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 15
+  },
+  {
+   "anio": 1987,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1987,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 302
+  },
+  {
+   "anio": 1987,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 353
+  },
+  {
+   "anio": 1987,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 1987,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1987,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1987,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1987,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 3
+  },
+  {
+   "anio": 1987,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 117
+  },
+  {
+   "anio": 1987,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 12
+  },
+  {
+   "anio": 1987,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1987,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1987,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1987,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 107
+  },
+  {
+   "anio": 1987,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 8
+  },
+  {
+   "anio": 1988,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1988,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 1988,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1988,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 224
+  },
+  {
+   "anio": 1988,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 20
+  },
+  {
+   "anio": 1988,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 51
+  },
+  {
+   "anio": 1988,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 131
+  },
+  {
+   "anio": 1988,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 4
+  },
+  {
+   "anio": 1988,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 42
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 6
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 165
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1988,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 1988,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1988,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 1988,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1988,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1988,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 108
+  },
+  {
+   "anio": 1988,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 8
+  },
+  {
+   "anio": 1989,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 1989,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1989,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 13
+  },
+  {
+   "anio": 1989,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 158
+  },
+  {
+   "anio": 1989,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 1989,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 100
+  },
+  {
+   "anio": 1989,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 173
+  },
+  {
+   "anio": 1989,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 21
+  },
+  {
+   "anio": 1989,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 168
+  },
+  {
+   "anio": 1989,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 2
+  },
+  {
+   "anio": 1989,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1989,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1989,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 1989,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 145
+  },
+  {
+   "anio": 1989,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1989,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 24
+  },
+  {
+   "anio": 1989,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 1989,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1989,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 88
+  },
+  {
+   "anio": 1989,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 1990,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 1990,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 1990,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1990,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 1990,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 2
+  },
+  {
+   "anio": 1990,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 117
+  },
+  {
+   "anio": 1990,
+   "tipo": "C",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1990,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 53
+  },
+  {
+   "anio": 1990,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 102
+  },
+  {
+   "anio": 1990,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 11
+  },
+  {
+   "anio": 1990,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 10
+  },
+  {
+   "anio": 1990,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 32
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 2
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 7
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 10
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 17
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 129
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 5
+  },
+  {
+   "anio": 1990,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 39
+  },
+  {
+   "anio": 1990,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 1990,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 1990,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1990,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1990,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 96
+  },
+  {
+   "anio": 1990,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 29
+  },
+  {
+   "anio": 1991,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1991,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1991,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1991,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 5
+  },
+  {
+   "anio": 1991,
+   "tipo": "C",
+   "pais": "SU",
+   "lanzados": 85
+  },
+  {
+   "anio": 1991,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 28
+  },
+  {
+   "anio": 1991,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 44
+  },
+  {
+   "anio": 1991,
+   "tipo": "D",
+   "pais": "I-ESA",
+   "lanzados": 8
+  },
+  {
+   "anio": 1991,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 5
+  },
+  {
+   "anio": 1991,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 201
+  },
+  {
+   "anio": 1991,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 104
+  },
+  {
+   "anio": 1991,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 94
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 11
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "SU",
+   "lanzados": 84
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1991,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 35
+  },
+  {
+   "anio": 1991,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1991,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 8
+  },
+  {
+   "anio": 1991,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1991,
+   "tipo": "R",
+   "pais": "SU",
+   "lanzados": 72
+  },
+  {
+   "anio": 1991,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 15
+  },
+  {
+   "anio": 1992,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 9
+  },
+  {
+   "anio": 1992,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1992,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 3
+  },
+  {
+   "anio": 1992,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 79
+  },
+  {
+   "anio": 1992,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 1992,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 66
+  },
+  {
+   "anio": 1992,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 324
+  },
+  {
+   "anio": 1992,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 10
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 79
+  },
+  {
+   "anio": 1992,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 28
+  },
+  {
+   "anio": 1992,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1992,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 1992,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1992,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1992,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 70
+  },
+  {
+   "anio": 1992,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 30
+  },
+  {
+   "anio": 1993,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 1993,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 1993,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1993,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1993,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 63
+  },
+  {
+   "anio": 1993,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 21
+  },
+  {
+   "anio": 1993,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1993,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1993,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 1876
+  },
+  {
+   "anio": 1993,
+   "tipo": "D",
+   "pais": "SU",
+   "lanzados": 1
+  },
+  {
+   "anio": 1993,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 2
+  },
+  {
+   "anio": 1993,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1993,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1993,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1993,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1993,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1993,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 12
+  },
+  {
+   "anio": 1993,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 58
+  },
+  {
+   "anio": 1993,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 32
+  },
+  {
+   "anio": 1993,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1993,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 1993,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1993,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 60
+  },
+  {
+   "anio": 1993,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 21
+  },
+  {
+   "anio": 1994,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1994,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1994,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1994,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 89
+  },
+  {
+   "anio": 1994,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 9
+  },
+  {
+   "anio": 1994,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 214
+  },
+  {
+   "anio": 1994,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 770
+  },
+  {
+   "anio": 1994,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1994,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 3
+  },
+  {
+   "anio": 1994,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1994,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1994,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 9
+  },
+  {
+   "anio": 1994,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 63
+  },
+  {
+   "anio": 1994,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 2
+  },
+  {
+   "anio": 1994,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 37
+  },
+  {
+   "anio": 1994,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 1994,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 1994,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1994,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1994,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 64
+  },
+  {
+   "anio": 1994,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 1995,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1995,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1995,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1995,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 7
+  },
+  {
+   "anio": 1995,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 48
+  },
+  {
+   "anio": 1995,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 11
+  },
+  {
+   "anio": 1995,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1995,
+   "tipo": "D",
+   "pais": "I-ESA",
+   "lanzados": 8
+  },
+  {
+   "anio": 1995,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 21
+  },
+  {
+   "anio": 1995,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 240
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 13
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 55
+  },
+  {
+   "anio": 1995,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 38
+  },
+  {
+   "anio": 1995,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1995,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 11
+  },
+  {
+   "anio": 1995,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1995,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1995,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 41
+  },
+  {
+   "anio": 1995,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 20
+  },
+  {
+   "anio": 1996,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1996,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 1996,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1996,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 32
+  },
+  {
+   "anio": 1996,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 19
+  },
+  {
+   "anio": 1996,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1996,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 7
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 23
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 27
+  },
+  {
+   "anio": 1996,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 39
+  },
+  {
+   "anio": 1996,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 1996,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 10
+  },
+  {
+   "anio": 1996,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1996,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1996,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 34
+  },
+  {
+   "anio": 1996,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 34
+  },
+  {
+   "anio": 1997,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 10
+  },
+  {
+   "anio": 1997,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 1997,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1997,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 7
+  },
+  {
+   "anio": 1997,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 1997,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 29
+  },
+  {
+   "anio": 1997,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 14
+  },
+  {
+   "anio": 1997,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 14
+  },
+  {
+   "anio": 1997,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 698
+  },
+  {
+   "anio": 1997,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1997,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 3
+  },
+  {
+   "anio": 1997,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 1997,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1997,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 7
+  },
+  {
+   "anio": 1997,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 17
+  },
+  {
+   "anio": 1997,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 27
+  },
+  {
+   "anio": 1997,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 88
+  },
+  {
+   "anio": 1997,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 1997,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 10
+  },
+  {
+   "anio": 1997,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1997,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1997,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 37
+  },
+  {
+   "anio": 1997,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 34
+  },
+  {
+   "anio": 1998,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 20
+  },
+  {
+   "anio": 1998,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 1998,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1998,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 30
+  },
+  {
+   "anio": 1998,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 1998,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 8
+  },
+  {
+   "anio": 1998,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 4
+  },
+  {
+   "anio": 1998,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 12
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 3
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 20
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 27
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 1998,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 98
+  },
+  {
+   "anio": 1998,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 1998,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 10
+  },
+  {
+   "anio": 1998,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 1998,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 30
+  },
+  {
+   "anio": 1998,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 35
+  },
+  {
+   "anio": 1999,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 8
+  },
+  {
+   "anio": 1999,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 1999,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 27
+  },
+  {
+   "anio": 1999,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 1999,
+   "tipo": "D",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1999,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 3966
+  },
+  {
+   "anio": 1999,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 16
+  },
+  {
+   "anio": 1999,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 50
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 2
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 13
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 15
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 2
+  },
+  {
+   "anio": 1999,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 83
+  },
+  {
+   "anio": 1999,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 1999,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 9
+  },
+  {
+   "anio": 1999,
+   "tipo": "R",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 1999,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 1999,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 1999,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 40
+  },
+  {
+   "anio": 1999,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 34
+  },
+  {
+   "anio": 2000,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2000,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2000,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 44
+  },
+  {
+   "anio": 2000,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 2000,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 1
+  },
+  {
+   "anio": 2000,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 461
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 2
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 4
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 19
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 24
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 4
+  },
+  {
+   "anio": 2000,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 53
+  },
+  {
+   "anio": 2000,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2000,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 12
+  },
+  {
+   "anio": 2000,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2000,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 44
+  },
+  {
+   "anio": 2000,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 30
+  },
+  {
+   "anio": 2001,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2001,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2001,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 59
+  },
+  {
+   "anio": 2001,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 7
+  },
+  {
+   "anio": 2001,
+   "tipo": "D",
+   "pais": "IN",
+   "lanzados": 371
+  },
+  {
+   "anio": 2001,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 23
+  },
+  {
+   "anio": 2001,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 3
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 8
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 31
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 2
+  },
+  {
+   "anio": 2001,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 34
+  },
+  {
+   "anio": 2001,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2001,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 8
+  },
+  {
+   "anio": 2001,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2001,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2001,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 30
+  },
+  {
+   "anio": 2001,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 23
+  },
+  {
+   "anio": 2002,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 11
+  },
+  {
+   "anio": 2002,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2002,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 9
+  },
+  {
+   "anio": 2002,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2002,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 25
+  },
+  {
+   "anio": 2002,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 2
+  },
+  {
+   "anio": 2002,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 61
+  },
+  {
+   "anio": 2002,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 130
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 7
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 3
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 10
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 11
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 18
+  },
+  {
+   "anio": 2002,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 31
+  },
+  {
+   "anio": 2002,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2002,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 11
+  },
+  {
+   "anio": 2002,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2002,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2002,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2002,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 30
+  },
+  {
+   "anio": 2002,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 2003,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 15
+  },
+  {
+   "anio": 2003,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2003,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2003,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 14
+  },
+  {
+   "anio": 2003,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 9
+  },
+  {
+   "anio": 2003,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 29
+  },
+  {
+   "anio": 2003,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 10
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 8
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 7
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 11
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 22
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 2003,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 29
+  },
+  {
+   "anio": 2003,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 2003,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2003,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2003,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2003,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 26
+  },
+  {
+   "anio": 2003,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 31
+  },
+  {
+   "anio": 2004,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 32
+  },
+  {
+   "anio": 2004,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 31
+  },
+  {
+   "anio": 2004,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 3
+  },
+  {
+   "anio": 2004,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2004,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 2004,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 3
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 10
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 8
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 10
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 19
+  },
+  {
+   "anio": 2004,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 20
+  },
+  {
+   "anio": 2004,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 8
+  },
+  {
+   "anio": 2004,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2004,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2004,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 27
+  },
+  {
+   "anio": 2004,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 25
+  },
+  {
+   "anio": 2005,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 13
+  },
+  {
+   "anio": 2005,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 2005,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 4
+  },
+  {
+   "anio": 2005,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2005,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2005,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 34
+  },
+  {
+   "anio": 2005,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 2
+  },
+  {
+   "anio": 2005,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 10
+  },
+  {
+   "anio": 2005,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 2
+  },
+  {
+   "anio": 2005,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 2
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 4
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 5
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 6
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 19
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 3
+  },
+  {
+   "anio": 2005,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 2005,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2005,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2005,
+   "tipo": "R",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2005,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2005,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2005,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 25
+  },
+  {
+   "anio": 2005,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 17
+  },
+  {
+   "anio": 2006,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 16
+  },
+  {
+   "anio": 2006,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2006,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2006,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 22
+  },
+  {
+   "anio": 2006,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 21
+  },
+  {
+   "anio": 2006,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 10
+  },
+  {
+   "anio": 2006,
+   "tipo": "D",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 2006,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 43
+  },
+  {
+   "anio": 2006,
+   "tipo": "D",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2006,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 658
+  },
+  {
+   "anio": 2006,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 241
+  },
+  {
+   "anio": 2006,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 7
+  },
+  {
+   "anio": 2006,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 2
+  },
+  {
+   "anio": 2006,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2006,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 12
+  },
+  {
+   "anio": 2006,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 18
+  },
+  {
+   "anio": 2006,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 16
+  },
+  {
+   "anio": 2006,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 2006,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 32
+  },
+  {
+   "anio": 2006,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 2006,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2006,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 6
+  },
+  {
+   "anio": 2006,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 26
+  },
+  {
+   "anio": 2006,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 2007,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 13
+  },
+  {
+   "anio": 2007,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2007,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2007,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 25
+  },
+  {
+   "anio": 2007,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 11
+  },
+  {
+   "anio": 2007,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 41
+  },
+  {
+   "anio": 2007,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 2007,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 12
+  },
+  {
+   "anio": 2007,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 46
+  },
+  {
+   "anio": 2007,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 31
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 9
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 3
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 6
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 20
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 18
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 2
+  },
+  {
+   "anio": 2007,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 46
+  },
+  {
+   "anio": 2007,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 9
+  },
+  {
+   "anio": 2007,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2007,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2007,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2007,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2007,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 28
+  },
+  {
+   "anio": 2007,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 20
+  },
+  {
+   "anio": 2008,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 37
+  },
+  {
+   "anio": 2008,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2008,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2008,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 23
+  },
+  {
+   "anio": 2008,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 4
+  },
+  {
+   "anio": 2008,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 23
+  },
+  {
+   "anio": 2008,
+   "tipo": "D",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2008,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2008,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 154
+  },
+  {
+   "anio": 2008,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 2
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 4
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 14
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 8
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 15
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 21
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 3
+  },
+  {
+   "anio": 2008,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 24
+  },
+  {
+   "anio": 2008,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 11
+  },
+  {
+   "anio": 2008,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2008,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2008,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2008,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 30
+  },
+  {
+   "anio": 2008,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 2009,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 15
+  },
+  {
+   "anio": 2009,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2009,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2009,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 25
+  },
+  {
+   "anio": 2009,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 2009,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2009,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 20
+  },
+  {
+   "anio": 2009,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 98
+  },
+  {
+   "anio": 2009,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 21
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 6
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 3
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 5
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 13
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 16
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 29
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 3
+  },
+  {
+   "anio": 2009,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 37
+  },
+  {
+   "anio": 2009,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2009,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 2009,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2009,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2009,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2009,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 35
+  },
+  {
+   "anio": 2009,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 2010,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 28
+  },
+  {
+   "anio": 2010,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2010,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2010,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2010,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 32
+  },
+  {
+   "anio": 2010,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 1
+  },
+  {
+   "anio": 2010,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 92
+  },
+  {
+   "anio": 2010,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 68
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 20
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 2
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 9
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 14
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 23
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 3
+  },
+  {
+   "anio": 2010,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 43
+  },
+  {
+   "anio": 2010,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 13
+  },
+  {
+   "anio": 2010,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2010,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2010,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2010,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2010,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 33
+  },
+  {
+   "anio": 2010,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 10
+  },
+  {
+   "anio": 2011,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 36
+  },
+  {
+   "anio": 2011,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2011,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2011,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 31
+  },
+  {
+   "anio": 2011,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 5
+  },
+  {
+   "anio": 2011,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 42
+  },
+  {
+   "anio": 2011,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 349
+  },
+  {
+   "anio": 2011,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 1
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 17
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 7
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 21
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 25
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 3
+  },
+  {
+   "anio": 2011,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 38
+  },
+  {
+   "anio": 2011,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 18
+  },
+  {
+   "anio": 2011,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2011,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2011,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2011,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2011,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 32
+  },
+  {
+   "anio": 2011,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 12
+  },
+  {
+   "anio": 2012,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 35
+  },
+  {
+   "anio": 2012,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2012,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2012,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 2012,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 14
+  },
+  {
+   "anio": 2012,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 5
+  },
+  {
+   "anio": 2012,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 43
+  },
+  {
+   "anio": 2012,
+   "tipo": "D",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 2012,
+   "tipo": "D",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2012,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 39
+  },
+  {
+   "anio": 2012,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 126
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 24
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 9
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 27
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 22
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 3
+  },
+  {
+   "anio": 2012,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 36
+  },
+  {
+   "anio": 2012,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 18
+  },
+  {
+   "anio": 2012,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 2012,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2012,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2012,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2012,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 27
+  },
+  {
+   "anio": 2012,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 12
+  },
+  {
+   "anio": 2013,
+   "tipo": "C",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2013,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 34
+  },
+  {
+   "anio": 2013,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2013,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2013,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2013,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 2013,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 23
+  },
+  {
+   "anio": 2013,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 7
+  },
+  {
+   "anio": 2013,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2013,
+   "tipo": "D",
+   "pais": "I-ESA",
+   "lanzados": 7
+  },
+  {
+   "anio": 2013,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 71
+  },
+  {
+   "anio": 2013,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 15
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 4
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 18
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 6
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 6
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 5
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 39
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 29
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 9
+  },
+  {
+   "anio": 2013,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 86
+  },
+  {
+   "anio": 2013,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 12
+  },
+  {
+   "anio": 2013,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2013,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2013,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2013,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2013,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 32
+  },
+  {
+   "anio": 2013,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 2014,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 26
+  },
+  {
+   "anio": 2014,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2014,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2014,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 16
+  },
+  {
+   "anio": 2014,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 9
+  },
+  {
+   "anio": 2014,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 9
+  },
+  {
+   "anio": 2014,
+   "tipo": "D",
+   "pais": "I-ESA",
+   "lanzados": 8
+  },
+  {
+   "anio": 2014,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2014,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 75
+  },
+  {
+   "anio": 2014,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 123
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 4
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 22
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 1
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 24
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 40
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 34
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 10
+  },
+  {
+   "anio": 2014,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 110
+  },
+  {
+   "anio": 2014,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 14
+  },
+  {
+   "anio": 2014,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2014,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2014,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 2014,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2014,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 33
+  },
+  {
+   "anio": 2014,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 18
+  },
+  {
+   "anio": 2015,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 16
+  },
+  {
+   "anio": 2015,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2015,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2015,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2015,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 14
+  },
+  {
+   "anio": 2015,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 5
+  },
+  {
+   "anio": 2015,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2015,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 35
+  },
+  {
+   "anio": 2015,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 4
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 37
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 35
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 27
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 7
+  },
+  {
+   "anio": 2015,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 114
+  },
+  {
+   "anio": 2015,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 17
+  },
+  {
+   "anio": 2015,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 8
+  },
+  {
+   "anio": 2015,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2015,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2015,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2015,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 30
+  },
+  {
+   "anio": 2015,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 2016,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 33
+  },
+  {
+   "anio": 2016,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2016,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2016,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2016,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2016,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 3
+  },
+  {
+   "anio": 2016,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 5
+  },
+  {
+   "anio": 2016,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2016,
+   "tipo": "D",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2016,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 14
+  },
+  {
+   "anio": 2016,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 36
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 37
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 2
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 12
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 16
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 32
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 15
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 1
+  },
+  {
+   "anio": 2016,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 92
+  },
+  {
+   "anio": 2016,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 21
+  },
+  {
+   "anio": 2016,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 8
+  },
+  {
+   "anio": 2016,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 7
+  },
+  {
+   "anio": 2016,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2016,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2016,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 18
+  },
+  {
+   "anio": 2016,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 2017,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 21
+  },
+  {
+   "anio": 2017,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2017,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2017,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2017,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2017,
+   "tipo": "C",
+   "pais": "OTROS",
+   "lanzados": 1
+  },
+  {
+   "anio": 2017,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 10
+  },
+  {
+   "anio": 2017,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 13
+  },
+  {
+   "anio": 2017,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2017,
+   "tipo": "D",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2017,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2017,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 4
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 35
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 4
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 9
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 11
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 67
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 24
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 8
+  },
+  {
+   "anio": 2017,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 280
+  },
+  {
+   "anio": 2017,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 14
+  },
+  {
+   "anio": 2017,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 2017,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2017,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 6
+  },
+  {
+   "anio": 2017,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 21
+  },
+  {
+   "anio": 2017,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 16
+  },
+  {
+   "anio": 2018,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 50
+  },
+  {
+   "anio": 2018,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2018,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2018,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 6
+  },
+  {
+   "anio": 2018,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 4
+  },
+  {
+   "anio": 2018,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 10
+  },
+  {
+   "anio": 2018,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 11
+  },
+  {
+   "anio": 2018,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 129
+  },
+  {
+   "anio": 2018,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 6
+  },
+  {
+   "anio": 2018,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 220
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 5
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 94
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 9
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 10
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 14
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "NZ",
+   "lanzados": 1
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 86
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 27
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 12
+  },
+  {
+   "anio": 2018,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 197
+  },
+  {
+   "anio": 2018,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 39
+  },
+  {
+   "anio": 2018,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 6
+  },
+  {
+   "anio": 2018,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 7
+  },
+  {
+   "anio": 2018,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 6
+  },
+  {
+   "anio": 2018,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 5
+  },
+  {
+   "anio": 2018,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 15
+  },
+  {
+   "anio": 2018,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 18
+  },
+  {
+   "anio": 2019,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 11
+  },
+  {
+   "anio": 2019,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2019,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2019,
+   "tipo": "C",
+   "pais": "NZ",
+   "lanzados": 1
+  },
+  {
+   "anio": 2019,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 5
+  },
+  {
+   "anio": 2019,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 18
+  },
+  {
+   "anio": 2019,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 46
+  },
+  {
+   "anio": 2019,
+   "tipo": "D",
+   "pais": "IN",
+   "lanzados": 129
+  },
+  {
+   "anio": 2019,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 29
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 72
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 9
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 7
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 9
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 13
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 52
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 31
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 13
+  },
+  {
+   "anio": 2019,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 266
+  },
+  {
+   "anio": 2019,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 33
+  },
+  {
+   "anio": 2019,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2019,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2019,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2019,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 12
+  },
+  {
+   "anio": 2019,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 21
+  },
+  {
+   "anio": 2019,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 9
+  },
+  {
+   "anio": 2020,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 26
+  },
+  {
+   "anio": 2020,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2020,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2020,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2020,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 5
+  },
+  {
+   "anio": 2020,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 66
+  },
+  {
+   "anio": 2020,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2020,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 30
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 6
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 72
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 5
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 5
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 8
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "NZ",
+   "lanzados": 8
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 51
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 22
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 105
+  },
+  {
+   "anio": 2020,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 962
+  },
+  {
+   "anio": 2020,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 28
+  },
+  {
+   "anio": 2020,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2020,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2020,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2020,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 11
+  },
+  {
+   "anio": 2020,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2020,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 9
+  },
+  {
+   "anio": 2020,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 14
+  },
+  {
+   "anio": 2021,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 29
+  },
+  {
+   "anio": 2021,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 2021,
+   "tipo": "C",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2021,
+   "tipo": "C",
+   "pais": "NZ",
+   "lanzados": 2
+  },
+  {
+   "anio": 2021,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 5
+  },
+  {
+   "anio": 2021,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 81
+  },
+  {
+   "anio": 2021,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 7
+  },
+  {
+   "anio": 2021,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 3
+  },
+  {
+   "anio": 2021,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 1
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 11
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 110
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 10
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 9
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 24
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "NZ",
+   "lanzados": 4
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 102
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 21
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 289
+  },
+  {
+   "anio": 2021,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 1228
+  },
+  {
+   "anio": 2021,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 44
+  },
+  {
+   "anio": 2021,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 4
+  },
+  {
+   "anio": 2021,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2021,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 4
+  },
+  {
+   "anio": 2021,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 9
+  },
+  {
+   "anio": 2021,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 15
+  },
+  {
+   "anio": 2021,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 14
+  },
+  {
+   "anio": 2022,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 41
+  },
+  {
+   "anio": 2022,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 2022,
+   "tipo": "C",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2022,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2022,
+   "tipo": "C",
+   "pais": "NZ",
+   "lanzados": 1
+  },
+  {
+   "anio": 2022,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 2
+  },
+  {
+   "anio": 2022,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 152
+  },
+  {
+   "anio": 2022,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 809
+  },
+  {
+   "anio": 2022,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2022,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 12
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 9
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 190
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 6
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 10
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 10
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 11
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "NZ",
+   "lanzados": 14
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 129
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 51
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 115
+  },
+  {
+   "anio": 2022,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 1903
+  },
+  {
+   "anio": 2022,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 46
+  },
+  {
+   "anio": 2022,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 3
+  },
+  {
+   "anio": 2022,
+   "tipo": "R",
+   "pais": "I-ESA",
+   "lanzados": 1
+  },
+  {
+   "anio": 2022,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2022,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 16
+  },
+  {
+   "anio": 2022,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2022,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 18
+  },
+  {
+   "anio": 2022,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 2023,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 39
+  },
+  {
+   "anio": 2023,
+   "tipo": "C",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 2023,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2023,
+   "tipo": "C",
+   "pais": "NZ",
+   "lanzados": 1
+  },
+  {
+   "anio": 2023,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 8
+  },
+  {
+   "anio": 2023,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 90
+  },
+  {
+   "anio": 2023,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 2
+  },
+  {
+   "anio": 2023,
+   "tipo": "D",
+   "pais": "IN",
+   "lanzados": 5
+  },
+  {
+   "anio": 2023,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2023,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 1
+  },
+  {
+   "anio": 2023,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 4
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 18
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 212
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 12
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 11
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 8
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 10
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 179
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 67
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 150
+  },
+  {
+   "anio": 2023,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 2230
+  },
+  {
+   "anio": 2023,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 53
+  },
+  {
+   "anio": 2023,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 2
+  },
+  {
+   "anio": 2023,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 6
+  },
+  {
+   "anio": 2023,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2023,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 16
+  },
+  {
+   "anio": 2023,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 2023,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 17
+  },
+  {
+   "anio": 2023,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 19
+  },
+  {
+   "anio": 2024,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 12
+  },
+  {
+   "anio": 2024,
+   "tipo": "C",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2024,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 1
+  },
+  {
+   "anio": 2024,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 14
+  },
+  {
+   "anio": 2024,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 713
+  },
+  {
+   "anio": 2024,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2024,
+   "tipo": "D",
+   "pais": "OTROS",
+   "lanzados": 4
+  },
+  {
+   "anio": 2024,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 3
+  },
+  {
+   "anio": 2024,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 1
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 4
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 266
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 5
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 21
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 6
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 10
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 25
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 118
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 98
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 31
+  },
+  {
+   "anio": 2024,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 2243
+  },
+  {
+   "anio": 2024,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 55
+  },
+  {
+   "anio": 2024,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2024,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 3
+  },
+  {
+   "anio": 2024,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 28
+  },
+  {
+   "anio": 2024,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 5
+  },
+  {
+   "anio": 2024,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 12
+  },
+  {
+   "anio": 2024,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 22
+  },
+  {
+   "anio": 2025,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 18
+  },
+  {
+   "anio": 2025,
+   "tipo": "C",
+   "pais": "RU",
+   "lanzados": 1
+  },
+  {
+   "anio": 2025,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 4
+  },
+  {
+   "anio": 2025,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 3
+  },
+  {
+   "anio": 2025,
+   "tipo": "D",
+   "pais": "NZ",
+   "lanzados": 1
+  },
+  {
+   "anio": 2025,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 2
+  },
+  {
+   "anio": 2025,
+   "tipo": "D",
+   "pais": "US",
+   "lanzados": 3
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 6
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 371
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 19
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 25
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 3
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 12
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 35
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "NZ",
+   "lanzados": 1
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 229
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 88
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 12
+  },
+  {
+   "anio": 2025,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 3710
+  },
+  {
+   "anio": 2025,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 74
+  },
+  {
+   "anio": 2025,
+   "tipo": "R",
+   "pais": "F",
+   "lanzados": 1
+  },
+  {
+   "anio": 2025,
+   "tipo": "R",
+   "pais": "IN",
+   "lanzados": 4
+  },
+  {
+   "anio": 2025,
+   "tipo": "R",
+   "pais": "J",
+   "lanzados": 2
+  },
+  {
+   "anio": 2025,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 36
+  },
+  {
+   "anio": 2025,
+   "tipo": "R",
+   "pais": "OTROS",
+   "lanzados": 2
+  },
+  {
+   "anio": 2025,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 13
+  },
+  {
+   "anio": 2025,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 11
+  },
+  {
+   "anio": 2026,
+   "tipo": "C",
+   "pais": "CN",
+   "lanzados": 9
+  },
+  {
+   "anio": 2026,
+   "tipo": "C",
+   "pais": "US",
+   "lanzados": 1
+  },
+  {
+   "anio": 2026,
+   "tipo": "D",
+   "pais": "CN",
+   "lanzados": 9
+  },
+  {
+   "anio": 2026,
+   "tipo": "D",
+   "pais": "J",
+   "lanzados": 1
+  },
+  {
+   "anio": 2026,
+   "tipo": "D",
+   "pais": "RU",
+   "lanzados": 2
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "CA",
+   "lanzados": 14
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "CN",
+   "lanzados": 261
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "D",
+   "lanzados": 16
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "F",
+   "lanzados": 8
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "I-ESA",
+   "lanzados": 2
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "IN",
+   "lanzados": 1
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "J",
+   "lanzados": 25
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "OTROS",
+   "lanzados": 120
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "RU",
+   "lanzados": 40
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "UK",
+   "lanzados": 7
+  },
+  {
+   "anio": 2026,
+   "tipo": "P",
+   "pais": "US",
+   "lanzados": 2080
+  },
+  {
+   "anio": 2026,
+   "tipo": "R",
+   "pais": "CN",
+   "lanzados": 37
+  },
+  {
+   "anio": 2026,
+   "tipo": "R",
+   "pais": "NZ",
+   "lanzados": 17
+  },
+  {
+   "anio": 2026,
+   "tipo": "R",
+   "pais": "RU",
+   "lanzados": 6
+  },
+  {
+   "anio": 2026,
+   "tipo": "R",
+   "pais": "US",
+   "lanzados": 9
+  }
+ ],
+ "en_orbita_por_regimen": [
+  {
+   "regimen": "LLEO",
+   "tipo": "P",
+   "n": 14145
+  },
+  {
+   "regimen": "LEO",
+   "tipo": "D",
+   "n": 8754
+  },
+  {
+   "regimen": "LEO",
+   "tipo": "P",
+   "n": 2991
+  },
+  {
+   "regimen": "GEO",
+   "tipo": "P",
+   "n": 1067
+  },
+  {
+   "regimen": "LEO",
+   "tipo": "R",
+   "n": 872
+  },
+  {
+   "regimen": "LEO",
+   "tipo": "C",
+   "n": 782
+  },
+  {
+   "regimen": "MEO",
+   "tipo": "D",
+   "n": 486
+  },
+  {
+   "regimen": "HEO",
+   "tipo": "D",
+   "n": 467
+  },
+  {
+   "regimen": "MEO",
+   "tipo": "P",
+   "n": 412
+  },
+  {
+   "regimen": "GTO",
+   "tipo": "R",
+   "n": 335
+  },
+  {
+   "regimen": "GTO",
+   "tipo": "D",
+   "n": 329
+  },
+  {
+   "regimen": "HEO",
+   "tipo": "R",
+   "n": 244
+  },
+  {
+   "regimen": "GEO",
+   "tipo": "R",
+   "n": 225
+  },
+  {
+   "regimen": "MEO",
+   "tipo": "R",
+   "n": 199
+  },
+  {
+   "regimen": "HEO",
+   "tipo": "C",
+   "n": 168
+  },
+  {
+   "regimen": "HEO",
+   "tipo": "P",
+   "n": 165
+  },
+  {
+   "regimen": "MEO",
+   "tipo": "C",
+   "n": 112
+  },
+  {
+   "regimen": "GTO",
+   "tipo": "C",
+   "n": 110
+  },
+  {
+   "regimen": "LLEO",
+   "tipo": "R",
+   "n": 110
+  },
+  {
+   "regimen": "GEO",
+   "tipo": "D",
+   "n": 99
+  },
+  {
+   "regimen": "GEO",
+   "tipo": "C",
+   "n": 89
+  },
+  {
+   "regimen": "LLEO",
+   "tipo": "D",
+   "n": 47
+  },
+  {
+   "regimen": "GTO",
+   "tipo": "P",
+   "n": 34
+  },
+  {
+   "regimen": "LLEO",
+   "tipo": "C",
+   "n": 31
+  },
+  {
+   "regimen": "VHEO",
+   "tipo": "R",
+   "n": 30
+  },
+  {
+   "regimen": "VHEO",
+   "tipo": "P",
+   "n": 19
+  },
+  {
+   "regimen": "VHEO",
+   "tipo": "C",
+   "n": 8
+  },
+  {
+   "regimen": "VHEO",
+   "tipo": "D",
+   "n": 8
+  },
+  {
+   "regimen": "-",
+   "tipo": "P",
+   "n": 4
+  },
+  {
+   "regimen": "-",
+   "tipo": "R",
+   "n": 2
+  },
+  {
+   "regimen": "SO",
+   "tipo": "P",
+   "n": 1
+  },
+  {
+   "regimen": "-",
+   "tipo": "C",
+   "n": 1
+  }
+ ],
+ "asat": [
+  {
+   "jcat": "S25730",
+   "satcat": "25730",
+   "cospar": "1999-025A",
+   "nombre": "Feng Yun 1C",
+   "pais": "CN",
+   "fecha_ensayo": "2007-01-11",
+   "catalogados": 3533,
+   "en_orbita": 2091
+  },
+  {
+   "jcat": "S13552",
+   "satcat": "13552",
+   "cospar": "1982-092A",
+   "nombre": "Kosmos-1408",
+   "pais": "SU",
+   "fecha_ensayo": "2021-11-15",
+   "catalogados": 1805,
+   "en_orbita": 4
+  },
+  {
+   "jcat": "S11278",
+   "satcat": "11278",
+   "cospar": "1979-017A",
+   "nombre": "P78-1",
+   "pais": "US",
+   "fecha_ensayo": "1985-09-13",
+   "catalogados": 284,
+   "en_orbita": 0
+  },
+  {
+   "jcat": "S29651",
+   "satcat": "29651",
+   "cospar": "2006-057A",
+   "nombre": "USA 193",
+   "pais": "US",
+   "fecha_ensayo": "2008-02-21",
+   "catalogados": 174,
+   "en_orbita": 0
+  },
+  {
+   "jcat": "S03530",
+   "satcat": "03530",
+   "cospar": "1968-097A",
+   "nombre": "Kosmos-252",
+   "pais": "SU",
+   "fecha_ensayo": "1968-11-01",
+   "catalogados": 135,
+   "en_orbita": 33
+  },
+  {
+   "jcat": "S43947",
+   "satcat": "43947",
+   "cospar": "2019-006A",
+   "nombre": "Microsat-R",
+   "pais": "IN",
+   "fecha_ensayo": "2019-03-27",
+   "catalogados": 129,
+   "en_orbita": 0
+  },
+  {
+   "jcat": "S10531",
+   "satcat": "10531",
+   "cospar": "1977-121A",
+   "nombre": "Kosmos-970",
+   "pais": "SU",
+   "fecha_ensayo": "1977-12-21",
+   "catalogados": 119,
+   "en_orbita": 113
+  },
+  {
+   "jcat": "S04964",
+   "satcat": "04964",
+   "cospar": "1971-015A",
+   "nombre": "Kosmos-397",
+   "pais": "SU",
+   "fecha_ensayo": null,
+   "catalogados": 113,
+   "en_orbita": 38
+  },
+  {
+   "jcat": "S03504",
+   "satcat": "03504",
+   "cospar": "1968-091A",
+   "nombre": "Kosmos-249",
+   "pais": "SU",
+   "fecha_ensayo": "1968-10-20",
+   "catalogados": 105,
+   "en_orbita": 32
+  },
+  {
+   "jcat": "S04594",
+   "satcat": "04594",
+   "cospar": "1970-089A",
+   "nombre": "Kosmos-374",
+   "pais": "SU",
+   "fecha_ensayo": "1970-10-23",
+   "catalogados": 96,
+   "en_orbita": 19
+  },
+  {
+   "jcat": "S09634",
+   "satcat": "09634",
+   "cospar": "1976-126A",
+   "nombre": "Kosmos-886",
+   "pais": "SU",
+   "fecha_ensayo": "1976-12-27",
+   "catalogados": 72,
+   "en_orbita": 49
+  },
+  {
+   "jcat": "S04598",
+   "satcat": "04598",
+   "cospar": "1970-091A",
+   "nombre": "Kosmos-375",
+   "pais": "SU",
+   "fecha_ensayo": "1970-10-30",
+   "catalogados": 46,
+   "en_orbita": 13
+  },
+  {
+   "jcat": "S11765",
+   "satcat": "11765",
+   "cospar": "1980-030A",
+   "nombre": "Kosmos-1174",
+   "pais": "SU",
+   "fecha_ensayo": "1980-04-18",
+   "catalogados": 44,
+   "en_orbita": 2
+  },
+  {
+   "jcat": "S23440",
+   "satcat": "23440",
+   "cospar": "1994-085B",
+   "nombre": "Briz-K No. 45004",
+   "pais": "RU",
+   "fecha_ensayo": null,
+   "catalogados": 25,
+   "en_orbita": 21
+  },
+  {
+   "jcat": "S05646",
+   "satcat": "05646",
+   "cospar": "1971-106A",
+   "nombre": "Kosmos-462",
+   "pais": "SU",
+   "fecha_ensayo": "1975-04-04",
+   "catalogados": 24,
+   "en_orbita": 0
+  },
+  {
+   "jcat": "S44421",
+   "satcat": "44421",
+   "cospar": "2019-039A",
+   "nombre": "Kosmos-2535",
+   "pais": "RU",
+   "fecha_ensayo": null,
+   "catalogados": 22,
+   "en_orbita": 4
+  },
+  {
+   "jcat": "S16937",
+   "satcat": "16937",
+   "cospar": "1986-069A",
+   "nombre": "USA 19",
+   "pais": "US",
+   "fecha_ensayo": "1986-09-05",
+   "catalogados": 12,
+   "en_orbita": 0
+  },
+  {
+   "jcat": "S03503",
+   "satcat": "03503",
+   "cospar": "1968-090A",
+   "nombre": "Kosmos-248",
+   "pais": "SU",
+   "fecha_ensayo": "1980-02-26",
+   "catalogados": 4,
+   "en_orbita": 0
+  },
+  {
+   "jcat": "S16938",
+   "satcat": "16938",
+   "cospar": "1986-069B",
+   "nombre": "Delta 180 Sensor Module",
+   "pais": "US",
+   "fecha_ensayo": "1986-11-25",
+   "catalogados": 4,
+   "en_orbita": 0
+  },
+  {
+   "jcat": "S09645",
+   "satcat": "09645",
+   "cospar": "1976-126D",
+   "nombre": "Tsiklon-2 23-301T Stage 2",
+   "pais": "SU",
+   "fecha_ensayo": "1976-12-30",
+   "catalogados": 2,
+   "en_orbita": 0
+  },
+  {
+   "jcat": "S09011",
+   "satcat": "09011",
+   "cospar": "1976-067A",
+   "nombre": "Kosmos-839",
+   "pais": "SU",
+   "fecha_ensayo": null,
+   "catalogados": 2,
+   "en_orbita": 1
+  }
+ ],
+ "colombia": [
+  {
+   "jcat": "S31128",
+   "satcat": "31128",
+   "cospar": "2007-012M",
+   "nombre": "Libertad",
+   "lanzamiento": "2007-04-17",
+   "estado": "En órbita",
+   "fin": null
+  },
+  {
+   "jcat": "S43721",
+   "satcat": "43721",
+   "cospar": "2018-096C",
+   "nombre": "FACSAT",
+   "lanzamiento": "2018-11-29",
+   "estado": "Reentrado",
+   "fin": "2023-06-03"
+  },
+  {
+   "jcat": "S56205",
+   "satcat": "56205",
+   "cospar": "2023-054AD",
+   "nombre": "FACSAT-2 Chiribiquete",
+   "lanzamiento": "2023-04-15",
+   "estado": "Reentrado",
+   "fin": "2025-10-27"
+  }
+ ],
+ "inspectores": [
+  {
+   "jcat": "S40099",
+   "satcat": "40099",
+   "cospar": "2014-043A",
+   "nombre": "USA 253",
+   "pais": "US",
+   "lanzamiento": "2014-07-28",
+   "orbita": "GEO/D",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "gssap",
+    "gssap satellites"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/gssap-1.htm",
+   "hijos": []
+  },
+  {
+   "jcat": "S40100",
+   "satcat": "40100",
+   "cospar": "2014-043B",
+   "nombre": "USA 254",
+   "pais": "US",
+   "lanzamiento": "2014-07-28",
+   "orbita": "GEO/D",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "gssap",
+    "gssap satellites"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/gssap-1.htm",
+   "hijos": []
+  },
+  {
+   "jcat": "S40258",
+   "satcat": "40258",
+   "cospar": "2014-058A",
+   "nombre": "Luch",
+   "pais": "RU",
+   "lanzamiento": "2014-09-27",
+   "orbita": "GEO/S",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "luch",
+    "olymp-k"
+   ],
+   "referencia": "https://www.rand.org/pubs/commentary/2026/03/how-russia-is-intercepting-communications-from-european.html",
+   "hijos": [
+    {
+     "jcat": "S67745",
+     "nombre": "deb Luch",
+     "tipo": "fragmento",
+     "en_orbita": true
+    }
+   ]
+  },
+  {
+   "jcat": "S41744",
+   "satcat": "41744",
+   "cospar": "2016-052A",
+   "nombre": "USA 270",
+   "pais": "US",
+   "lanzamiento": "2016-08-19",
+   "orbita": "GEO/D",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "gssap",
+    "gssap satellites"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/gssap-3.htm",
+   "hijos": []
+  },
+  {
+   "jcat": "S41745",
+   "satcat": "41745",
+   "cospar": "2016-052B",
+   "nombre": "USA 271",
+   "pais": "US",
+   "lanzamiento": "2016-08-19",
+   "orbita": "GEO/D",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "gssap",
+    "gssap satellites"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/gssap-3.htm",
+   "hijos": []
+  },
+  {
+   "jcat": "S43917",
+   "satcat": "43917",
+   "cospar": "2018-110C",
+   "nombre": "TJS-3 subsatellite",
+   "pais": "CN",
+   "lanzamiento": "2018-12-24",
+   "orbita": "GEO/S",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "tjs-3",
+    "tjs-3 akm"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/tjs-3.htm",
+   "hijos": []
+  },
+  {
+   "jcat": "S44797",
+   "satcat": "44797",
+   "cospar": "2019-079A",
+   "nombre": "Kosmos-2542",
+   "pais": "RU",
+   "lanzamiento": "2019-11-25",
+   "orbita": "LEO/S",
+   "estado": "Fuera de órbita",
+   "fin": "2023-10-24",
+   "alias_corpus": [
+    "cosmos 2542"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/kosmos-2542.htm",
+   "hijos": [
+    {
+     "jcat": "S44835",
+     "nombre": "Kosmos-2543",
+     "tipo": "objeto",
+     "en_orbita": false
+    }
+   ]
+  },
+  {
+   "jcat": "S44835",
+   "satcat": "44835",
+   "cospar": "2019-079D",
+   "nombre": "Kosmos-2543",
+   "pais": "RU",
+   "lanzamiento": "2019-11-25",
+   "orbita": "LEO/S",
+   "estado": "Fuera de órbita",
+   "fin": "2024-08-26",
+   "alias_corpus": [
+    "cosmos 2543"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/kosmos-2543.htm",
+   "hijos": [
+    {
+     "jcat": "S45915",
+     "nombre": "Kosmos-2543 projectile",
+     "tipo": "objeto",
+     "en_orbita": true
+    }
+   ]
+  },
+  {
+   "jcat": "S55841",
+   "satcat": "55841",
+   "cospar": "2023-031A",
+   "nombre": "Luch-5Kh No. 3",
+   "pais": "RU",
+   "lanzamiento": "2023-03-12",
+   "orbita": "GEO/D",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "luch (olymp) 2",
+    "olymp-k"
+   ],
+   "referencia": "https://sattrackcam.blogspot.com/2025/03/the-russian-eavesdropping-satellite.html",
+   "hijos": []
+  },
+  {
+   "jcat": "S59773",
+   "satcat": "59773",
+   "cospar": "2024-092A",
+   "nombre": "Kosmos-2576",
+   "pais": "RU",
+   "lanzamiento": "2024-05-16",
+   "orbita": "LLEO/S",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "cosmos 2576"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/kosmos-2576.htm",
+   "hijos": []
+  },
+  {
+   "jcat": "S64095",
+   "satcat": "64095",
+   "cospar": "2025-109A",
+   "nombre": "Kosmos-2588",
+   "pais": "RU",
+   "lanzamiento": "2025-05-23",
+   "orbita": "LLEO/I",
+   "estado": "En órbita",
+   "fin": null,
+   "alias_corpus": [
+    "cosmos 2588"
+   ],
+   "referencia": "https://space.skyrocket.de/doc_sdat/kosmos-2588.htm",
+   "hijos": []
+  }
+ ]
+}

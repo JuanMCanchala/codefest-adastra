@@ -27,7 +27,8 @@ export type NombreComponente =
   | "panel_evidencia"
   | "distribucion"
   | "evidencia_satelital"
-  | "deforestacion";
+  | "deforestacion"
+  | "poblacion_orbital";
 
 export type Filtros = Record<string, string | number | null>;
 
@@ -233,6 +234,103 @@ export interface DatosDeforestacion {
   procedencia: ProcedenciaDeforestacion | null;
 }
 
+/** De dónde sale el catálogo: es lo que aquí hace de `doc_id`/`chunk_id`. */
+export interface ProcedenciaOrbital {
+  fuente: string;
+  url: string;
+  licencia: string;
+  cita: string;
+  actualizado: string;
+  descargado: string;
+  filas: number;
+}
+
+/** Objetos catalogados de un año de lanzamiento, tipo y país. */
+export interface PuntoSerieOrbital {
+  anio: number;
+  /** `P` carga útil, `R` etapa de cohete, `C` componente, `D` desecho. */
+  tipo: "P" | "R" | "C" | "D";
+  pais: string;
+  lanzados: number;
+}
+
+/** Objetos en órbita hoy de un régimen orbital y un tipo. */
+export interface ConteoRegimenOrbital {
+  regimen: string;
+  tipo: "P" | "R" | "C" | "D";
+  n: number;
+}
+
+/** Un ensayo antisatélite: el satélite destruido y sus desechos catalogados. */
+export interface EnsayoAsat {
+  jcat: string;
+  satcat: string;
+  cospar: string;
+  nombre: string;
+  pais: string;
+  fecha_ensayo: string | null;
+  catalogados: number;
+  en_orbita: number;
+  refs: Ref[];
+}
+
+export interface ObjetoColombiaOrbital {
+  jcat: string;
+  satcat: string;
+  cospar: string;
+  nombre: string;
+  lanzamiento: string;
+  estado: string;
+  fin: string | null;
+}
+
+/** Fragmento, proyectil u otro objeto catalogado con el mismo `Parent` que el inspector. */
+export interface HijoInspector {
+  jcat: string;
+  nombre: string;
+  tipo: "fragmento" | "objeto";
+  en_orbita: boolean;
+}
+
+/** Satélite de inspección o proximidad: lista curada, declarada como tal. */
+export interface SateliteInspector {
+  jcat: string;
+  satcat: string;
+  cospar: string;
+  nombre: string;
+  pais: string;
+  lanzamiento: string;
+  orbita: string;
+  estado: string;
+  fin: string | null;
+  alias_corpus: string[];
+  referencia: string;
+  hijos: HijoInspector[];
+  refs: Ref[];
+}
+
+/**
+ * Cada vista trae su propia forma de `datos`; `vista` es el discriminador. Cuando no hay
+ * datos en disco, las cuatro llegan con `vista: "crecimiento"` y sus listas vacías (la API
+ * no llega a mirar el filtro `vista` pedido si el JSON precalculado falta).
+ */
+export type DatosPoblacionOrbital =
+  | {
+      vista: "crecimiento";
+      procedencia: ProcedenciaOrbital | null;
+      serie: PuntoSerieOrbital[];
+      en_orbita_por_regimen: ConteoRegimenOrbital[];
+      total_lanzados?: number;
+      total_en_orbita?: number;
+    }
+  | { vista: "asat"; procedencia: ProcedenciaOrbital | null; asat: EnsayoAsat[] }
+  | { vista: "colombia"; procedencia: ProcedenciaOrbital | null; colombia: ObjetoColombiaOrbital[] }
+  | {
+      vista: "inspectores";
+      procedencia: ProcedenciaOrbital | null;
+      inspectores: SateliteInspector[];
+    };
+
 export interface FilaEvidencia {
   doc_id: string;
   chunk_id: IdChunk;
@@ -288,6 +386,10 @@ export type ResultadoComponente =
   | (SobreComponente & {
       componente: "deforestacion";
       datos: DatosDeforestacion;
+    })
+  | (SobreComponente & {
+      componente: "poblacion_orbital";
+      datos: DatosPoblacionOrbital;
     });
 
 export interface CuerpoComponente {

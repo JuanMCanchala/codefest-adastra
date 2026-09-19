@@ -11,7 +11,7 @@ Etapa 1. El contrato completo está en [`API.md`](API.md).
 ```
 dashboard/
 ├── api/app/            FastAPI: main.py, db.py, evidencia.py, visualizar.py, settings.py
-│   └── componentes/    un módulo por componente del catálogo cerrado (8)
+│   └── componentes/    un módulo por componente del catálogo cerrado (8 del agente + 4)
 ├── datos/              dashboard.db (34,5 MB) y geo/*.geojson → se copian a /app/datos
 ├── web/                SPA (Vite) → se compila en la etapa 1 y queda en /app/web
 └── Dockerfile          etapa 1 node:22-alpine (npm ci && npm run build)
@@ -43,7 +43,7 @@ dashboard/
 | Método | Ruta | Respuesta |
 | --- | --- | --- |
 | GET | `/api/salud` | `{estado, tablas: {...conteos}, textos: {disponible, indexado}}` |
-| GET | `/api/catalogo` | los 11 componentes (los 8 del agente más `distribucion`, `evidencia_satelital` y `deforestacion`) con sus filtros, opciones y valores por defecto |
+| GET | `/api/catalogo` | los 12 componentes (los 8 del agente más `distribucion`, `evidencia_satelital`, `deforestacion` y `poblacion_orbital`) con sus filtros, opciones y valores por defecto |
 | POST | `/api/componente` | `{componente, fenomeno?, filtros?}` → datos, `evidencia`, `nota_metodo`, `total_evidencia`, `filtros_ignorados` |
 | POST | `/api/visualizar` | `{instruccion}` → agente del Reto 1 → especificación ejecutada |
 | GET | `/api/evidencia/{chunk_id}` | fragmento con `doc_id`, fuente, metadatos del documento y texto |
@@ -54,10 +54,11 @@ Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `compos
 `linea_tiempo`, `matriz_calor`, `red_entidades`, `mapa_colombia`, `mapa_mundo`,
 `cuadrante_priorizacion`, `panel_evidencia`; más `distribucion` (histograma, Anexo B.2.1),
 `evidencia_satelital` (el ortomosaico, la segmentación del modelo y la anotación humana del
-sitio minero, uno al lado del otro) y `deforestacion` (hectáreas de bosque perdidas en el
-Chocó, apiladas por la causa que declara la fuente), que solo se alcanzan desde el selector
-del tablero o por URL porque el catálogo del agente quedó congelado con la evaluación del
-Reto 1.
+sitio minero, uno al lado del otro), `deforestacion` (hectáreas de bosque perdidas en el
+Chocó, apiladas por la causa que declara la fuente) y `poblacion_orbital` (objetos en órbita,
+ensayos antisatélite y satélites de inspección, del catálogo GCAT), que solo se alcanzan desde
+el selector del tablero o por URL porque el catálogo del agente quedó congelado con la
+evaluación del Reto 1.
 
 `evidencia_satelital` es el único componente que no consulta la base: enseña los trípticos que
 precalcula `scripts/eldor_recorte.py` y que viajan dentro de la SPA (`web/public/eldor/`). Su
@@ -81,6 +82,22 @@ polígono. Su trazabilidad es el conjunto, el método, el periodo y el código D
 municipio, resuelto contra las mismas geometrías del DANE que dibuja el mapa, que es lo que
 permite cruzarlo con las alertas tempranas del corpus. Sin el JSON en disco devuelve
 `procedencia: null` y la vista lo dice.
+
+`poblacion_orbital` es el único componente propio de F2 (seguridad del entorno espacial): los
+otros dos fenómenos tienen `mapa_colombia`/`deforestacion`/`evidencia_satelital` (F3) o se
+apoyan en `composicion_corpus` (F1), pero F2 solo reutilizaba los genéricos. Lee
+`datos/orbita/orbita.json`, que precalcula `scripts/gcat_orbita.py` a partir de GCAT — General
+Catalog of Artificial Space Objects (McDowell, CC BY 4.0, 69.999 objetos). Cuatro vistas
+(`vista`): `crecimiento` (objetos catalogados por año × tipo × país, más los que siguen en
+órbita hoy por régimen orbital), `asat` (los 21 ensayos antisatélite con padre catalogado
+cierto por GCAT, catalogados frente a en-órbita), `colombia` (los tres objetos con
+responsabilidad de Colombia: Libertad, FACSAT y FACSAT-2) e `inspectores` (una lista **curada**
+de 11 satélites de inspección y proximidad —Luch/Olymp-K, GSSAP, TJS-3, Kosmos-2542/2543/
+2576/2588— con referencia pública por entrada). `crecimiento` y `colombia` no llevan
+`doc_id`/`chunk_id`: su trazabilidad es el catálogo de origen (`jcat`/`satcat`/`cospar` por
+objeto). `asat` e `inspectores` sí citan fragmentos reales del corpus, resueltos contra
+`menciones` por una lista fija de alias; las filas sin alias validado se muestran igual, sin
+evidencia, en vez de inventar un vínculo. Sin el JSON en disco devuelve `procedencia: null`.
 
 Límites: `evidencia` ≤ 200 elementos (con
 `total_evidencia`), `refs` ≤ 20 por elemento cliqueable, `top` ≤ 30 (≤ 60 nodos en la red),
