@@ -154,10 +154,15 @@ class Sistema:
     def _nodo_por_ruta(ruta: str) -> str:
         # ``ruta`` ya viene acotada a RUTAS por Orquestador.decidir y por RouterEmbeddings;
         # una clave fuera de ese conjunto es un error de programación y debe fallar aquí.
+        # `visualizacion` tambien entra por el corpus: sin eso `retrieval_context` iba
+        # vacio y la fidelidad (30 % del bloque de Calidad) no se puede medir contra un
+        # contexto vacio, ademas de que una pregunta de corpus mal enrutada se perdia
+        # entera. De paso el tablero recibe la evidencia que sustenta el grafico, que el
+        # Anexo B.1.3 exige trazable hasta doc_id y chunk_id.
         return {
             "corpus": "corpus",
             "ambos": "corpus",
-            "visualizacion": "visualizacion",
+            "visualizacion": "corpus",
             "fuera_de_alcance": "fuera",
         }[ruta]
 
@@ -185,7 +190,7 @@ class Sistema:
         g.add_edge("corpus", "verificador")
         g.add_conditional_edges(
             "verificador",
-            lambda s: "visualizacion" if s["decision"].ruta == "ambos" else END,
+            lambda s: "visualizacion" if s["decision"].ruta in {"ambos", "visualizacion"} else END,
         )
         g.add_edge("visualizacion", END)
         g.add_edge("fuera", END)

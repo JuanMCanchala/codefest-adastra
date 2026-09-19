@@ -167,7 +167,13 @@ def test_ruta_ambos_invoca_tres_agentes_y_devuelve_spec():
 
 def test_componente_fuera_del_catalogo_se_descarta():
     malo = VIZ.replace("linea_tiempo", "puntaje_de_amenaza")
-    s, _ = sistema({"orquestador": ruta("visualizacion"), "agente_visualizacion": malo})
+    s, _ = sistema(
+        {
+            "orquestador": ruta("visualizacion"),
+            "agente_corpus": "Las pruebas ASAT generaron desechos [1].",
+            "agente_visualizacion": malo,
+        }
+    )
     r = s.responder("Dame un puntaje de amenaza por país", incluir_extras=True)
     assert r.extras["visualizacion"] is None
 
@@ -253,6 +259,51 @@ def test_filtros_con_alternativas_del_catalogo_se_descartan():
             "filtros": {"economia": "Minería ilegal", "tipo_alerta": "Inminencia|Estructural"},
         }
     )
-    s, _ = sistema({"orquestador": ruta("visualizacion"), "agente_visualizacion": viz})
+    s, _ = sistema(
+        {
+            "orquestador": ruta("visualizacion"),
+            "agente_corpus": "Las alertas registran minería ilegal [1].",
+            "agente_visualizacion": viz,
+        }
+    )
     r = s.responder("Mapa de alertas por minería ilegal", incluir_extras=True)
     assert r.extras["visualizacion"]["filtros"] == {"economia": "Minería ilegal"}
+
+
+def test_ruta_visualizacion_pasa_por_el_corpus_y_ancla_la_respuesta():
+    """Una petición de gráfico también recupera evidencia.
+
+    Antes esta ruta devolvía `retrieval_context` vacío y un `actual_output` que no se
+    apoyaba en nada: la fidelidad no se puede medir contra un contexto vacío (30 % del
+    bloque de Calidad) y una pregunta de corpus mal enrutada se perdía entera.
+    """
+    s, _ = sistema(
+        {
+            "orquestador": ruta("visualizacion"),
+            "agente_corpus": "El corpus registra dos pruebas ASAT [1].",
+            "agente_visualizacion": VIZ,
+        }
+    )
+    r = s.responder("Muéstrame una línea de tiempo de las pruebas ASAT", incluir_extras=True)
+
+    assert r.evaluacion.retrieval_context == [f.texto for f in FRAG]
+    assert "agente_corpus" in r.metadata.agentes_invocados
+    # La respuesta es la del corpus, citada, y la visualización viaja aparte: añadirle
+    # una frase del tipo "preparé el mapa" metería en `actual_output` una afirmación que
+    # el contexto recuperado no sustenta y bajaría la fidelidad.
+    assert r.respuesta == "El corpus registra dos pruebas ASAT [1]."
+    assert r.extras["visualizacion"]["componente"] == "linea_tiempo"
+    assert r.extras["citas"], "el tablero necesita la evidencia que sustenta el gráfico"
+
+
+def test_ninguna_ruta_con_contenido_deja_el_contexto_vacio():
+    for r_ruta in ("corpus", "ambos", "visualizacion"):
+        s, _ = sistema(
+            {
+                "orquestador": ruta(r_ruta),
+                "agente_corpus": "Respuesta apoyada en la evidencia [1].",
+                "agente_visualizacion": VIZ,
+            }
+        )
+        respuesta = s.responder("Pregunta de prueba")
+        assert respuesta.evaluacion.retrieval_context, f"ruta {r_ruta} sin contexto"
