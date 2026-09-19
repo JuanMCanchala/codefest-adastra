@@ -12,6 +12,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import main
+from app.catalogo import CATALOGO
 from app.graph import Sistema
 from app.guard import RECHAZO
 from app.retrieval import Fragmento
@@ -193,6 +194,15 @@ def test_sin_la_bandera_la_ruta_corpus_no_gasta_el_agente_de_visualizacion():
     r = s.responder("¿Dónde se concentran las alertas?", incluir_extras=True)
     assert "agente_visualizacion" not in llm.llamadas
     assert r.extras["visualizacion"] is None
+
+
+def test_catalogo_incluye_los_componentes_satelital_y_deforestacion():
+    # Sin estas dos entradas el agente nunca los propone: solo se llegaba a ellos
+    # por el selector manual del tablero.
+    assert "evidencia_satelital" in CATALOGO
+    assert "deforestacion" in CATALOGO
+    assert "PERÚ" in CATALOGO["evidencia_satelital"]
+    assert "CHOCÓ" in CATALOGO["deforestacion"]
 
 
 def test_componente_fuera_del_catalogo_se_descarta():

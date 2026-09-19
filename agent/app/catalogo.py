@@ -50,6 +50,21 @@ CATALOGO: dict[str, str] = {
         "Fragmentos originales que sustentan un hallazgo. "
         "Filtros: entidad | doc_id | consulta, limite."
     ),
+    "evidencia_satelital": (
+        "Imagen de dron segmentada de una mina de oro: ortomosaico, predicción del modelo "
+        "y anotación humana, con las hectáreas medidas sobre la propia imagen (evidencia). "
+        "Cubre sitios de Madre de Dios, PERÚ. Úsalo cuando pregunten por la medición, la "
+        "imagen, la foto o la prueba visual de la minería. "
+        "Filtros: sitio=Anel|ElEngano|Linda, encuadre=frontera|mineria|bosque."
+    ),
+    "deforestacion": (
+        "Hectáreas de bosque perdidas por municipio, desglosadas por la causa declarada "
+        "(composición). SOLO cubre el departamento del CHOCÓ, 2014-2021. Úsalo cuando "
+        "pregunten por deforestación, pérdida de bosque o por la causa de esa pérdida en "
+        "el Chocó o en el Pacífico. NO lo uses para la Amazonía ni para el resto del país. "
+        "Filtros: causa=Minería|Incendio|Cultivo|Ganadería|Frontera Agropecuaria, "
+        "desde, hasta (años 2014-2021), top."
+    ),
 }
 
 
