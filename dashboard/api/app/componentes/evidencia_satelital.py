@@ -144,10 +144,15 @@ def calcular(
             "exigiría dos fechas del mismo sitio. La regeneración natural sí marca suelo "
             "desmontado antes, porque solo crece sobre terreno ya intervenido."
         )
+    # El país va en el título, no solo en la nota de método. ELDOR es el único conjunto
+    # público con anotación humana a esta resolución, y está en Perú: quien mira la imagen
+    # tiene que saberlo antes de preguntarlo. Declarado deja de ser un error y pasa a ser
+    # una elección; escondido, lo primero que se le nota.
+    sitio = f"{elegido['sitio']} (Madre de Dios, Perú)"
     titulos = {
-        "bosque": f"Bosque medido sobre imagen — sitio {elegido['sitio']}",
-        "mineria": f"Minería medida sobre imagen — sitio {elegido['sitio']}",
-        "frontera": f"Minería medida sobre imagen — sitio {elegido['sitio']}",
+        "bosque": f"Bosque medido sobre imagen — sitio {sitio}",
+        "mineria": f"Minería medida sobre imagen — sitio {sitio}",
+        "frontera": f"Minería medida sobre imagen — sitio {sitio}",
     }
     return (
         Salida(
