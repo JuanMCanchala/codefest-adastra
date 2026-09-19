@@ -12,12 +12,13 @@ privado, tres agentes, trazabilidad del tablero y despliegue en Coolify).
 ## Estructura
 
 | Carpeta                                      | Contenido                                                                                                                           |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | [`00_sintesis/`](00_sintesis/)               | Síntesis ejecutiva, contraste con la especificación y análisis de la base SQL de ADL                                                |
 | [`01_fenomenos/`](01_fenomenos/)             | Investigación de los tres fenómenos sobre el corpus, verificación web, análisis transversal del jurado y subfenómenos diferenciales |
 | [`02_estado_del_arte/`](02_estado_del_arte/) | Revisión de literatura científica y conversación en redes sociales                                                                  |
 | [`03_arquitectura/`](03_arquitectura/)       | Arquitectura empresarial, worldmonitor, fuentes de datos, modelo local, repositorios y licencias                                    |
 | [`99_primera_pasada/`](99_primera_pasada/)   | Primer borrador rápido, superado por el resto; se conserva como histórico                                                           |
+| [`nicolas/`](nicolas/README.md)              | Investigación previa de Nicolás (arquitectura multiagente, catálogo de visualizaciones, notas de despliegue en Coolify); subida como respaldo e insumo adicional |
 
 ### 00 · Síntesis
 

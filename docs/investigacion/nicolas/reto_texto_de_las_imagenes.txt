@@ -1,0 +1,53 @@
+AVISO: el texto es de imagenes que estan en desorden, no tener en cuenta el orden directo
+
+--------------------
+
+RETO 2
+Módulo de analítica visual que genere
+visualizaciones útiles para el análisis de los
+tres fenómenos de interés. Mínimo un agente,
+integrado con el asistente conversacional.
+
+Entrega sábado septiembre 18, 12:30
+horas
+
+------------------------------
+
+Cada equipo entregará una solución compuesta por
+dos componentes principales
+
+RETO 1
+Asistente conversacional (con GUI) compuesto
+por mínimo dos agentes que responda
+preguntas de los tres fenómenos.
+
+Entrega sábado septiembre 18, 08:00
+horas
+
+---------------------------------
+
+Cada equipo entregará una solución compuesta por dos
+componentes principales.
+
+El diseño y uso esperado de cada componente debe
+estar correctamente documentado.
+
+La solución completa será presentada ante el jurado
+evaluador mediante un "pitch".
+
+----------------------------------
+
+Desarrollar una sistema de IA multi-agente
+que permita analizar datos de fuentes públicas
+relacionadas con tres fenómenos de interés
+
+Fenómeno 1
+IA y capacidades estratégicas
+
+Fenómeno 2
+Seguridad Espacial
+
+Fenómeno 3
+
+Amenazas regionales
+
