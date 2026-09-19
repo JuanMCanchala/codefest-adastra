@@ -30,6 +30,18 @@ export function CuerpoComponente({
   nivelColombia,
   onCambiarNivelColombia,
 }: Props) {
+  /*
+   * Identidad de la consulta para la cámara de los mapas: al cambiar, el mapa reencuadra
+   * sobre las regiones con dato. Se deriva del propio resultado —qué se pidió y qué filtros
+   * se aplicaron—, así que otra instrucción del agente mueve la cámara y un simple cambio
+   * de nivel del mapa, que no toca ninguno de los dos, la deja quieta.
+   */
+  const enfoque = JSON.stringify([
+    resultado.componente,
+    resultado.fenomeno,
+    resultado.filtros_aplicados ?? null,
+  ]);
+
   const comunes = {
     titulo: resultado.titulo,
     fenomeno: resultado.fenomeno,
@@ -45,10 +57,11 @@ export function CuerpoComponente({
           datos={resultado.datos}
           nivel={nivelColombia}
           onCambiarNivel={onCambiarNivelColombia}
+          enfoque={enfoque}
         />
       );
     case "mapa_mundo":
-      return <VistaMapaMundo {...comunes} datos={resultado.datos} />;
+      return <VistaMapaMundo {...comunes} datos={resultado.datos} enfoque={enfoque} />;
     case "linea_tiempo":
       return <VistaLineaTiempo {...comunes} datos={resultado.datos} />;
     case "matriz_calor":
