@@ -288,6 +288,78 @@ def test_filtro_en_blanco_no_es_un_filtro(cliente, componente: str) -> None:
         assert cuerpo["datos"] == sin.json()["datos"], (componente, blanco)
 
 
+def test_orden_observacion_cierra_el_ciclo_con_datos_reales(cliente, conexion) -> None:
+    """La ficha de un municipio trae alertas contadas de la tabla, el punto del MGN y las
+    hectáreas de Amazon Mining Watch, y todo lo que es dato lleva refs que existen."""
+    cuerpo = cliente.post(
+        "/api/componente",
+        json={"componente": "orden_observacion", "filtros": {"municipio": "La Montañita"}},
+    ).json()
+    assert cuerpo["filtros_ignorados"] == []
+    assert cuerpo["filtros_aplicados"]["municipio"] == "La Montañita"
+    d = cuerpo["datos"]
+    t = d["territorio"]
+    assert t["divipola"] == "18410" and t["departamento"] == "Caquetá"
+    # El punto de referencia sale del polígono del MGN y cae dentro de Colombia.
+    assert t["centro"] is not None
+    lng, lat = t["centro"]
+    assert -80 < lng < -66 and -4.5 < lat < 13.5
+    # Las alertas son las de la tabla, ni una más.
+    esperadas = conexion.execute(
+        "SELECT COUNT(*) FROM alertas WHERE divipola_mpio = '18410' AND anio BETWEEN 2017 AND 2026"
+    ).fetchone()[0]
+    assert d["alertas"]["total"] == esperadas == sum(p["alertas"] for p in d["alertas"]["por_anio"])
+    for ref in d["alertas"]["refs"]:
+        assert _existe(conexion, ref["doc_id"], ref["chunk_id"])
+    # Presencia armada de Amazon Underworld con su fila de origen.
+    assert d["presencia_armada"] is not None
+    assert d["presencia_armada"]["grupos"]
+    assert _existe(
+        conexion,
+        d["presencia_armada"]["refs"][0]["doc_id"],
+        d["presencia_armada"]["refs"][0]["chunk_id"],
+    )
+    # La Montañita es uno de los siete municipios con detección municipal de AMW.
+    m = d["mineria_detectada"]
+    assert m["en_cobertura"] is True
+    assert m["municipal"]["area_ha"] > 0 and m["municipal"]["poligonos"] > 0
+    assert m["procedencia"]["commit"] and m["procedencia"]["sensor"].startswith("Sentinel-2")
+    # Y aparece como entidad del corpus, con fragmentos reales.
+    assert d["menciones"]["documentos"] > 0
+    assert cuerpo["evidencia"] and cuerpo["total_evidencia"] >= len(cuerpo["evidencia"])
+
+
+def test_orden_observacion_resuelve_nombres_y_declara_lo_que_no_encuentra(cliente) -> None:
+    # Nombre parcial y sin tildes: cae en el municipio con más alertas que lo contiene.
+    parcial = cliente.post(
+        "/api/componente",
+        json={"componente": "orden_observacion", "filtros": {"municipio": "tumaco"}},
+    ).json()
+    assert parcial["datos"]["territorio"]["municipio"] == "San Andrés de Tumaco"
+    # Código DIVIPOLA.
+    codigo = cliente.post(
+        "/api/componente",
+        json={"componente": "orden_observacion", "filtros": {"municipio": "52835"}},
+    ).json()
+    assert codigo["datos"]["territorio"]["divipola"] == "52835"
+    # Un municipio que no existe: se avisa y se abre el de más alertas, nunca una ficha vacía.
+    nada = cliente.post(
+        "/api/componente",
+        json={"componente": "orden_observacion", "filtros": {"municipio": "Narnia"}},
+    ).json()
+    assert nada["filtros_ignorados"] == ["municipio"]
+    assert nada["datos"]["alertas"]["total"] > 0
+    assert nada["datos"]["candidatos"][0]["municipio"] == nada["datos"]["territorio"]["municipio"]
+    # Fuera de la cuenca amazónica no se inventa minería: se dice que no hay medición.
+    fuera = cliente.post(
+        "/api/componente",
+        json={"componente": "orden_observacion", "filtros": {"municipio": "Apartadó"}},
+    ).json()
+    assert fuera["datos"]["mineria_detectada"]["en_cobertura"] is False
+    assert fuera["datos"]["mineria_detectada"]["municipal"] is None
+    assert fuera["datos"]["presencia_armada"] is None
+
+
 def test_distribucion_es_un_histograma_trazable(cliente, conexion) -> None:
     """Las barras suman el total, la cola se recoge en la última y cada barra trae refs reales."""
     cuerpo = cliente.post(

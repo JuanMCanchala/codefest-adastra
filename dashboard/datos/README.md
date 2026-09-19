@@ -32,6 +32,7 @@ modificar nada.
 | `data/adl/corpus/**`                                      | JSON de artículos (fecha, título), fichas de alertas, CSV de Amazon Underworld |
 | `data/space_corpus.db`                                    | base SQL de ADL (19 documentos de F2, entidades curadas)     |
 | Natural Earth 110m / MGN 2018 del DANE                    | geometrías de países, departamentos y municipios             |
+| `amw/colombia.json` (Amazon Mining Watch, `earthrise-media/mining-detector`) | hectáreas de minería aurífera detectadas sobre Sentinel-2: serie nacional y departamental 2018–2026T2 y 7 municipios con polígonos; misma copia que lee el agente (`agent/datos/amw`), generada por `scripts/amw_colombia.py` con commit, modelo y licencia declarados |
 
 ## Tablas
 

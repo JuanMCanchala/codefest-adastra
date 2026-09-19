@@ -25,7 +25,8 @@ export type NombreComponente =
   | "mapa_mundo"
   | "cuadrante_priorizacion"
   | "panel_evidencia"
-  | "distribucion";
+  | "distribucion"
+  | "orden_observacion";
 
 export type Filtros = Record<string, string | number | null>;
 
@@ -141,6 +142,69 @@ export interface DatosDistribucion {
   barras: BarraDistribucion[];
 }
 
+/** Un valor de una columna cerrada y cuántas veces aparece. */
+export interface Conteo {
+  valor: string;
+  n: number;
+}
+
+export interface TerritorioOrden {
+  divipola: string;
+  municipio: string;
+  departamento: string;
+  divipola_dpto: string;
+  /** Centro de la caja del polígono municipal del MGN, [lng, lat]; no es un dato medido. */
+  centro: [number, number] | null;
+  area_km2: number | null;
+  fuente_geometria: string;
+}
+
+export interface AlertasOrden {
+  total: number;
+  ultima_fecha: string | null;
+  por_anio: { anio: number; alertas: number; refs: Ref[] }[];
+  tipos: Conteo[];
+  economias: Conteo[];
+  grupos_armados: Conteo[];
+  poblaciones: Conteo[];
+  codigos: string[];
+  refs: Ref[];
+}
+
+export interface PresenciaArmada {
+  total_grupos: number | null;
+  grupos: string[];
+  con_presencia: number | null;
+  sin_informacion: number | null;
+  poblacion: number | null;
+  area_km2: number | null;
+  refs: Ref[];
+}
+
+export interface PuntoMineria {
+  etiqueta: string;
+  nuevo_ha: number;
+  acumulado_ha: number;
+}
+
+export interface MineriaDetectada {
+  municipal: { area_ha: number; poligonos: number } | null;
+  departamental: PuntoMineria[] | null;
+  nacional_acumulado_ha: number | null;
+  en_cobertura: boolean;
+  cobertura: string | null;
+  procedencia: Record<string, string | null> | null;
+}
+
+export interface DatosOrdenObservacion {
+  territorio: TerritorioOrden;
+  alertas: AlertasOrden;
+  presencia_armada: PresenciaArmada | null;
+  mineria_detectada: MineriaDetectada;
+  menciones: { entidad: string; documentos: number; fragmentos: number; refs: Ref[] } | null;
+  candidatos: { divipola: string; municipio: string; departamento: string; alertas: number }[];
+}
+
 export interface FilaEvidencia {
   doc_id: string;
   chunk_id: IdChunk;
@@ -188,6 +252,10 @@ export type ResultadoComponente =
   | (SobreComponente & {
       componente: "distribucion";
       datos: DatosDistribucion;
+    })
+  | (SobreComponente & {
+      componente: "orden_observacion";
+      datos: DatosOrdenObservacion | null;
     });
 
 export interface CuerpoComponente {

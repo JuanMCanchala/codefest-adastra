@@ -13,6 +13,7 @@ import {
   Layers,
   Map as MapaIcono,
   Quote,
+  Satellite,
   Share2,
   type LucideIcon,
 } from "lucide-react";
@@ -226,6 +227,29 @@ export const CATALOGO: readonly DefinicionComponente[] = [
           { valor: "formato", etiqueta: "Formato" },
           { valor: "idioma", etiqueta: "Idioma" },
         ],
+      },
+    ],
+  },
+  {
+    componente: "orden_observacion",
+    etiqueta: "Orden de observación",
+    descripcion:
+      "De la mención al sobrevuelo: qué dice el corpus de un municipio, qué minería ya midió el satélite ahí y cuándo vuelve a mirarlo cada plataforma. Una ficha para decidir qué observar.",
+    familia: "espacial",
+    icono: Satellite,
+    usaAnios: true,
+    filtros: [
+      {
+        clave: "municipio",
+        etiqueta: "Municipio",
+        tipo: "texto",
+        ayuda: "nombre o código DIVIPOLA, p. ej. Tumaco o 52835; vacío: el de más alertas",
+      },
+      {
+        clave: "economia",
+        etiqueta: "Economía ilícita",
+        tipo: "texto",
+        ayuda: "p. ej. minería",
       },
     ],
   },

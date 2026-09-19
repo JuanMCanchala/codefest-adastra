@@ -18,6 +18,7 @@ METADATA_LOCAL = "C:/Programacion/ANDES/entrega/base_vectorial/encoder_bge-m3/me
 os.environ.setdefault("DB_PATH", str(TABLERO / "datos" / "dashboard.db"))
 os.environ.setdefault("METADATA_PATH", METADATA_LOCAL)
 os.environ.setdefault("GEO_DIR", str(TABLERO / "datos" / "geo"))
+os.environ.setdefault("AMW_PATH", str(TABLERO / "datos" / "amw" / "colombia.json"))
 os.environ.setdefault("WEB_DIST", str(TABLERO / "web" / "dist"))
 
 from fastapi.testclient import TestClient  # noqa: E402

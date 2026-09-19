@@ -20,6 +20,7 @@ from . import (
     mapa_colombia,
     mapa_mundo,
     matriz_calor,
+    orden_observacion,
     panel_evidencia,
     red_entidades,
 )
@@ -37,6 +38,9 @@ CATALOGO: dict[str, str] = {
     # quedó congelado al abrir la evaluación del Reto 1, así que el agente no lo propone.
     "distribucion": "Histograma de una variable contada (fragmentos por documento, alertas "
     "por municipio, menciones por entidad…): la tarea «distribución» del Anexo B.2.1.",
+    "orden_observacion": "Ficha de un municipio que cierra el ciclo mención → territorio → "
+    "sobrevuelo: alertas, presencia armada, minería detectada por satélite y el punto de "
+    "referencia para calcular cuándo lo mira cada satélite.",
 }
 
 MODULOS: dict[str, ModuleType] = {
@@ -49,6 +53,7 @@ MODULOS: dict[str, ModuleType] = {
     "cuadrante_priorizacion": cuadrante_priorizacion,
     "panel_evidencia": panel_evidencia,
     "distribucion": distribucion,
+    "orden_observacion": orden_observacion,
 }
 
 

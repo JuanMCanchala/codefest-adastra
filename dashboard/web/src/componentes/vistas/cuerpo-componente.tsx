@@ -6,6 +6,7 @@ import { VistaLineaTiempo } from "@/componentes/vistas/linea-tiempo";
 import { VistaMapaColombia, type NivelMapa } from "@/componentes/vistas/mapa-colombia";
 import { VistaMapaMundo } from "@/componentes/vistas/mapa-mundo";
 import { VistaMatrizCalor } from "@/componentes/vistas/matriz-calor";
+import { VistaOrdenObservacion } from "@/componentes/vistas/orden-observacion";
 import { VistaPanelEvidencia } from "@/componentes/vistas/panel-evidencia";
 import { VistaRedEntidades } from "@/componentes/vistas/red-entidades";
 import type { Accion, Seleccion } from "@/lib/seleccion";
@@ -80,5 +81,7 @@ export function CuerpoComponente({
       return <VistaPanelEvidencia {...comunes} datos={resultado.datos} />;
     case "distribucion":
       return <VistaDistribucion {...comunes} datos={resultado.datos} />;
+    case "orden_observacion":
+      return <VistaOrdenObservacion {...comunes} datos={resultado.datos} />;
   }
 }

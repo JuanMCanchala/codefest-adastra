@@ -1,0 +1,1074 @@
+{
+  "procedencia": {
+    "fuente": "Amazon Mining Watch — earthrise-media/mining-detector",
+    "url": "https://github.com/earthrise-media/mining-detector",
+    "commit": "eb89719a4eb5566f1c7f7d5e57bf8380edc675e6",
+    "modelo": "48px_v3.7a-i_ensemble (ensamble de CNN sobre parches de Sentinel-2)",
+    "licencia": "MIT",
+    "fecha_publicacion": "2026-09-07",
+    "sensor": "Sentinel-2 (10 m/px)",
+    "cobertura": "cuenca amazónica; no incluye el Bajo Cauca antioqueño",
+    "archivos": [
+      "data/public/mined_areas_by_jurisdiction.csv",
+      "data/outputs/48px_v3.7a-i_ensemble/amazon_basin_48px_v3.7-ensemble_0.50_2023-01-01_2023-12-31-dissolved-0.6.geojson"
+    ]
+  },
+  "nacional": [
+    {
+      "anio": 2018,
+      "trimestre": null,
+      "etiqueta": "2018",
+      "nuevo_ha": 39.0,
+      "acumulado_ha": 39.0
+    },
+    {
+      "anio": 2019,
+      "trimestre": null,
+      "etiqueta": "2019",
+      "nuevo_ha": 4.01,
+      "acumulado_ha": 43.0
+    },
+    {
+      "anio": 2020,
+      "trimestre": null,
+      "etiqueta": "2020",
+      "nuevo_ha": 0.93,
+      "acumulado_ha": 43.93
+    },
+    {
+      "anio": 2021,
+      "trimestre": null,
+      "etiqueta": "2021",
+      "nuevo_ha": 3.29,
+      "acumulado_ha": 47.22
+    },
+    {
+      "anio": 2022,
+      "trimestre": null,
+      "etiqueta": "2022",
+      "nuevo_ha": 103.48,
+      "acumulado_ha": 150.7
+    },
+    {
+      "anio": 2023,
+      "trimestre": null,
+      "etiqueta": "2023",
+      "nuevo_ha": 126.37,
+      "acumulado_ha": 277.06
+    },
+    {
+      "anio": 2024,
+      "trimestre": null,
+      "etiqueta": "2024",
+      "nuevo_ha": 26.59,
+      "acumulado_ha": 303.65
+    },
+    {
+      "anio": 2025,
+      "trimestre": 1,
+      "etiqueta": "2025T1",
+      "nuevo_ha": 23.04,
+      "acumulado_ha": 326.69
+    },
+    {
+      "anio": 2025,
+      "trimestre": 2,
+      "etiqueta": "2025T2",
+      "nuevo_ha": 0.0,
+      "acumulado_ha": 326.69
+    },
+    {
+      "anio": 2025,
+      "trimestre": 3,
+      "etiqueta": "2025T3",
+      "nuevo_ha": 203.44,
+      "acumulado_ha": 530.14
+    },
+    {
+      "anio": 2025,
+      "trimestre": 4,
+      "etiqueta": "2025T4",
+      "nuevo_ha": 0.0,
+      "acumulado_ha": 530.14
+    },
+    {
+      "anio": 2026,
+      "trimestre": 1,
+      "etiqueta": "2026T1",
+      "nuevo_ha": 28.07,
+      "acumulado_ha": 558.21
+    },
+    {
+      "anio": 2026,
+      "trimestre": 2,
+      "etiqueta": "2026T2",
+      "nuevo_ha": 105.6,
+      "acumulado_ha": 663.8
+    }
+  ],
+  "departamentos": {
+    "Amazonas": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 66.43,
+        "acumulado_ha": 66.43
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 66.43
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 19.14,
+        "acumulado_ha": 85.57
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 104.41,
+        "acumulado_ha": 189.98
+      }
+    ],
+    "Guainía": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 39.0,
+        "acumulado_ha": 39.0
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 4.01,
+        "acumulado_ha": 43.0
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.93,
+        "acumulado_ha": 43.93
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 3.29,
+        "acumulado_ha": 47.22
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 8.73,
+        "acumulado_ha": 55.95
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 14.55,
+        "acumulado_ha": 70.5
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 4.79,
+        "acumulado_ha": 75.29
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 23.04,
+        "acumulado_ha": 98.33
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 98.33
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 98.33
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 98.33
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 8.93,
+        "acumulado_ha": 107.26
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 1.19,
+        "acumulado_ha": 108.45
+      }
+    ],
+    "Meta": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 137.02,
+        "acumulado_ha": 137.02
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 137.02
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 137.02
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 137.02
+      }
+    ],
+    "Putumayo": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 94.75,
+        "acumulado_ha": 94.75
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 111.81,
+        "acumulado_ha": 206.56
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 21.8,
+        "acumulado_ha": 228.36
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 228.36
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 228.36
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 228.36
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 228.36
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 228.36
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 228.36
+      }
+    ]
+  },
+  "resguardos_indigenas": {
+    "Resguardo Indígena Curripaco de Tonina, Sejal, San Jose y Otras": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 9.84,
+        "acumulado_ha": 9.84,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 9.84,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 9.84,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 9.84,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 9.84,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 9.84,
+        "estado_juridico": "RESOLUCION"
+      }
+    ],
+    "Resguardo Indígena Rio Cuiari e Isana": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 34.21,
+        "acumulado_ha": 34.21,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 3.75,
+        "acumulado_ha": 37.96,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.93,
+        "acumulado_ha": 38.88,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 3.29,
+        "acumulado_ha": 42.17,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 0.55,
+        "acumulado_ha": 42.72,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 0.31,
+        "acumulado_ha": 43.03,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 43.03,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 1.65,
+        "acumulado_ha": 44.68,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 44.68,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 44.68,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 44.68,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 8.59,
+        "acumulado_ha": 53.27,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 1.19,
+        "acumulado_ha": 54.46,
+        "estado_juridico": "RESOLUCION"
+      }
+    ],
+    "Resguardo Indígena de la Cuenca Media Y Alta del Rio Inirida": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 4.79,
+        "acumulado_ha": 4.79,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 0.26,
+        "acumulado_ha": 5.05,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 5.05,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 5.05,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 8.18,
+        "acumulado_ha": 13.23,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 14.24,
+        "acumulado_ha": 27.47,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 4.79,
+        "acumulado_ha": 32.26,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 11.54,
+        "acumulado_ha": 43.81,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 43.81,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 43.81,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 43.81,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 0.34,
+        "acumulado_ha": 44.14,
+        "estado_juridico": "RESOLUCION"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 44.14,
+        "estado_juridico": "RESOLUCION"
+      }
+    ]
+  },
+  "areas_protegidas": {
+    "Puinawai": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 34.21,
+        "acumulado_ha": 34.21,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 3.75,
+        "acumulado_ha": 37.96,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.93,
+        "acumulado_ha": 38.88,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 3.29,
+        "acumulado_ha": 42.17,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 0.55,
+        "acumulado_ha": 42.72,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 0.31,
+        "acumulado_ha": 43.03,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 43.03,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 13.2,
+        "acumulado_ha": 56.23,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 56.23,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 56.23,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 56.23,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 8.59,
+        "acumulado_ha": 64.82,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 1.19,
+        "acumulado_ha": 66.0,
+        "estado_juridico": "REGISTRADA"
+      }
+    ],
+    "Río Puré": [
+      {
+        "anio": 2018,
+        "trimestre": null,
+        "etiqueta": "2018",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2019,
+        "trimestre": null,
+        "etiqueta": "2019",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2020,
+        "trimestre": null,
+        "etiqueta": "2020",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2021,
+        "trimestre": null,
+        "etiqueta": "2021",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2022,
+        "trimestre": null,
+        "etiqueta": "2022",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2023,
+        "trimestre": null,
+        "etiqueta": "2023",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2024,
+        "trimestre": null,
+        "etiqueta": "2024",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 1,
+        "etiqueta": "2025T1",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 2,
+        "etiqueta": "2025T2",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 0.0,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 3,
+        "etiqueta": "2025T3",
+        "nuevo_ha": 66.43,
+        "acumulado_ha": 66.43,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2025,
+        "trimestre": 4,
+        "etiqueta": "2025T4",
+        "nuevo_ha": 0.0,
+        "acumulado_ha": 66.43,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 1,
+        "etiqueta": "2026T1",
+        "nuevo_ha": 19.14,
+        "acumulado_ha": 85.57,
+        "estado_juridico": "REGISTRADA"
+      },
+      {
+        "anio": 2026,
+        "trimestre": 2,
+        "etiqueta": "2026T2",
+        "nuevo_ha": 104.41,
+        "acumulado_ha": 189.98,
+        "estado_juridico": "REGISTRADA"
+      }
+    ]
+  },
+  "municipios": [
+    {
+      "divipola_mpio": "18410",
+      "municipio": "La Montañita",
+      "departamento": "Caquetá",
+      "area_ha": 284.04,
+      "poligonos": 3
+    },
+    {
+      "divipola_mpio": "94884",
+      "municipio": "Puerto Colombia",
+      "departamento": "Guainía",
+      "area_ha": 204.87,
+      "poligonos": 4
+    },
+    {
+      "divipola_mpio": "94887",
+      "municipio": "Pana Pana",
+      "departamento": "Guainía",
+      "area_ha": 162.32,
+      "poligonos": 3
+    },
+    {
+      "divipola_mpio": "94886",
+      "municipio": "Cacahual",
+      "departamento": "Guainía",
+      "area_ha": 103.45,
+      "poligonos": 2
+    },
+    {
+      "divipola_mpio": "94001",
+      "municipio": "Inírida",
+      "departamento": "Guainía",
+      "area_ha": 97.77,
+      "poligonos": 2
+    },
+    {
+      "divipola_mpio": "86571",
+      "municipio": "Puerto Guzmán",
+      "departamento": "Putumayo",
+      "area_ha": 27.04,
+      "poligonos": 1
+    },
+    {
+      "divipola_mpio": "97511",
+      "municipio": "Pacoa",
+      "departamento": "Vaupés",
+      "area_ha": 27.03,
+      "poligonos": 1
+    }
+  ],
+  "conteos_poligonos": {
+    "poligonos_totales": 7318,
+    "geometrias_nulas": 3,
+    "fuera_de_colombia": 7299,
+    "en_colombia": 16
+  }
+}

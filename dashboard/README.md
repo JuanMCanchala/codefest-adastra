@@ -43,7 +43,7 @@ dashboard/
 | Método | Ruta | Respuesta |
 | --- | --- | --- |
 | GET | `/api/salud` | `{estado, tablas: {...conteos}, textos: {disponible, indexado}}` |
-| GET | `/api/catalogo` | los 9 componentes (los 8 del agente más `distribucion`) con sus filtros, opciones y valores por defecto |
+| GET | `/api/catalogo` | los 10 componentes (los 8 del agente más `distribucion` y `orden_observacion`) con sus filtros, opciones y valores por defecto |
 | POST | `/api/componente` | `{componente, fenomeno?, filtros?}` → datos, `evidencia`, `nota_metodo`, `total_evidencia`, `filtros_ignorados` |
 | POST | `/api/visualizar` | `{instruccion}` → agente del Reto 1 → especificación ejecutada |
 | GET | `/api/evidencia/{chunk_id}` | fragmento con `doc_id`, fuente, metadatos del documento y texto |
@@ -52,9 +52,11 @@ dashboard/
 
 Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `composicion_corpus`,
 `linea_tiempo`, `matriz_calor`, `red_entidades`, `mapa_colombia`, `mapa_mundo`,
-`cuadrante_priorizacion`, `panel_evidencia`; más `distribucion` (histograma, Anexo B.2.1), que
-solo se alcanza desde el selector del tablero o por URL porque el catálogo del agente quedó
-congelado con la evaluación del Reto 1. Límites: `evidencia` ≤ 200 elementos (con
+`cuadrante_priorizacion`, `panel_evidencia`; más `distribucion` (histograma, Anexo B.2.1) y
+`orden_observacion` (la ficha «de la mención al sobrevuelo»: alertas del municipio, presencia
+armada, minería medida por Amazon Mining Watch y el punto sobre el que la SPA propaga las
+pasadas satelitales), que solo se alcanzan desde el selector del tablero o por URL porque el
+catálogo del agente quedó congelado con la evaluación del Reto 1. Límites: `evidencia` ≤ 200 elementos (con
 `total_evidencia`), `refs` ≤ 20 por elemento cliqueable, `top` ≤ 30 (≤ 60 nodos en la red),
 `limite` ≤ 20 en `panel_evidencia`.
 

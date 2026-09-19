@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     db_path: Path = Path("/app/datos/dashboard.db")
     metadata_path: Path = Path("/data/base_vectorial/encoder_bge-m3/metadata.jsonl")
     geo_dir: Path = Path("/app/datos/geo")
+    # Detecciones de minería de Amazon Mining Watch reorganizadas por
+    # `scripts/amw_colombia.py` (misma copia que lee el agente en agent/datos/amw).
+    amw_path: Path = Path("/app/datos/amw/colombia.json")
 
     # SPA compilada (Vite) servida por el mismo puerto que la API (Anexo A.4).
     web_dist: Path = Path("/app/web")

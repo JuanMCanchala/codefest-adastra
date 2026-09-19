@@ -50,6 +50,7 @@ RUN curl -fsSL "$BASE_VECTORIAL_URL" -o /tmp/base.zip \
 COPY --chown=tablero api/app ./app
 COPY --chown=tablero datos/dashboard.db ./datos/dashboard.db
 COPY --chown=tablero datos/geo ./datos/geo
+COPY --chown=tablero datos/amw ./datos/amw
 COPY --from=web --chown=tablero /web/dist ./web
 
 EXPOSE 8080
