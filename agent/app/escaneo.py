@@ -33,11 +33,19 @@ def _neutralizar(texto: str, tramos: list[tuple[int, int]]) -> str:
     return "".join(partes)
 
 
-def _chunk_int(chunk_id: str) -> int:
+def clave_chunk(chunk_id: str) -> int:
+    """Clave numérica de un ``chunk_id``, o -1 si no es numérico.
+
+    Pública porque ``agents.py`` la necesita para cruzar un fragmento contra la lista
+    ``marcados`` que devuelve ``sanear_fragmentos`` y decidir si lo datamarca.
+    """
     try:
         return int(chunk_id)
     except (TypeError, ValueError):
         return -1
+
+
+_chunk_int = clave_chunk  # alias histórico
 
 
 def sanear_fragmentos(fragmentos: list[Fragmento]) -> tuple[list[Fragmento], list[int]]:

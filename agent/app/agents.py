@@ -16,7 +16,7 @@ from pydantic import ValidationError
 
 from . import prompts
 from .catalogo import SpecVisualizacion, describir_catalogo
-from .escaneo import sanear_fragmentos
+from .escaneo import clave_chunk, sanear_fragmentos
 from .guard import datamarcar, delimitar
 from .llm import LLM
 from .planner import descomponer, intercalar
@@ -139,11 +139,26 @@ class AgenteCorpus:
             )
 
         tracker.recuperado([f.texto for f in fragmentos])
-        # Datamarking (S3, spotlighting) solo sobre el texto del fragmento: la marca se
-        # intercala entre sus palabras, no en la numeración "[n] (doc_id)" que el agente
-        # necesita citar limpia.
+        # Datamarking (S3, spotlighting) solo sobre los fragmentos que el escaneo marcó
+        # como sospechosos, no sobre los seis.
+        #
+        # Medido el 19-sep-2026: intercalar la marca entre palabras multiplica por 2,14
+        # los tokens del contexto (314 → 673 con el tokenizador de BGE-M3). Aplicado a
+        # todos, subía el gasto de 2 627 a 4 328 tokens por pregunta: un +65 % en la
+        # métrica que pesa el 40 % del bloque de Eficiencia y que se normaliza contra los
+        # demás equipos. La defensa es contra inyección indirecta, y esa solo existe en un
+        # fragmento que trae instrucciones embebidas: pagarla en los limpios es gasto sin
+        # amenaza.
+        #
+        # En un fragmento sospechoso el escaneo ya sustituyó el tramo detectado por un
+        # aviso; el datamarking se mantiene como segunda capa sobre el resto de ESE
+        # fragmento, para los tramos que el regex no formuló. La marca va solo en el
+        # texto, nunca en la numeración "[n] (doc_id)" que el agente debe citar limpia.
+        sospechosos = set(marcados)
         contexto = "\n\n".join(
-            f"[{i}] ({f.doc_id}) {datamarcar(f.texto)}" for i, f in enumerate(fragmentos, 1)
+            f"[{i}] ({f.doc_id}) "
+            + (datamarcar(f.texto) if clave_chunk(f.chunk_id) in sospechosos else f.texto)
+            for i, f in enumerate(fragmentos, 1)
         )
         texto = self._llm.completar(
             tracker=tracker,
