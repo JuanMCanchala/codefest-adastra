@@ -1,5 +1,6 @@
+import type { FeatureCollection } from "geojson";
 import { Info } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 import { obtenerGeoDepartamentos, obtenerGeoMunicipios } from "@/api/cliente";
 import type { FilaMapaColombia } from "@/api/tipos";
@@ -21,6 +22,8 @@ export type NivelMapa = "departamento" | "municipio";
 interface Props extends PropsVista<FilaMapaColombia[]> {
   nivel: NivelMapa;
   onCambiarNivel: (nivel: NivelMapa) => void;
+  /** Identidad de la consulta: al cambiar, la cámara reencuadra sobre los datos. */
+  enfoque: string;
 }
 
 /** Coropleta de Colombia: departamentos y, al acercar el zoom, municipios. */
@@ -30,13 +33,31 @@ export function VistaMapaColombia({
   seleccion,
   onSeleccionar,
   onCambiarNivel,
+  enfoque,
 }: Props) {
   const geo = useRecurso(`geo-${nivel}`, (senal) =>
     nivel === "municipio" ? obtenerGeoMunicipios(senal) : obtenerGeoDepartamentos(senal),
   );
 
-  const claveGeo = nivel === "municipio" ? "divipola_mpio" : "divipola_dpto";
-  const claveNombre = nivel === "municipio" ? "municipio" : "departamento";
+  /**
+   * Geometría dibujada. Al cruzar el umbral municipal hay que bajar el otro GeoJSON, y si
+   * mientras tanto la vista cambiara al estado de carga, el mapa se desmontaría y volvería
+   * al encuadre inicial: acercarse sería imposible. Se sigue dibujando la capa anterior
+   * -con las claves que le corresponden- hasta que la nueva está lista.
+   */
+  const dibujada = useRef<{
+    geojson: FeatureCollection;
+    claveGeo: string;
+    claveNombre: string;
+  } | null>(null);
+  if (geo.fase === "listo") {
+    dibujada.current = {
+      geojson: geo.dato,
+      claveGeo: nivel === "municipio" ? "divipola_mpio" : "divipola_dpto",
+      claveNombre: nivel === "municipio" ? "municipio" : "departamento",
+    };
+  }
+  const capa = dibujada.current;
 
   const valores = useMemo(() => {
     const mapa = new Map<string, number>();
@@ -85,11 +106,11 @@ export function VistaMapaColombia({
       ? (datos.find((f) => f.nombre === seleccion.titulo)?.divipola ?? null)
       : null;
 
-  if (geo.fase === "cargando") {
-    return <Cargando mensaje="Descargando geometrías del Marco Geoestadístico Nacional…" />;
-  }
-  if (geo.fase === "error") {
+  if (geo.fase === "error" && !capa) {
     return <AvisoError mensaje={geo.mensaje} onReintentar={geo.recargar} />;
+  }
+  if (!capa) {
+    return <Cargando mensaje="Descargando geometrías del Marco Geoestadístico Nacional…" />;
   }
   if (datos.length === 0) {
     return (
@@ -104,34 +125,44 @@ export function VistaMapaColombia({
     <div className="grid grid-cols-[minmax(0,1fr)] gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="relative h-[var(--alto-vista,520px)] border-b border-borde lg:border-b-0 lg:border-r">
         <MapaCoropleta
-          geojson={geo.dato}
-          claveGeo={claveGeo}
-          claveNombre={claveNombre}
+          geojson={capa.geojson}
+          claveGeo={capa.claveGeo}
+          claveNombre={capa.claveNombre}
           valores={valores}
           maximo={maximo}
           unidad="alertas"
           centro={CENTRO}
           zoom={4.6}
-          zoomMinimo={4}
-          zoomMaximo={9.5}
+          zoomMinimo={3}
+          // Hasta donde llega la imagen: Esri sirve World Imagery hasta el nivel 19, que en
+          // Colombia son unos 30 cm por píxel. Pasado ese nivel solo habría teselas ampliadas
+          // —o el aviso de «sin cobertura» del propio Esri—, así que no se ofrece.
+          zoomMaximo={19}
           seleccionada={seleccionada}
           onClicRegion={seleccionarDivipola}
+          enfoque={enfoque}
+          // El reencuadre no cruza solo el umbral municipal: ese salto lo decide el usuario.
+          zoomMaximoEnfoque={ZOOM_MUNICIPIO - 0.2}
           onZoom={(zoom) => {
             const deseado: NivelMapa = zoom >= ZOOM_MUNICIPIO ? "municipio" : "departamento";
             if (deseado !== nivel) {
               onCambiarNivel(deseado);
             }
           }}
+          superposicion={
+            <>
+              <div className="pointer-events-none absolute bottom-12 left-3">
+                <LeyendaEscala maximo={maximo} unidad="alertas tempranas" />
+              </div>
+              <p className="pointer-events-none absolute left-3 top-3 inline-flex max-w-[calc(100%-4.5rem)] items-center gap-1.5 rounded border border-borde bg-panel px-2 py-1 text-xs text-apagado">
+                <Info aria-hidden="true" className="size-3" />
+                {nivel === "municipio"
+                  ? "Detalle municipal · aleje el zoom para volver a departamentos"
+                  : "Departamentos · acerque el zoom para ver municipios"}
+              </p>
+            </>
+          }
         />
-        <div className="pointer-events-none absolute bottom-9 left-3">
-          <LeyendaEscala maximo={maximo} unidad="alertas tempranas" />
-        </div>
-        <p className="pointer-events-none absolute left-3 top-3 inline-flex max-w-[calc(100%-4.5rem)] items-center gap-1.5 rounded border border-borde bg-panel px-2 py-1 text-xs text-apagado">
-          <Info aria-hidden="true" className="size-3" />
-          {nivel === "municipio"
-            ? "Detalle municipal · aleje el zoom para volver a departamentos"
-            : "Departamentos · acerque el zoom para ver municipios"}
-        </p>
       </div>
       <div className="barra-fina max-h-[var(--alto-vista,520px)] overflow-y-auto">
         <TablaRanking

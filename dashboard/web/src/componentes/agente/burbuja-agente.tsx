@@ -85,7 +85,9 @@ export function BurbujaAgente({
   onCambiarNivelColombia,
 }: Props) {
   const escritorio = useEscritorio();
-  const [abierta, setAbierta] = useState(true);
+  // Nace cerrada: el tablero es lo primero que hay que ver, y la burbuja de la esquina
+  // basta para llamar al agente cuando haga falta.
+  const [abierta, setAbierta] = useState(false);
   const [ampliada, setAmpliada] = useState(false);
   const [verHistorial, setVerHistorial] = useState(false);
   const [izquierda, setIzquierda] = useState<number | null>(null);

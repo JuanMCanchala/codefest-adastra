@@ -15,6 +15,8 @@ const CLAVE = "aerocode:tema";
 
 /** Valores del modo oscuro: los mismos de `estilos.css`, por si se lee antes de montar. */
 export const TEMA = {
+  /** Modo vigente: lo consultan las capas que eligen recurso según el tema. */
+  modo: "oscuro" as Modo,
   fondo: "#0a0a0a",
   panel: "#111111",
   elevado: "#1a1a1a",
@@ -48,7 +50,7 @@ const DERIVADOS: Record<Modo, Pick<typeof TEMA, "mapaFondo" | "sinDato" | "franj
     },
   };
 
-const VARIABLES: Record<string, keyof typeof TEMA> = {
+const VARIABLES: Record<string, Exclude<keyof typeof TEMA, "modo">> = {
   "--color-fondo": "fondo",
   "--color-panel": "panel",
   "--color-elevado": "elevado",
@@ -71,6 +73,7 @@ export function sincronizarTema(modo: Modo): void {
     }
   }
   Object.assign(TEMA, DERIVADOS[modo]);
+  TEMA.modo = modo;
 }
 
 export function modoGuardado(): Modo {

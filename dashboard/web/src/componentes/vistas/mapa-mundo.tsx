@@ -16,8 +16,16 @@ import { formatearEntero, maximoDe } from "@/lib/utils";
  */
 const CENTRO: [number, number] = [-55, 10];
 
+/** Tope del reencuadre: con pocos países el globo no debe caer sobre una ciudad. */
+const ZOOM_MAXIMO_ENFOQUE = 3.4;
+
+interface Props extends PropsVista<FilaMapaMundo[]> {
+  /** Identidad de la consulta: al cambiar, la cámara reencuadra sobre los datos. */
+  enfoque: string;
+}
+
 /** Coropleta mundial de menciones de países en el corpus. */
-export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<FilaMapaMundo[]>) {
+export function VistaMapaMundo({ datos, seleccion, onSeleccionar, enfoque }: Props) {
   const geo = useRecurso("geo-paises", (senal) => obtenerGeoPaises(senal));
 
   const valores = useMemo(() => {
@@ -93,16 +101,21 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<F
           maximo={maximo}
           unidad="menciones"
           centro={CENTRO}
-          esferico
           zoom={1.6}
           zoomMinimo={0.8}
-          zoomMaximo={6}
+          zoomMaximo={17}
           seleccionada={seleccionada}
           onClicRegion={seleccionarPais}
+          enfoque={enfoque}
+          zoomMaximoEnfoque={ZOOM_MAXIMO_ENFOQUE}
+          escalaAltura={800_000}
+          globo
+          superposicion={
+            <div className="pointer-events-none absolute bottom-12 left-3">
+              <LeyendaEscala maximo={maximo} unidad="menciones en el corpus" />
+            </div>
+          }
         />
-        <div className="pointer-events-none absolute bottom-9 left-3">
-          <LeyendaEscala maximo={maximo} unidad="menciones en el corpus" />
-        </div>
       </div>
       <div className="barra-fina max-h-[var(--alto-vista,520px)] overflow-y-auto">
         <TablaRanking
