@@ -39,6 +39,29 @@ d('BAAI/bge-m3', ignore_patterns=x); \
 d('cross-encoder/mmarco-mMiniLMv2-L12-H384-v1', ignore_patterns=x + ['openvino/*']); \
 d('proventra/mdeberta-v3-base-prompt-injection', ignore_patterns=x)"
 
+# Clasificador de inyección: la imagen declara cuál usa, para que el contenedor no tenga
+# que deducirlo. El de por defecto es abierto y ya quedó descargado arriba.
+ARG MODELO_INYECCION=proventra/mdeberta-v3-base-prompt-injection
+ENV MODELO_INYECCION=${MODELO_INYECCION}
+
+# Para usar en su lugar Llama Prompt Guard 2 (acceso restringido) hay que descargarlo
+# aquí. El token NO puede ir en un ARG ni en un ENV: quedaría registrado en
+# `docker history` y filtraría la credencial dentro de la imagen. Va como secreto de
+# BuildKit, descomentando estas líneas y construyendo así:
+#
+#   DOCKER_BUILDKIT=1 docker build --secret id=hf_token,env=HF_TOKEN \
+#     --build-arg MODELO_INYECCION=meta-llama/Llama-Prompt-Guard-2-86M ./agent
+#
+# RUN --mount=type=secret,id=hf_token,uid=10001 \
+#     python -c "from huggingface_hub import snapshot_download as d; \
+# d('$MODELO_INYECCION', token=open('/run/secrets/hf_token').read().strip(), \
+# ignore_patterns=['onnx/*', '*.onnx', '*.h5', '*.msgpack', '*.ot'])"
+#
+# Quedan comentadas a propósito: `--mount` exige BuildKit y, si el constructor de Coolify
+# no lo trae, la imagen del agente dejaría de construir. Antes de activarlas hay que
+# comprobar que la build de Coolify usa BuildKit. La medición que sostiene que el modelo
+# por defecto detecta más está en docs/investigacion/03_arquitectura/reranking_y_seguridad.md.
+
 # Base vectorial de la Etapa 1 (release público, 507 MB comprimidos).
 ARG BASE_VECTORIAL_URL=https://github.com/JuanMCanchala/ad-astra-retrieval/releases/download/base-vectorial-v1/base_vectorial.zip
 RUN curl -fsSL "$BASE_VECTORIAL_URL" -o /tmp/base.zip \

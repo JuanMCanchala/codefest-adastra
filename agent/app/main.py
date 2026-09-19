@@ -41,7 +41,9 @@ def _crear_sistema() -> tuple[Sistema, object]:
         RecuperadorEtapa1(cfg.base_vectorial_dir, cfg.retrieval_config)
     )
     clasificador = (
-        ClasificadorInyeccion(cfg.umbral_inyeccion) if cfg.clasificador_inyeccion else None
+        ClasificadorInyeccion(cfg.umbral_inyeccion, cfg.modelo_inyeccion, cfg.hf_token)
+        if cfg.clasificador_inyeccion
+        else None
     )
     return Sistema(crear_llm(), recuperador, cfg, clasificador), recuperador
 

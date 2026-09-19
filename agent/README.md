@@ -65,7 +65,32 @@ imagen.
 | `BASE_VECTORIAL_DIR`       | `/data/base_vectorial`                                                                   | Ruta de la base vectorial                                                                                   |
 | `FRAGMENTOS_CONTEXTO`      | `6`                                                                                      | Fragmentos que recibe el redactor                                                                           |
 | `GRAFO_EN_RECUPERACION`    | `false`                                                                                  | Integra el grafo en la recuperación. Carga GLiNER, así que antes hay que medir la latencia.                 |
+| `MODELO_INYECCION`         | `proventra/mdeberta-v3-base-prompt-injection`                                            | Clasificador de la segunda capa de seguridad. Alternativa medida: `meta-llama/Llama-Prompt-Guard-2-86M`     |
+| `UMBRAL_INYECCION`         | `0.5`                                                                                    | Probabilidad mínima para tratar la pregunta como ataque                                                     |
+| `HF_TOKEN`                 | —                                                                                        | Solo para modelos de acceso restringido (Prompt Guard 2). Va en Coolify, nunca en la imagen ni en el código |
 | `CORS_ORIGINS`             | `*`                                                                                      | Orígenes permitidos (frontagent y dashboard)                                                                |
+
+### Cambiar el clasificador de inyección
+
+`MODELO_INYECCION` acepta cualquier clasificador binario de inyección de HuggingFace: la
+etiqueta de ataque se deduce de `id2label`, así que conviven los que usan
+`SAFE`/`INJECTION` y los que usan `LABEL_0`/`LABEL_1`.
+
+El valor por defecto es el que **más detecta en nuestro dominio**. Medido sobre las 50
+preguntas oficiales, 14 preguntas legítimas con vocabulario "peligroso" y 24 ataques
+difíciles en ES/EN/PT/FR que el filtro de patrones no puede ver:
+
+| Pila                                           | Falsos positivos | Ataques difíciles | Latencia |
+| ---------------------------------------------- | ---------------- | ----------------- | -------- |
+| patrones + `proventra/mdeberta` (por defecto)  | 0 / 50           | **15/24 (62 %)**  | 245 ms   |
+| patrones + `Llama-Prompt-Guard-2-86M`          | 0 / 50           | 8/24 (33 %)       | 220 ms   |
+| patrones + ambos                               | 0 / 50           | 15/24 (62 %)      | 450 ms   |
+
+El detalle está en
+[`docs/investigacion/03_arquitectura/reranking_y_seguridad.md`](../docs/investigacion/03_arquitectura/reranking_y_seguridad.md) §2.7.
+Prompt Guard 2 es de acceso restringido: para usarlo hay que descargarlo **en la
+construcción** con un secreto de BuildKit (ver el bloque comentado del `Dockerfile`).
+Nunca se pasa el token como `ARG` ni como `ENV`, porque quedaría en `docker history`.
 
 > **Pendiente:** confirmar los IDs de modelo en la consola de Bedrock y elegirlos con los
 > benchmarks de `docs/investigacion/03_arquitectura/benchmarks_modelos_bedrock.md`. La ficha

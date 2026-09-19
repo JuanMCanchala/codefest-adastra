@@ -42,6 +42,13 @@ class Settings(BaseSettings):
     # --- Seguridad: clasificador de prompt injection (segunda capa, en CPU) ---
     clasificador_inyeccion: bool = True
     umbral_inyeccion: float = 0.5
+    # Alternativa medida: "meta-llama/Llama-Prompt-Guard-2-86M" (acceso restringido,
+    # necesita HF_TOKEN en la construcción). Detectó 8/24 ataques difíciles frente a
+    # 15/24 del valor por defecto; ver el encabezado de clasificador.py.
+    modelo_inyeccion: str = "proventra/mdeberta-v3-base-prompt-injection"
+    # Solo se usa para descargar modelos de acceso restringido. Nunca va en la imagen ni
+    # en el código: se declara en las variables de entorno de Coolify (Anexo A.6).
+    hf_token: str = ""
 
     # --- Servidor ---
     cors_origins: str = "*"
