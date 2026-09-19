@@ -107,7 +107,7 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar, enfoque }: Pro
           escalaAltura={800_000}
           globo
         />
-        <div className="pointer-events-none absolute bottom-9 left-3">
+        <div className="pointer-events-none absolute bottom-12 left-3">
           <LeyendaEscala maximo={maximo} unidad="menciones en el corpus" />
         </div>
       </div>

@@ -129,7 +129,7 @@ export function VistaMapaColombia({
             }
           }}
         />
-        <div className="pointer-events-none absolute bottom-9 left-3">
+        <div className="pointer-events-none absolute bottom-12 left-3">
           <LeyendaEscala maximo={maximo} unidad="alertas tempranas" />
         </div>
         <p className="pointer-events-none absolute left-3 top-3 inline-flex max-w-[calc(100%-4.5rem)] items-center gap-1.5 rounded border border-borde bg-panel px-2 py-1 text-xs text-apagado">

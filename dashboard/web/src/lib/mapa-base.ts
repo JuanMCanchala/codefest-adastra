@@ -73,7 +73,7 @@ export const RELIEVE = {
   teselas: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
   codificacion: "terrarium",
   zoomMaximo: 12,
-  atribucion: "Elevación: Mapzen / AWS Terrain Tiles",
+  atribucion: "Elevación: AWS Terrain Tiles",
   exageracion: 1.3,
 } as const;
 
