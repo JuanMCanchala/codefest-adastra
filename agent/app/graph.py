@@ -22,7 +22,7 @@ from langgraph.graph import END, StateGraph
 from . import prompts
 from .agents import AgenteCorpus, AgenteVisualizacion, Decision, Orquestador
 from .contract import ChatResponse, Evaluacion
-from .guard import RECHAZO, detectar_inyeccion, sanear_salida
+from .guard import RECHAZO, Nivel, evaluar, sanear_salida
 from .llm import LLM, ErrorModelo, PresupuestoAgotado
 from .retrieval import Recuperador
 from .router import Enrutador, RouterEmbeddings
@@ -73,17 +73,30 @@ class Sistema:
 
     # ------------------------------------------------------------------ nodos
     def _n_guarda(self, s: Estado) -> Estado:
-        # Capa 1: patrones deterministas. Capa 2: clasificador multilingüe en CPU.
-        # Ninguna llama a un modelo generativo, así que un rechazo no gasta tokens.
-        capa = None
-        if detectar_inyeccion(s["pregunta"]):
-            capa = "patrón de inyección"
-        elif self.clasificador is not None and self.clasificador.es_ataque(s["pregunta"]):
-            capa = "clasificador de inyección"
-        if capa:
+        # Dos niveles (decisión S1). Capa 1: patrones deterministas, ya separados en
+        # rechazo (credenciales, ejecución de código: alto daño, alta precisión) y
+        # aislar (todo lo demás: cambio de rol, jailbreak, exfiltración del prompt).
+        # Capa 2: el clasificador solo corre si los patrones no vieron nada, y lo que
+        # atrapa —lo que un regex no formuló— se trata igual que un aislamiento, no
+        # como rechazo duro: no es de la categoría alto-daño/alta-precisión que
+        # justifica bloquear sin más.
+        nivel, motivo = evaluar(s["pregunta"])
+        if (
+            nivel is Nivel.LIMPIO
+            and self.clasificador is not None
+            and self.clasificador.es_ataque(s["pregunta"])
+        ):
+            nivel, motivo = Nivel.AISLAR, "clasificador de inyección"
+
+        if nivel is Nivel.RECHAZO:
             s["tracker"].agente(self.orquestador.nombre)
-            s["tracker"].herramienta("filtro_seguridad", {"accion": "rechazo"}, capa)
+            s["tracker"].herramienta("filtro_seguridad", {"accion": "rechazo"}, motivo)
             return {"respuesta": RECHAZO}
+        if nivel is Nivel.AISLAR:
+            # No se bloquea: sigue el flujo normal. La pregunta ya viaja delimitada como
+            # dato no confiable en los tres prompts (agents.py), rechazo/aislar aquí solo
+            # decide si se corta antes de gastar una llamada o se deja seguir.
+            s["tracker"].herramienta("filtro_seguridad", {"accion": "aislar"}, motivo)
         return {}
 
     def _n_enrutador(self, s: Estado) -> Estado:
