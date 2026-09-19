@@ -1,0 +1,67 @@
+{
+  "agente": {
+    "nombre": "Analista Estratégico AD ASTRA",
+    "descripcion": "Sistema multiagente que responde preguntas sobre IA y capacidades estratégicas, seguridad del entorno espacial y dinámicas territoriales en América Latina, con respuestas citadas y trazables a doc_id y chunk_id del corpus, y que genera visualizaciones del tablero a partir de instrucciones en lenguaje natural.",
+    "version": "1.0.0",
+    "endpoint": "https://agent.NOMBRE_EQUIPO.codefest2026.augusta.avaldigitallabs.com/chat",
+    "input_modes": ["text/plain", "application/json"],
+    "output_modes": ["application/json"]
+  },
+  "orquestador": {
+    "nombre": "orquestador",
+    "descripcion": "Recibe la pregunta, aplica el filtro de seguridad contra prompt injection y clasifica la intención (corpus, visualización, ambas o fuera de alcance). Delega en el sub-agente especializado con una consulta de búsqueda reformulada y el fenómeno detectado.",
+    "modelo": "gpt-oss-20b",
+    "proveedor": "openai",
+    "tools": [
+      {
+        "name": "filtro_seguridad",
+        "descripcion": "Detecta de forma determinista intentos de inyección de instrucciones o exfiltración y responde con un rechazo cortés sin invocar modelos.",
+        "input_parameters": { "pregunta": "string" }
+      }
+    ]
+  },
+  "subagentes": [
+    {
+      "id": "agente_corpus",
+      "nombre": "Agente de corpus",
+      "descripcion": "Recupera fragmentos de la base vectorial de la Etapa 1 (BGE-M3 denso y disperso, FAISS, fusión RRF y reranking) y redacta una respuesta basada únicamente en ellos, citando cada afirmación. Se abstiene cuando la evidencia no alcanza.",
+      "modelo": "gpt-oss-120b",
+      "proveedor": "openai",
+      "activado_por": "orquestador",
+      "ejemplos_de_activacion": [
+        "¿Cómo están empleando los sistemas no tripulados potenciados por IA en operaciones militares?",
+        "¿Qué capacidades antisatélite han demostrado los Estados en la última década?"
+      ],
+      "tools": [
+        {
+          "name": "buscar_corpus",
+          "descripcion": "Búsqueda híbrida con reranking sobre el corpus de los tres fenómenos. Devuelve fragmentos con doc_id y chunk_id.",
+          "input_parameters": { "query": "string", "k": "integer" }
+        }
+      ]
+    },
+    {
+      "id": "agente_visualizacion",
+      "nombre": "Agente de visualización",
+      "descripcion": "Elige, de un catálogo cerrado, el componente del tablero que responde a la tarea analítica pedida (comparación, distribución, relación, tendencia, composición o espacial) y define sus filtros. Los valores los calcula el backend a partir del corpus, con trazabilidad a doc_id y chunk_id.",
+      "modelo": "gpt-oss-20b",
+      "proveedor": "openai",
+      "activado_por": "orquestador",
+      "ejemplos_de_activacion": [
+        "Muéstrame en un mapa los departamentos de Colombia con más alertas tempranas",
+        "Compara la evolución de documentos por fenómeno en el tiempo"
+      ],
+      "tools": [
+        {
+          "name": "seleccionar_componente",
+          "descripcion": "Valida el componente elegido contra el catálogo y devuelve su especificación con filtros.",
+          "input_parameters": {
+            "componente": "string",
+            "fenomeno": "integer",
+            "filtros": "object"
+          }
+        }
+      ]
+    }
+  ]
+}
