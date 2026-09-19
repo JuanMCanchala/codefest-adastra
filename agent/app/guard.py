@@ -13,28 +13,49 @@ from __future__ import annotations
 import re
 import unicodedata
 
+# Patrones de alta precisión: exigen que la orden se dirija al asistente (segunda
+# persona, "tus reglas", "a partir de ahora"...). Las preguntas legítimas del dominio
+# ("¿qué beneficios dan los satélites?", "¿Rusia actúa como mediador?", "nuevas reglas de
+# la ONU", "quién ejecuta el comando conjunto") NO deben dispararlos: ver pruebas.
 _PATRONES = [
     # anular o reemplazar instrucciones
     r"\b(ignora|ignore|olvida|forget|desconsidere|omite|disregard)\b.{0,40}"
     r"\b(instrucc|instruction|regla|rule|indicac|prompt|anterior|previous|above|arriba)",
-    r"\b(nuevas?|new)\s+(instrucciones|instructions|reglas|rules)\b",
+    r"\b(tus|your|sus)\s+(nuevas\s+)?(instrucciones|reglas|rules|instructions)\b"
+    r".{0,30}\b(son|ahora|now|are)\b",
+    r"\bnuevas instrucciones\s*:",
     # exfiltrar el prompt de sistema o la configuración
     r"\b(system|sistema)\s*(prompt|message|mensaje)\b",
-    r"\b(muestra|revela|imprime|repite|show|reveal|print|repeat|dime|tell me)\b.{0,40}"
-    r"\b(prompt|instrucc|instruction|configurac|configuration|reglas internas)",
-    r"\b(api[\s_-]?key|token|contrase(n|ñ)a|password|secret|credencial|credential)s?\b",
+    r"\b(muestra|revela|imprime|repite|show|reveal|print|repeat|dime|tell me|traduce|translate|"
+    r"resume|summari[sz]e|parafrasea|escribe|codifica|encode)\b.{0,30}"
+    r"\b(tus|your|tu|las)\s+(prompt|instrucciones|instructions|reglas|rules|indicaciones|"
+    r"configuraci[oó]n|configuration)\b",
+    r"\b(texto|mensaje|frase|text|message)\b.{0,30}\b(arriba de esta|antes de mi|above|before my)",
+    r"\b(primera|first)\s+(frase|instrucci[oó]n|mensaje|line|message)\b.{0,40}"
+    r"\b(te\s+dieron|te\s+dijeron|recibiste|you\s+(were|received))",
+    r"\b(tu|your|el|the)\s+(api[\s_-]?key|token de acceso|access token|bearer token|"
+    r"contrase(n|ñ)a|password|credenciales|credentials)\b",
     r"\b(variables? de entorno|environment variables?|os\.environ|\.env)\b",
+    r"\b(base64|rot13|leetspeak)\b",
     # cambio de rol / jailbreak
-    r"\b(act[uú]a como|act as|pretend|finge|haz de cuenta|roleplay)\b",
+    r"\b(a partir de ahora|from now on|desde ahora)\b.{0,30}\b(eres|ser[aá]s|you are|act[uú]a)",
+    r"\b(act[uú]a|comp[oó]rtate|act)\s+(como|as)\b.{0,60}\b(sin|without|no)\s+"
+    r"(restricci|filtro|l[ií]mite|rules|filter)",
+    r"\b(eres|ser[aá]s|you are)\s+(ahora\s+)?(un[ao]?\s+)?(gpt|ia|ai|asistente|modelo)?\s*"
+    r"(sin|without)\s+(filtros|restricciones|l[ií]mites|filters|restrictions)",
     r"\b(modo|mode)\s+(desarrollador|developer|dan|jailbreak|sin restricciones|god)\b",
-    r"\bjailbreak\b|\bDAN\b",
+    r"\bjailbreak\b|\bdo anything now\b",
+    r"\bresponde\s+(solo|[uú]nicamente)\s+con\s+(la\s+palabra|el\s+texto)\b",
     # delimitadores de plantilla usados para inyectar turnos
     r"<\|?(im_start|system|endoftext|im_end)\|?>|\[/?INST\]|###\s*(system|instruction)",
     # ejecución de código o acceso al sistema
-    r"\b(ejecuta|execute|run|corre)\b.{0,30}\b(c[oó]digo|code|comando|command|shell|script)",
+    r"\b(ejecuta|execute|run)\b.{0,20}\b(este|el siguiente|this|the following)\s+"
+    r"(c[oó]digo|comando|script|command)\b",
     r"\b(rm -rf|curl |wget |subprocess|eval\(|exec\()",
 ]
 _REGEX = [re.compile(p, re.IGNORECASE | re.DOTALL) for p in _PATRONES]
+# "DAN" solo en mayúsculas: en minúscula es el verbo "dar" ("¿qué beneficios dan...?").
+_REGEX.append(re.compile(r"\bDAN\b"))
 
 RECHAZO = (
     "Entiendo tu solicitud, pero no puedo modificar mis instrucciones, revelar mi "
