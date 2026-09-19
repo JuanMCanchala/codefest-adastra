@@ -21,7 +21,12 @@ const casos = readFileSync(process.argv[2], "utf-8")
 const salida = process.argv[3];
 
 const navegador = await chromium.launch();
-const pagina = await navegador.newPage({ viewport: { width: 1440, height: 900 } });
+// `ignoreHTTPSErrors`: contra el despliegue real el certificado es el de reserva de
+// Traefik mientras no se emita el definitivo, y sin esto el navegador no llega a abrir.
+const pagina = await navegador.newPage({
+  viewport: { width: 1440, height: 900 },
+  ignoreHTTPSErrors: true,
+});
 
 let ultima = null;
 pagina.on("response", async (r) => {
