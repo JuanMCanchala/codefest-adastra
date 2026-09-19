@@ -87,12 +87,21 @@ for (const [i, caso] of casos.entries()) {
     fallo = String(e).slice(0, 160);
   }
   const despues = await titulo.textContent().catch(() => null);
-  // Dos capturas separadas: si diferen entre sí el mapa sigue animando y la
-  // comparación contra el estado previo no probaría nada.
-  const pintado1 = await huella();
-  await pagina.waitForTimeout(400);
-  const pintado2 = await huella();
-  const quieto = pintado1 !== null && pintado1 === pintado2;
+  // El dibujo solo sirve de prueba cuando ha dejado de moverse: se reintenta hasta
+  // que dos capturas seguidas coinciden. Los mapas y las líneas de tiempo animan al
+  // entrar, y con una sola espera corta la mitad de los casos quedaba sin veredicto.
+  let pintado2 = await huella();
+  let quieto = false;
+  for (let intento = 0; intento < 12; intento += 1) {
+    await pagina.waitForTimeout(400);
+    const siguiente = await huella();
+    if (siguiente !== null && siguiente === pintado2) {
+      quieto = true;
+      pintado2 = siguiente;
+      break;
+    }
+    pintado2 = siguiente;
+  }
   const spec = ultima?.cuerpo?.especificacion ?? null;
   const resultado = ultima?.cuerpo?.resultado ?? null;
   const fila = {
