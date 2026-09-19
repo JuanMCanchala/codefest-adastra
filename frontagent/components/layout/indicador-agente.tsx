@@ -11,13 +11,13 @@ interface SaludApi {
 }
 
 const ETIQUETAS: Record<Estado, string> = {
-  consultando: "Verificando agente",
+  consultando: "Verificando agente…",
   "en-linea": "Agente en línea",
   "sin-conexion": "Agente sin conexión",
 };
 
 const COLORES: Record<Estado, string> = {
-  consultando: "bg-apagado",
+  consultando: "bg-tenue animate-pulse",
   "en-linea": "bg-ok",
   "sin-conexion": "bg-alerta",
 };
@@ -33,7 +33,9 @@ export function IndicadorAgente() {
         const respuesta = await fetch("/api/health", { cache: "no-store" });
         const datos = (await respuesta.json()) as SaludApi;
         if (vigente) {
-          setEstado(datos.agente?.alcanzable === true ? "en-linea" : "sin-conexion");
+          setEstado(
+            datos.agente?.alcanzable === true ? "en-linea" : "sin-conexion",
+          );
         }
       } catch {
         if (vigente) {
@@ -54,8 +56,14 @@ export function IndicadorAgente() {
   }, []);
 
   return (
-    <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-apagado">
-      <span aria-hidden="true" className={cn("size-2 rounded-full", COLORES[estado])} />
+    <p
+      role="status"
+      className="inline-flex h-9 items-center gap-2 rounded-md border border-borde bg-fondo px-3 text-sm text-apagado"
+    >
+      <span
+        aria-hidden="true"
+        className={cn("size-2 rounded-full", COLORES[estado])}
+      />
       {ETIQUETAS[estado]}
     </p>
   );
