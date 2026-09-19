@@ -546,7 +546,12 @@ export function MapaCoropleta({
         });
       }
     };
-    if (instancia.isStyleLoaded()) {
+    // `isStyleLoaded()` también es falso mientras el estilo baja teselas o digiere un
+    // `setData` anterior; en ese caso `once("load")` no vale, porque el mapa ya cargó y
+    // ese evento no se repite: la geometría nueva nunca llegaba y al volver de municipios
+    // a departamentos se seguía dibujando la malla municipal con colores departamentales.
+    // Con la fuente ya creada, `setData` es seguro en cualquier momento.
+    if (instancia.getSource(FUENTE) || instancia.isStyleLoaded()) {
       preparar();
     } else {
       void instancia.once("load", preparar);
@@ -850,6 +855,10 @@ export function MapaCoropleta({
         "relative h-full w-full",
         pantallaCompleta && "fixed inset-0 z-40 h-screen w-screen bg-fondo",
       )}
+      // Qué geometría está dibujada, legible desde fuera: las pruebas afirman sobre el
+      // dibujo (33 departamentos frente a 1.122 municipios), no solo sobre el rótulo.
+      data-clave-geo={claveGeo}
+      data-rasgos={geojson.features.length}
     >
       <div ref={contenedor} className="h-full w-full" />
       {superposicion}
