@@ -16,7 +16,8 @@ from pydantic import ValidationError
 
 from . import prompts
 from .catalogo import SpecVisualizacion, describir_catalogo
-from .guard import delimitar
+from .escaneo import sanear_fragmentos
+from .guard import datamarcar, delimitar
 from .llm import LLM
 from .retrieval import Fragmento, Recuperador
 from .settings import Settings
@@ -95,8 +96,26 @@ class AgenteCorpus:
         if not fragmentos:
             return RespuestaCorpus(texto=prompts.SIN_EVIDENCIA)
 
+        # Escaneo de inyección indirecta (decisión S2/S3): un documento del corpus con
+        # instrucciones embebidas no entra crudo al prompt del redactor. Se neutraliza el
+        # tramo, no se descarta el fragmento completo, porque el resto suele ser
+        # evidencia legítima. retrieval_context (contrato §2.4) refleja lo que
+        # efectivamente se le entregó al modelo, ya saneado.
+        fragmentos, marcados = sanear_fragmentos(fragmentos)
+        if marcados:
+            tracker.herramienta(
+                "escanear_fragmentos",
+                {"num_fragmentos": len(fragmentos)},
+                f"chunk_ids neutralizados: {marcados}",
+            )
+
         tracker.recuperado([f.texto for f in fragmentos])
-        contexto = "\n\n".join(f"[{i}] ({f.doc_id}) {f.texto}" for i, f in enumerate(fragmentos, 1))
+        # Datamarking (S3, spotlighting) solo sobre el texto del fragmento: la marca se
+        # intercala entre sus palabras, no en la numeración "[n] (doc_id)" que el agente
+        # necesita citar limpia.
+        contexto = "\n\n".join(
+            f"[{i}] ({f.doc_id}) {datamarcar(f.texto)}" for i, f in enumerate(fragmentos, 1)
+        )
         texto = self._llm.completar(
             tracker=tracker,
             agente=self.nombre,

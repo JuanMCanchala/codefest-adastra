@@ -112,6 +112,20 @@ class RecuperadorEtapa1:
             sparse_indexes=sparse,
         )
 
+    def codificar(self, textos: list[str]) -> list[list[float]] | None:
+        """Vectores densos BGE-M3 para el router por embeddings (Parte 2, decisión A2).
+
+        No dispara la carga: si el encoder todavía no está listo (arranque en frío)
+        devuelve ``None`` y quien llama —el router— cae al orquestador LLM en vez de
+        fallar o bloquear la respuesta esperando los ~2,5 GB de modelos.
+        """
+        if self._retriever is None:
+            return None
+        encoder = self._retriever.encoders.get("bge-m3")
+        if encoder is None:
+            return None
+        return encoder.encode(list(textos), is_query=True).tolist()
+
     def buscar(self, consulta: str, k: int) -> list[Fragmento]:
         self.cargar()
         resultado = self._retriever.retrieve("q", consulta)

@@ -1,8 +1,15 @@
 """Orquestación multiagente con LangGraph.
 
-Flujo: guarda → orquestador → {agente_corpus | agente_visualizacion | ambos | fuera de
-alcance} → respuesta. La ruta más frecuente usa dos llamadas a modelos (orquestador +
-especialista); un intento de inyección se rechaza sin gastar ninguna.
+Flujo: guarda → enrutador → {orquestador} → {agente_corpus → verificador |
+agente_visualizacion | ambos | fuera de alcance} → respuesta.
+
+El enrutador por embeddings (decisión A2) intenta clasificar la pregunta sin gastar
+ninguna llamada al modelo; si no hay confianza suficiente —o el encoder todavía no
+cargó—, cae al orquestador LLM, que pasa a ser el camino de excepción. La ruta más
+frecuente sin enrutador queda en dos llamadas (orquestador + especialista); con
+enrutador puede quedar en una sola. Un intento de inyección se rechaza sin gastar
+ninguna. El verificador de citas, determinista, es el cuarto agente: no llama a
+ningún modelo.
 """
 
 from __future__ import annotations
@@ -15,11 +22,13 @@ from langgraph.graph import END, StateGraph
 from . import prompts
 from .agents import AgenteCorpus, AgenteVisualizacion, Decision, Orquestador
 from .contract import ChatResponse, Evaluacion
-from .guard import RECHAZO, detectar_inyeccion, sanear_salida
+from .guard import RECHAZO, Nivel, evaluar, sanear_salida
 from .llm import LLM, ErrorModelo, PresupuestoAgotado
 from .retrieval import Recuperador
+from .router import Enrutador, RouterEmbeddings
 from .settings import Settings
 from .tracker import Tracker
+from .verificador import verificar_citas
 
 log = logging.getLogger(__name__)
 
@@ -44,27 +53,68 @@ class Sistema:
         recuperador: Recuperador,
         cfg: Settings,
         clasificador: Clasificador | None = None,
+        router: Enrutador | None = None,
     ) -> None:
         self.clasificador = clasificador
         self.orquestador = Orquestador(llm, cfg)
         self.corpus = AgenteCorpus(llm, recuperador, cfg)
         self.visual = AgenteVisualizacion(llm, cfg)
+        # Router explícito para pruebas; si no se da, se activa solo cuando el
+        # recuperador sabe codificar texto (RecuperadorEtapa1.codificar). Los dobles de
+        # prueba sin ese método dejan el sistema tal como estaba: todo pasa por el
+        # orquestador LLM.
+        if router is not None:
+            self.router: Enrutador | None = router
+        elif hasattr(recuperador, "codificar"):
+            self.router = RouterEmbeddings(recuperador)
+        else:
+            self.router = None
         self._grafo = self._construir()
 
     # ------------------------------------------------------------------ nodos
     def _n_guarda(self, s: Estado) -> Estado:
-        # Capa 1: patrones deterministas. Capa 2: clasificador multilingüe en CPU.
-        # Ninguna llama a un modelo generativo, así que un rechazo no gasta tokens.
-        capa = None
-        if detectar_inyeccion(s["pregunta"]):
-            capa = "patrón de inyección"
-        elif self.clasificador is not None and self.clasificador.es_ataque(s["pregunta"]):
-            capa = "clasificador de inyección"
-        if capa:
+        # Dos niveles (decisión S1). Capa 1: patrones deterministas, ya separados en
+        # rechazo (credenciales, ejecución de código: alto daño, alta precisión) y
+        # aislar (todo lo demás: cambio de rol, jailbreak, exfiltración del prompt).
+        # Capa 2: el clasificador solo corre si los patrones no vieron nada, y lo que
+        # atrapa —lo que un regex no formuló— se trata igual que un aislamiento, no
+        # como rechazo duro: no es de la categoría alto-daño/alta-precisión que
+        # justifica bloquear sin más.
+        nivel, motivo = evaluar(s["pregunta"])
+        if (
+            nivel is Nivel.LIMPIO
+            and self.clasificador is not None
+            and self.clasificador.es_ataque(s["pregunta"])
+        ):
+            nivel, motivo = Nivel.AISLAR, "clasificador de inyección"
+
+        if nivel is Nivel.RECHAZO:
             s["tracker"].agente(self.orquestador.nombre)
-            s["tracker"].herramienta("filtro_seguridad", {"accion": "rechazo"}, capa)
+            s["tracker"].herramienta("filtro_seguridad", {"accion": "rechazo"}, motivo)
             return {"respuesta": RECHAZO}
+        if nivel is Nivel.AISLAR:
+            # No se bloquea: sigue el flujo normal. La pregunta ya viaja delimitada como
+            # dato no confiable en los tres prompts (agents.py), rechazo/aislar aquí solo
+            # decide si se corta antes de gastar una llamada o se deja seguir.
+            s["tracker"].herramienta("filtro_seguridad", {"accion": "aislar"}, motivo)
         return {}
+
+    def _n_enrutador(self, s: Estado) -> Estado:
+        # Cero llamadas al modelo. Si no hay router, o el router se abstiene por baja
+        # confianza o encoder no listo, el estado queda sin "decision" y la arista
+        # condicional cae al orquestador LLM.
+        if self.router is None:
+            return {}
+        d = self.router.enrutar(s["pregunta"])
+        if d.ruta is None:
+            return {}
+        s["tracker"].agente("enrutador_embeddings")
+        s["tracker"].herramienta(
+            "enrutar_por_embeddings",
+            {"pregunta": s["pregunta"][:200]},
+            f"ruta={d.ruta} confianza={d.confianza:.2f} margen={d.margen:.2f}",
+        )
+        return {"decision": Decision(ruta=d.ruta, fenomeno=None, consulta=s["pregunta"])}
 
     def _n_orquestador(self, s: Estado) -> Estado:
         return {"decision": self.orquestador.decidir(s["pregunta"], s["tracker"])}
@@ -72,6 +122,17 @@ class Sistema:
     def _n_corpus(self, s: Estado) -> Estado:
         r = self.corpus.responder(s["pregunta"], s["decision"], s["tracker"])
         return {"respuesta": r.texto, "fragmentos": r.fragmentos}
+
+    def _n_verificador(self, s: Estado) -> Estado:
+        fragmentos = s.get("fragmentos") or []
+        r = verificar_citas(s.get("respuesta", ""), len(fragmentos))
+        s["tracker"].agente("verificador_citas")
+        s["tracker"].herramienta(
+            "verificar_citas",
+            {"num_fragmentos": len(fragmentos)},
+            f"validas={r.citas_validas} invalidas={r.citas_invalidas}",
+        )
+        return {"respuesta": r.texto}
 
     def _n_visual(self, s: Estado) -> Estado:
         spec = self.visual.proponer(s["pregunta"], s["decision"], s["tracker"])
@@ -89,26 +150,41 @@ class Sistema:
         return {"respuesta": prompts.FUERA_DE_ALCANCE}
 
     # ------------------------------------------------------------------ grafo
+    @staticmethod
+    def _nodo_por_ruta(ruta: str) -> str:
+        # ``ruta`` ya viene acotada a RUTAS por Orquestador.decidir y por RouterEmbeddings;
+        # una clave fuera de ese conjunto es un error de programación y debe fallar aquí.
+        return {
+            "corpus": "corpus",
+            "ambos": "corpus",
+            "visualizacion": "visualizacion",
+            "fuera_de_alcance": "fuera",
+        }[ruta]
+
     def _construir(self):
         g = StateGraph(Estado)
         g.add_node("guarda", self._n_guarda)
+        g.add_node("enrutador", self._n_enrutador)
         g.add_node("orquestador", self._n_orquestador)
         g.add_node("corpus", self._n_corpus)
+        g.add_node("verificador", self._n_verificador)
         g.add_node("visualizacion", self._n_visual)
         g.add_node("fuera", self._n_fuera)
         g.set_entry_point("guarda")
-        g.add_conditional_edges("guarda", lambda s: END if s.get("respuesta") else "orquestador")
+        g.add_conditional_edges("guarda", lambda s: END if s.get("respuesta") else "enrutador")
         g.add_conditional_edges(
-            "orquestador",
-            lambda s: {
-                "corpus": "corpus",
-                "ambos": "corpus",
-                "visualizacion": "visualizacion",
-                "fuera_de_alcance": "fuera",
-            }[s["decision"].ruta],
+            "enrutador",
+            lambda s: (
+                self._nodo_por_ruta(s["decision"].ruta) if s.get("decision") else "orquestador"
+            ),
         )
         g.add_conditional_edges(
-            "corpus",
+            "orquestador",
+            lambda s: self._nodo_por_ruta(s["decision"].ruta),
+        )
+        g.add_edge("corpus", "verificador")
+        g.add_conditional_edges(
+            "verificador",
             lambda s: "visualizacion" if s["decision"].ruta == "ambos" else END,
         )
         g.add_edge("visualizacion", END)

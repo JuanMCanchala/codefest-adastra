@@ -63,3 +63,13 @@ class RecuperadorConCache:
     @property
     def listo(self) -> bool:
         return bool(getattr(self._base, "listo", True))
+
+    def codificar(self, textos: list[str]) -> list[list[float]] | None:
+        """Delegación al recuperador envuelto, para el router por embeddings (Parte 2,
+        decisión A2). Sin esto, ``Sistema`` ve un ``RecuperadorConCache`` sin
+        ``codificar`` y el router queda desactivado en silencio en todo despliegue real
+        —``main.py`` siempre envuelve en caché—, aunque ``RecuperadorEtapa1`` sí lo
+        implemente. Si la base no sabe codificar, devuelve ``None`` igual que ella: el
+        router cae al orquestador LLM sin fallar."""
+        codificar = getattr(self._base, "codificar", None)
+        return codificar(textos) if codificar is not None else None

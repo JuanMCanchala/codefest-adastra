@@ -47,6 +47,23 @@ def test_normalizacion():
     assert normalizar_consulta("  Ｈola   MUNDO ") == "hola mundo"
 
 
+def test_codificar_se_delega_a_la_base():
+    # Regresión: sin esta delegación, el router por embeddings (Parte 2) queda
+    # desactivado en silencio en todo despliegue real, porque main.py siempre envuelve
+    # RecuperadorEtapa1 en RecuperadorConCache antes de construir Sistema.
+    class ConCodificar(RecuperadorContado):
+        def codificar(self, textos: list[str]) -> list[list[float]]:
+            return [[1.0, 0.0] for _ in textos]
+
+    rec = RecuperadorConCache(ConCodificar())
+    assert rec.codificar(["a", "b"]) == [[1.0, 0.0], [1.0, 0.0]]
+
+
+def test_codificar_da_none_si_la_base_no_lo_implementa():
+    rec = RecuperadorConCache(RecuperadorContado())
+    assert rec.codificar(["a"]) is None
+
+
 def test_health_devuelve_503_mientras_carga(monkeypatch):
     from app.graph import Sistema
     from app.settings import Settings
