@@ -14,13 +14,27 @@
   },
   "orquestador": {
     "nombre": "orquestador",
-    "descripcion": "Recibe la pregunta, aplica el filtro de seguridad contra prompt injection y clasifica la intención (corpus, visualización, ambas o fuera de alcance). Delega en el sub-agente especializado con una consulta de búsqueda reformulada y el fenómeno detectado.",
+    "descripcion": "Recibe la pregunta, tras el filtro de seguridad determinista y el enrutador por embeddings (que resuelven la mayoría de las preguntas sin llegar aquí), y clasifica la intención (corpus, visualización, ambas o fuera de alcance) para las que quedan con baja confianza. Delega en el sub-agente especializado con una consulta de búsqueda reformulada y el fenómeno detectado. Camino de excepción, no el más frecuente (ver 'enrutador').",
     "modelo": "qwen3-next-80b",
     "proveedor": "qwen",
     "tools": [
       {
         "name": "filtro_seguridad",
-        "descripcion": "Detecta de forma determinista intentos de inyección de instrucciones o exfiltración y responde con un rechazo cortés sin invocar modelos.",
+        "descripcion": "Guard de dos niveles, determinista, sin invocar modelos. Rechazo duro solo ante credenciales o ejecución de código (alto daño, alta precisión); el resto de la inyección detectada (cambio de rol, jailbreak, exfiltración del prompt) no bloquea la pregunta, se aísla y sigue el flujo normal, tratada como dato no confiable en los tres prompts. Una segunda capa (clasificador mDeBERTa en CPU) corre solo si los patrones no vieron nada, y lo que atrapa se trata igual que un aislamiento.",
+        "input_parameters": {
+          "pregunta": "string"
+        }
+      }
+    ]
+  },
+  "enrutador": {
+    "nombre": "Enrutador por embeddings",
+    "descripcion": "Clasifica la pregunta contra prototipos de cada ruta con el mismo encoder BGE-M3 ya cargado para la recuperación, sin gastar ninguna llamada al modelo. Si la similitud contra el mejor prototipo o el margen contra el segundo son bajos, o el encoder aún no cargó (arranque en frío), se abstiene y cae al orquestador LLM, que pasa a ser el camino de excepción. Determinista, no es un modelo generativo: no tiene 'modelo' ni 'proveedor'.",
+    "activado_por": "guarda",
+    "tools": [
+      {
+        "name": "enrutar_por_embeddings",
+        "descripcion": "Similitud coseno contra prototipos por ruta (corpus, visualización, ambas, fuera de alcance), calibrada con las 50 preguntas oficiales y las 20 fuera de alcance del banco de evaluación (agent/eval/): el margen contra la segunda ruta discrimina mejor que la confianza absoluta.",
         "input_parameters": {
           "pregunta": "string"
         }
@@ -31,10 +45,10 @@
     {
       "id": "agente_corpus",
       "nombre": "Agente de corpus",
-      "descripcion": "Recupera fragmentos de la base vectorial de la Etapa 1 (BGE-M3 denso y disperso, FAISS, fusión RRF y reranking) y redacta una respuesta basada únicamente en ellos, citando cada afirmación. Se abstiene cuando la evidencia no alcanza.",
-      "modelo": "llama-3.3-70b-instruct",
+      "descripcion": "Recupera fragmentos de la base vectorial de la Etapa 1 (BGE-M3 denso y disperso, FAISS, fusión RRF y reranking), los escanea y neutraliza contra inyección indirecta, y redacta una respuesta basada únicamente en ellos, citando cada afirmación. Se abstiene cuando la evidencia no alcanza. No contradice cifras ni afirmaciones de los fragmentos, y responde en el idioma de la pregunta con las citas en el idioma original del fragmento.",
+      "modelo": "meta.llama3-3-70b-instruct",
       "proveedor": "meta",
-      "activado_por": "orquestador",
+      "activado_por": "orquestador o enrutador",
       "ejemplos_de_activacion": [
         "¿Cómo están empleando los sistemas no tripulados potenciados por IA en operaciones militares?",
         "¿Qué capacidades antisatélite han demostrado los Estados en la última década?"
@@ -46,6 +60,28 @@
           "input_parameters": {
             "query": "string",
             "k": "integer"
+          }
+        },
+        {
+          "name": "escanear_fragmentos",
+          "descripcion": "Detecta instrucciones embebidas en los fragmentos recuperados (inyección indirecta) y neutraliza solo el tramo sospechoso, sin descartar el fragmento completo. El texto de los fragmentos que llega al modelo lleva además datamarking (spotlighting).",
+          "input_parameters": {
+            "num_fragmentos": "integer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "verificador_citas",
+      "nombre": "Verificador de citas",
+      "descripcion": "Corre siempre después del agente de corpus, sin invocar ningún modelo. Comprueba que cada marca [n] de la respuesta corresponda a un fragmento realmente entregado y quita las que quedan fuera de rango antes de devolver el texto. Cuarto agente del diseño sin costo de interacción.",
+      "activado_por": "agente_corpus",
+      "tools": [
+        {
+          "name": "verificar_citas",
+          "descripcion": "Valida cada marca [n] contra el número de fragmentos del contexto entregado y elimina las que no corresponden a ninguno.",
+          "input_parameters": {
+            "num_fragmentos": "integer"
           }
         }
       ]
