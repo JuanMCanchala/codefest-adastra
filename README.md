@@ -113,7 +113,7 @@ revisa cada pregunta antes del orquestador. Un ataque rechazado ahí cuesta **0 
 │   ├── especificacion/      # especificación oficial de la Etapa 2
 │   └── investigacion/       # estado del arte, benchmarks y análisis de los fenómenos
 ├── reto1/  reto2/           # enunciados
-├── tests/e2e/               # fixtures de pruebas de punta a punta
+├── tests/e2e/               # pruebas de punta a punta (Playwright) de las dos interfaces
 ├── .github/workflows/ci.yml # integración continua
 └── LICENSE                  # AGPL-3.0
 ```
@@ -125,6 +125,7 @@ Cada componente tiene su propio README con más detalle:
 - [`dashboard/README.md`](dashboard/README.md), con el contrato en
   [`dashboard/API.md`](dashboard/API.md)
 - [`dashboard/datos/README.md`](dashboard/datos/README.md)
+- [`tests/e2e/README.md`](tests/e2e/README.md)
 
 ---
 
