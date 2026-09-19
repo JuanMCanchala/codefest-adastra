@@ -38,6 +38,16 @@ class Settings(BaseSettings):
     base_vectorial_dir: Path = Path("/data/base_vectorial")
     retrieval_config: Path = Path("/app/config.retrieval.yaml")
     fragmentos_contexto: int = 6
+    # Calificación de evidencia antes de redactar. El valor es el logit del cross-encoder
+    # del mejor fragmento: por debajo de este umbral, el redactor recibe una instrucción
+    # de cautela (no se abstiene: abstenerse hundiría Answer Relevancy, que pesa 30 % del
+    # bloque de Calidad).
+    #
+    # Calibrado sobre la base vectorial real: las 50 preguntas oficiales dan un mejor
+    # score de -0,25 a +10,10 (mediana +4,48) y las 20 fuera de alcance de -5,13 a +0,25
+    # (mediana -2,14). Con -0,5 ninguna de las 50 oficiales queda marcada y se detectan
+    # 17 de las 20 sin evidencia. Subirlo a 0,0 detecta 19/20 pero marca 1 oficial.
+    umbral_evidencia: float = -0.5
 
     # --- Seguridad: clasificador de prompt injection (segunda capa, en CPU) ---
     clasificador_inyeccion: bool = True

@@ -45,7 +45,7 @@
     {
       "id": "agente_corpus",
       "nombre": "Agente de corpus",
-      "descripcion": "Recupera fragmentos de la base vectorial de la Etapa 1 (BGE-M3 denso y disperso, FAISS, fusión RRF y reranking), los escanea y neutraliza contra inyección indirecta, y redacta una respuesta basada únicamente en ellos, citando cada afirmación. Se abstiene cuando la evidencia no alcanza. No contradice cifras ni afirmaciones de los fragmentos, y responde en el idioma de la pregunta con las citas en el idioma original del fragmento.",
+      "descripcion": "Descompone la pregunta si es compuesta, recupera fragmentos de la base vectorial de la Etapa 1 (BGE-M3 denso y disperso, FAISS, fusión RRF y reranking), los escanea y neutraliza contra inyección indirecta, y redacta una respuesta basada únicamente en ellos, citando cada afirmación. Califica la evidencia antes de redactar y se abstiene cuando no hay ninguna. No contradice cifras ni afirmaciones de los fragmentos, y responde en el idioma de la pregunta con las citas en el idioma original del fragmento.",
       "modelo": "meta.llama3-3-70b-instruct",
       "proveedor": "meta",
       "activado_por": "orquestador o enrutador",
@@ -54,6 +54,13 @@
         "¿Qué capacidades antisatélite han demostrado los Estados en la última década?"
       ],
       "tools": [
+        {
+          "name": "planificar_consulta",
+          "descripcion": "Planificador determinista, sin invocar modelos. Descompone una pregunta compuesta en subpreguntas (máximo 3) y busca cada una por separado, repartiendo por turnos los mismos fragmentos de contexto entre ellas. Una pregunta simple no se descompone y el flujo es el de siempre: no suma interacciones ni tokens.",
+          "input_parameters": {
+            "consulta": "string"
+          }
+        },
         {
           "name": "buscar_corpus",
           "descripcion": "Búsqueda híbrida con reranking sobre el corpus de los tres fenómenos. Devuelve fragmentos con doc_id y chunk_id.",
@@ -67,6 +74,13 @@
           "descripcion": "Detecta instrucciones embebidas en los fragmentos recuperados (inyección indirecta) y neutraliza solo el tramo sospechoso, sin descartar el fragmento completo. El texto de los fragmentos que llega al modelo lleva además datamarking (spotlighting).",
           "input_parameters": {
             "num_fragmentos": "integer"
+          }
+        },
+        {
+          "name": "calificar_evidencia",
+          "descripcion": "Califica la evidencia recuperada antes de redactar, con el score del cross-encoder del mejor fragmento y un umbral calibrado sobre la base real. Por debajo del umbral el redactor recibe una instrucción de cautela; no se abstiene, porque abstenerse costaría relevancia de respuesta. Determinista, sin modelos.",
+          "input_parameters": {
+            "umbral": "number"
           }
         }
       ]
@@ -109,5 +123,19 @@
         }
       ]
     }
-  ]
+  ],
+  "memoria": {
+    "nombre": "Memoria conversacional",
+    "descripcion": "Memoria de turnos por sesión, opcional y determinista. Solo se activa cuando el cliente envía 'sesion': el frontend propio la manda y la evaluación automática no, de modo que ante ADL el agente es sin estado y el contrato de la §2.4 no cambia. Resuelve preguntas de seguimiento ('¿y en Colombia?') reescribiendo la consulta de búsqueda con el turno anterior; la pregunta que ve el redactor, y por tanto 'evaluacion.input', sigue siendo la original. Acotada en turnos, en número de sesiones y con caducidad. No tiene 'modelo' ni 'proveedor'.",
+    "activado_por": "guarda",
+    "tools": [
+      {
+        "name": "memoria_conversacion",
+        "descripcion": "Expande la consulta de búsqueda con la pregunta del turno previo cuando la actual es un seguimiento que no se entiende por sí solo.",
+        "input_parameters": {
+          "sesion": "string"
+        }
+      }
+    ]
+  }
 }

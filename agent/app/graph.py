@@ -15,6 +15,7 @@ ningún modelo.
 from __future__ import annotations
 
 import logging
+from dataclasses import replace
 from typing import Any, Protocol, TypedDict
 
 from langgraph.graph import END, StateGraph
@@ -24,6 +25,7 @@ from .agents import AgenteCorpus, AgenteVisualizacion, Decision, Orquestador
 from .contract import ChatResponse, Evaluacion
 from .guard import RECHAZO, Nivel, evaluar, sanear_salida
 from .llm import LLM, ErrorModelo, PresupuestoAgotado
+from .memoria import Memoria
 from .retrieval import Recuperador
 from .router import Enrutador, RouterEmbeddings
 from .settings import Settings
@@ -39,6 +41,8 @@ class Clasificador(Protocol):
 
 class Estado(TypedDict, total=False):
     pregunta: str
+    sesion: str | None
+    consulta_memoria: str | None
     tracker: Tracker
     decision: Decision
     respuesta: str
@@ -56,6 +60,7 @@ class Sistema:
         router: Enrutador | None = None,
     ) -> None:
         self.clasificador = clasificador
+        self.memoria = Memoria()
         self.orquestador = Orquestador(llm, cfg)
         self.corpus = AgenteCorpus(llm, recuperador, cfg)
         self.visual = AgenteVisualizacion(llm, cfg)
@@ -99,6 +104,15 @@ class Sistema:
             s["tracker"].herramienta("filtro_seguridad", {"accion": "aislar"}, motivo)
         return {}
 
+    def _n_memoria(self, s: Estado) -> Estado:
+        # Sin `sesion` (el caso de la evaluación de ADL) esto es un no-op: ni consulta la
+        # memoria ni la escribe, así que el comportamiento medido no cambia.
+        consulta, motivo = self.memoria.expandir(s.get("sesion"), s["pregunta"])
+        if motivo is None:
+            return {}
+        s["tracker"].herramienta("memoria_conversacion", {"sesion": "***"}, motivo)
+        return {"consulta_memoria": consulta}
+
     def _n_enrutador(self, s: Estado) -> Estado:
         # Cero llamadas al modelo. Si no hay router, o el router se abstiene por baja
         # confianza o encoder no listo, el estado queda sin "decision" y la arista
@@ -120,7 +134,13 @@ class Sistema:
         return {"decision": self.orquestador.decidir(s["pregunta"], s["tracker"])}
 
     def _n_corpus(self, s: Estado) -> Estado:
-        r = self.corpus.responder(s["pregunta"], s["decision"], s["tracker"])
+        decision = s["decision"]
+        expandida = s.get("consulta_memoria")
+        if expandida:
+            # Solo la consulta de búsqueda hereda el turno anterior; `pregunta` —y por
+            # tanto `evaluacion.input`— sigue siendo la que escribió el usuario.
+            decision = replace(decision, consulta=expandida)
+        r = self.corpus.responder(s["pregunta"], decision, s["tracker"])
         return {"respuesta": r.texto, "fragmentos": r.fragmentos}
 
     def _n_verificador(self, s: Estado) -> Estado:
@@ -169,6 +189,7 @@ class Sistema:
     def _construir(self):
         g = StateGraph(Estado)
         g.add_node("guarda", self._n_guarda)
+        g.add_node("memoria", self._n_memoria)
         g.add_node("enrutador", self._n_enrutador)
         g.add_node("orquestador", self._n_orquestador)
         g.add_node("corpus", self._n_corpus)
@@ -176,7 +197,8 @@ class Sistema:
         g.add_node("visualizacion", self._n_visual)
         g.add_node("fuera", self._n_fuera)
         g.set_entry_point("guarda")
-        g.add_conditional_edges("guarda", lambda s: END if s.get("respuesta") else "enrutador")
+        g.add_conditional_edges("guarda", lambda s: END if s.get("respuesta") else "memoria")
+        g.add_edge("memoria", "enrutador")
         g.add_conditional_edges(
             "enrutador",
             lambda s: (
@@ -197,11 +219,13 @@ class Sistema:
         return g.compile()
 
     # ------------------------------------------------------------------ API
-    def responder(self, pregunta: str, incluir_extras: bool = False) -> ChatResponse:
+    def responder(
+        self, pregunta: str, incluir_extras: bool = False, sesion: str | None = None
+    ) -> ChatResponse:
         tracker = Tracker()
         estado_final = "ok"
         try:
-            s = self._grafo.invoke({"pregunta": pregunta, "tracker": tracker})
+            s = self._grafo.invoke({"pregunta": pregunta, "tracker": tracker, "sesion": sesion})
             respuesta = sanear_salida(s.get("respuesta") or prompts.SIN_EVIDENCIA)
         except PresupuestoAgotado:
             estado_final, s = "error_presupuesto", {}
@@ -209,6 +233,11 @@ class Sistema:
         except ErrorModelo:
             estado_final, s = "error_modelo", {}
             respuesta = "No pude completar la respuesta por un problema temporal del modelo."
+
+        # Se recuerda el turno solo si el cliente trajo sesión, y solo cuando hubo una
+        # decisión de ruta: un rechazo del filtro de seguridad no entra en el historial.
+        if sesion and s.get("decision"):
+            self.memoria.recordar(sesion, pregunta, s["decision"].ruta)
 
         extras = None
         if incluir_extras:

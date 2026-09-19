@@ -27,6 +27,9 @@ class Fragmento:
     fuente: str
     fenomeno: int | None
     titulo: str | None = None
+    # Score del ultimo paso de ranking, propagado desde la Etapa 1. Lo usa el agente de
+    # corpus para calificar la evidencia antes de redactar (evidence gating).
+    score: float = 0.0
 
     def cita(self) -> str:
         return f"[{self.doc_id}#{self.chunk_id}]"
@@ -140,6 +143,7 @@ class RecuperadorEtapa1:
                     fuente=meta.get("fuente", ""),
                     fenomeno=meta.get("fenomeno"),
                     titulo=meta.get("titulo"),
+                    score=getattr(f, "score", 0.0),
                 )
             )
         return fragmentos

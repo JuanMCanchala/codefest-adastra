@@ -51,7 +51,9 @@ flowchart LR
 | ------------------ | ------------------------------------------------------------- |
 | `app/contract.py`  | Contrato de respuesta de la §2.4                              |
 | `app/graph.py`     | Grafo LangGraph y armado de la respuesta                      |
-| `app/agents.py`    | Orquestador, agente de corpus, agente satelital y de visualización |
+| `app/agents.py`    | Orquestador, agente de corpus y agente de visualización       |
+| `app/planner.py`   | Descomposición determinista de preguntas compuestas           |
+| `app/memoria.py`   | Memoria conversacional por sesión, opcional                   |
 | `app/prompts.py`   | Prompts de sistema                                            |
 | `app/catalogo.py`  | Catálogo cerrado de componentes visuales del Reto 2           |
 | `app/guard.py`     | Defensas contra _prompt injection_                            |
@@ -80,6 +82,7 @@ imagen.
 | `PRESUPUESTO_TOKENS`       | `40000000`                                                                               | Tope de tokens del proceso, para proteger la bolsa de USD 100                                               |
 | `BASE_VECTORIAL_DIR`       | `/data/base_vectorial`                                                                   | Ruta de la base vectorial                                                                                   |
 | `FRAGMENTOS_CONTEXTO`      | `6`                                                                                      | Fragmentos que recibe el redactor                                                                           |
+| `UMBRAL_EVIDENCIA`         | `-0.5`                                                                                   | Score mínimo del cross-encoder para no advertir de evidencia débil. Calibrado sobre la base real                |
 | `GRAFO_EN_RECUPERACION`    | `false`                                                                                  | Integra el grafo en la recuperación. Carga GLiNER, así que antes hay que medir la latencia.                 |
 | `MODELO_INYECCION`         | `proventra/mdeberta-v3-base-prompt-injection`                                            | Clasificador de la segunda capa de seguridad. Alternativa medida: `meta-llama/Llama-Prompt-Guard-2-86M`     |
 | `UMBRAL_INYECCION`         | `0.5`                                                                                    | Probabilidad mínima para tratar la pregunta como ataque                                                     |

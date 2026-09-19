@@ -19,6 +19,7 @@ from .catalogo import SpecVisualizacion, describir_catalogo
 from .escaneo import sanear_fragmentos
 from .guard import datamarcar, delimitar
 from .llm import LLM
+from .planner import descomponer, intercalar
 from .retrieval import Fragmento, Recuperador
 from .settings import Settings
 from .tracker import Tracker
@@ -87,7 +88,22 @@ class AgenteCorpus:
     def responder(self, pregunta: str, decision: Decision, tracker: Tracker) -> RespuestaCorpus:
         tracker.agente(self.nombre)
         k = self._cfg.fragmentos_contexto
-        fragmentos = self._rec.buscar(decision.consulta, k)
+        # Planner determinista (planner.py): una pregunta compuesta se busca por partes y
+        # los fragmentos se reparten por turnos entre ellas. Cuesta una búsqueda extra por
+        # subpregunta —décimas de segundo, cero tokens, cero interacciones— y el contexto
+        # sigue acotado a `k`. Una pregunta simple devuelve [pregunta] y el flujo es el de
+        # siempre.
+        subpreguntas = descomponer(decision.consulta)
+        if len(subpreguntas) > 1:
+            rankings = [self._rec.buscar(s, k) for s in subpreguntas]
+            fragmentos = intercalar(rankings, k, lambda f: f.chunk_id)
+            tracker.herramienta(
+                "planificar_consulta",
+                {"consulta": decision.consulta},
+                f"{len(subpreguntas)} subpreguntas: " + " | ".join(subpreguntas),
+            )
+        else:
+            fragmentos = self._rec.buscar(decision.consulta, k)
         tracker.herramienta(
             "buscar_corpus",
             {"query": decision.consulta, "k": k},
@@ -109,6 +125,19 @@ class AgenteCorpus:
                 f"chunk_ids neutralizados: {marcados}",
             )
 
+        # Calificación de evidencia (evidence gating). El score del cross-encoder separa
+        # bien lo que el corpus sí cubre de lo que no: ver el umbral en settings.py. No
+        # se abstiene —eso costaría relevancia, que vale 30 %—, se le pide cautela al
+        # redactor para que no afirme más de lo que los fragmentos sostienen.
+        mejor = max((f.score for f in fragmentos), default=0.0)
+        evidencia_debil = mejor < self._cfg.umbral_evidencia
+        if evidencia_debil:
+            tracker.herramienta(
+                "calificar_evidencia",
+                {"umbral": self._cfg.umbral_evidencia},
+                f"mejor_score={mejor:.3f} -> evidencia débil",
+            )
+
         tracker.recuperado([f.texto for f in fragmentos])
         # Datamarking (S3, spotlighting) solo sobre el texto del fragmento: la marca se
         # intercala entre sus palabras, no en la numeración "[n] (doc_id)" que el agente
@@ -121,7 +150,10 @@ class AgenteCorpus:
             agente=self.nombre,
             modelo=self._cfg.modelo_corpus,
             sistema=prompts.AGENTE_CORPUS,
-            mensaje=delimitar("FRAGMENTOS", contexto) + "\n\n" + delimitar("PREGUNTA", pregunta),
+            mensaje=delimitar("FRAGMENTOS", contexto)
+            + ("\n\n" + prompts.AVISO_EVIDENCIA_DEBIL if evidencia_debil else "")
+            + "\n\n"
+            + delimitar("PREGUNTA", pregunta),
             max_tokens=self._cfg.llm_max_tokens_respuesta,
         )
         return RespuestaCorpus(texto=texto, fragmentos=fragmentos)

@@ -85,6 +85,11 @@ class FragmentResult:
     chunk_id: str  # id del chunk original del indice (trazabilidad)
     doc_id: str
     text: str  # <= 250 palabras  <- CLAVE NDCG@10 (se juzga el texto)
+    # Score del ultimo paso de ranking (logit del cross-encoder si el rerank esta
+    # activo, score de fusion RRF si no). No se usa para ordenar —la lista ya viene
+    # ordenada— sino para que el consumidor pueda juzgar si la evidencia alcanza.
+    # Valor por defecto: los llamadores anteriores a este campo siguen funcionando.
+    score: float = 0.0
 
 
 @dataclass

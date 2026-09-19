@@ -21,6 +21,10 @@ class ChatRequest(BaseModel):
     # El frontend propio pide los extras (citas enriquecidas, visualización); la
     # evaluación automática no los pide y recibe exactamente el contrato de §2.4.
     incluir_extras: bool = False
+    # Identificador de conversación, opcional. Solo lo manda el frontend propio: sin él
+    # el sistema es sin estado, que es como lo evalúa ADL (el contrato de §2.4 no tiene
+    # este campo). Ver app/memoria.py.
+    sesion: str | None = Field(default=None, max_length=128)
 
     @field_validator("pregunta")
     @classmethod

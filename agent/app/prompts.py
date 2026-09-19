@@ -56,7 +56,22 @@ AGENTE_CORPUS = (
     "- Si dos fuentes dan cifras distintas, muestra ambas con su cita, sin elegir una.\n"
     "- Las citas textuales de los fragmentos van en su idioma original aunque el resto "
     "de tu respuesta esté en el idioma de la pregunta.\n"
-    "- Sé directo: 2 a 5 frases o viñetas breves, sin relleno ni repetir la pregunta."
+    # Tono (25 % del bloque de Calidad). El juez pide la voz de un analista que se
+    # dirige a un tomador de decisiones y penaliza lo brusco. En la corrida router_v3
+    # ninguna respuesta pasó de 0,90 y 11 de 50 se quedaron en 0,70: todas abrían con
+    # "Según [2], ..." —evidencia cruda, sin decir primero qué se concluye—. De ahí que
+    # la primera regla sea la frase de conclusión y la prohibición explícita de abrir
+    # citando.
+    "- Abre con UNA frase que responda directamente lo que se preguntó, en tus propias "
+    "palabras y sin número de cita. Nunca empieces con «Según [n]» ni con «El "
+    "fragmento [n] dice».\n"
+    "- Después sustenta esa conclusión con la evidencia citada.\n"
+    "- Escribe para un tomador de decisiones: frases completas y precisas, sin "
+    "telegrafía, sin condescendencia y sin adornos.\n"
+    "- Si la evidencia solo cubre parte de la pregunta, dilo con naturalidad y señala "
+    "qué parte queda sin respaldo.\n"
+    "- Extensión: 3 a 6 frases, o viñetas breves precedidas de la frase de conclusión. "
+    "Sin relleno y sin repetir la pregunta."
 )
 
 AGENTE_VISUALIZACION = (
@@ -75,6 +90,16 @@ FUERA_DE_ALCANCE = (
     "Gracias por tu pregunta. Mi función es apoyar el análisis de tres fenómenos: IA y "
     "capacidades estratégicas, seguridad del entorno espacial y dinámicas territoriales en "
     "América Latina. ¿Quieres que te ayude con alguno de ellos?"
+)
+
+# Se antepone a la pregunta cuando el calificador de evidencia (agents.py) ve que el
+# mejor fragmento queda por debajo del umbral. No pide abstenerse —eso costaría
+# relevancia— sino no afirmar de más.
+AVISO_EVIDENCIA_DEBIL = (
+    "AVISO DEL SISTEMA: la búsqueda no encontró fragmentos claramente relacionados con "
+    "esta pregunta. Responde solo con lo que los fragmentos sí sostengan, di "
+    "explícitamente qué parte de la pregunta queda sin respaldo en el corpus, y no "
+    "completes los vacíos con conocimiento propio."
 )
 
 SIN_EVIDENCIA = (

@@ -78,6 +78,7 @@ async def _leer_pregunta(request: Request) -> ChatRequest:
         raise HTTPException(status_code=413, detail="la solicitud es demasiado grande")
     texto = cuerpo.decode("utf-8", errors="replace").strip()
     extras = False
+    sesion: str | None = None
     if "json" in request.headers.get("content-type", "") or texto.startswith("{"):
         try:
             datos = json.loads(texto)
@@ -88,10 +89,13 @@ async def _leer_pregunta(request: Request) -> ChatRequest:
         elif isinstance(datos, dict):
             texto = next((str(datos[k]) for k in CLAVES_PREGUNTA if datos.get(k)), "")
             extras = bool(datos.get("incluir_extras", False))
+            # Solo el frontend propio manda `sesion`; sin ella el agente es sin estado.
+            bruto = datos.get("sesion")
+            sesion = str(bruto)[:128] if bruto else None
         else:
             raise HTTPException(status_code=400, detail="formato de pregunta no soportado")
     try:
-        return ChatRequest(pregunta=texto, incluir_extras=extras)
+        return ChatRequest(pregunta=texto, incluir_extras=extras, sesion=sesion)
     except ValidationError as exc:
         raise HTTPException(
             status_code=422, detail="la pregunta está vacía o es demasiado larga"
@@ -103,7 +107,7 @@ async def chat(request: Request) -> JSONResponse:
     peticion = await _leer_pregunta(request)
     sistema: Sistema = request.app.state.sistema
     respuesta = await run_in_threadpool(
-        sistema.responder, peticion.pregunta, peticion.incluir_extras
+        sistema.responder, peticion.pregunta, peticion.incluir_extras, peticion.sesion
     )
     return JSONResponse(respuesta.model_dump(exclude_none=True))
 

@@ -242,10 +242,10 @@ class Retriever:
         min_words = rcfg.get("min_fragment_words", 20)
         n_target = rcfg["final_fragments"]
         fragments: list[FragmentResult] = []
-        reserva: list[tuple[str, str, str]] = []
+        reserva: list[tuple[str, str, str, float]] = []
         seen_texts: set[str] = set()
 
-        for chunk_id, _score in fused:
+        for chunk_id, score in fused:
             if chunk_id not in meta_by_id:
                 continue
             meta = meta_by_id[chunk_id]
@@ -264,7 +264,7 @@ class Retriever:
                 # que empieza o termina fuera, asi que se pospone: solo se usa si
                 # no hay suficientes fragmentos bien formados para los 10.
                 if len(sub.split()) < min_words or not _bien_formado(sub):
-                    reserva.append((chunk_id, meta["doc_id"], sub))
+                    reserva.append((chunk_id, meta["doc_id"], sub, score))
                     continue
                 fragments.append(
                     FragmentResult(
@@ -272,6 +272,7 @@ class Retriever:
                         chunk_id=chunk_id,
                         doc_id=meta["doc_id"],
                         text=sub,
+                        score=score,
                     )
                 )
                 if len(fragments) >= n_target:
@@ -279,7 +280,7 @@ class Retriever:
             if len(fragments) >= n_target:
                 break
 
-        for chunk_id, doc_id, sub in reserva:  # completar si faltan
+        for chunk_id, doc_id, sub, score in reserva:  # completar si faltan
             if len(fragments) >= n_target:
                 break
             fragments.append(
@@ -288,6 +289,7 @@ class Retriever:
                     chunk_id=chunk_id,
                     doc_id=doc_id,
                     text=sub,
+                    score=score,
                 )
             )
 

@@ -57,21 +57,31 @@ sola llamada al modelo** (corpus vía enrutador), medido en el harness propio
 
 ## 2. Agentes y orquestación
 
-### 2.1 Los seis participantes
+### 2.1 Los ocho participantes
 
 | # | Nombre | Tipo | Llamadas al modelo | Rol |
 | --- | --- | --- | --- | --- |
 | 1 | `guarda` | Determinista | 0 (más el clasificador CPU, no generativo) | Guard de dos niveles: rechazo duro (credenciales, ejecución de código) o aislamiento (todo lo demás), ver §7.2 |
-| 2 | `enrutador` (por embeddings) | Determinista | 0 | Clasifica la ruta por similitud coseno contra prototipos, con el BGE-M3 ya cargado para recuperación |
-| 3 | `orquestador` | LLM (Qwen3-Next-80B) | 1, solo si el enrutador se abstiene | Camino de excepción: clasifica intención y reformula la consulta cuando el enrutador no tiene confianza suficiente |
-| 4 | `agente_corpus` | LLM (Llama 3.3 70B) | 1, si hay fragmentos (si no, 0) | Recupera, escanea y sanea fragmentos, redacta citando cada afirmación, se abstiene si la evidencia no alcanza |
-| 5 | `verificador_citas` | Determinista | 0 | Corre siempre después del corpus: valida cada marca `[n]` contra el contexto real entregado |
-| 6 | `agente_visualizacion` | LLM (Qwen3-Next-80B) | 1 | Elige componente de un catálogo cerrado y sus filtros; el backend calcula los valores |
+| 2 | `memoria` | Determinista, opcional | 0 | Solo si el cliente manda `sesion`: reescribe la consulta de búsqueda de un seguimiento con el turno previo (§2.6) |
+| 3 | `enrutador` (por embeddings) | Determinista | 0 | Clasifica la ruta por similitud coseno contra prototipos, con el BGE-M3 ya cargado para recuperación |
+| 4 | `orquestador` | LLM (Qwen3-Next-80B) | 1, solo si el enrutador se abstiene | Camino de excepción: clasifica intención y reformula la consulta cuando el enrutador no tiene confianza suficiente |
+| 5 | `planner` | Determinista | 0 | Descompone una pregunta compuesta en hasta 3 subpreguntas y busca cada una por separado (§2.5) |
+| 6 | `agente_corpus` | LLM (Llama 3.3 70B) | 1, si hay fragmentos (si no, 0) | Recupera, escanea y sanea fragmentos, redacta citando cada afirmación, se abstiene si la evidencia no alcanza |
+| 7 | `verificador_citas` | Determinista | 0 | Corre siempre después del corpus: valida cada marca `[n]` contra el contexto real entregado |
+| 8 | `agente_visualizacion` | LLM (Qwen3-Next-80B) | 1 | Elige componente de un catálogo cerrado y sus filtros; el backend calcula los valores |
 
-Seis participantes, tres de ellos sin costo de interacción (0 llamadas). El diseño
-del bloque D (20 % de la nota) se apoya en esto: sumar agentes al sistema **sin** sumar
-coste al bloque B (20 %) — router y verificador son la prueba de que ambos objetivos
-no son excluyentes.
+Ocho participantes, **cinco de ellos sin costo de interacción** (0 llamadas al
+modelo). El diseño del bloque D (20 % de la nota) se apoya en esto: sumar capacidad al
+sistema **sin** sumar coste al bloque B (20 %). Guarda, memoria, enrutador, planner y
+verificador son la prueba de que ambos objetivos no son excluyentes.
+
+El criterio que separa lo que es un agente con modelo de lo que es una pieza
+determinista es simple: **si la tarea se puede resolver con una regla medible, no se
+gasta una llamada al modelo en ella**. Enrutar, descomponer, calificar evidencia,
+resolver una referencia al turno anterior y validar citas son tareas de ese tipo. Es la
+misma conclusión a la que llega la literatura que revisamos (Kim et al. 2025: las
+arquitecturas sin verificación centralizada propagan más errores; MAFBench 2026: la
+orquestación por sí sola multiplica la latencia).
 
 ### 2.2 Enrutamiento sin LLM (decisión A2)
 
@@ -146,6 +156,72 @@ cambio de una mejora de calidad no medida. La literatura de producción (ver
 como una falla común en sistemas multiagente reales.
 
 ---
+
+### 2.5 Planner determinista y calificación de evidencia
+
+**Por qué existen.** Las 50 preguntas del banco oficial son de un solo salto, pero el
+sistema no se entrega para responder 50 preguntas conocidas: los expertos escriben las
+suyas en vivo (§3.4) y en operación llegan preguntas compuestas. Diseñar solo para el
+banco de prueba es exactamente lo que el bloque D penaliza al juzgar "qué tan eficiente
+y pertinente resulta ese diseño".
+
+**Planner.** Ante una pregunta compuesta —dos interrogativos unidos por un conector, o
+dos frases interrogativas seguidas— se descompone en hasta 3 subpreguntas, se busca cada
+una por separado y los fragmentos se reparten **por turnos** entre ellas. Tres
+propiedades deliberadas:
+
+1. **No suma interacciones ni tokens.** La descomposición es una regla, no una llamada al
+   modelo. Solo suma una búsqueda por subpregunta: décimas de segundo, cero tokens.
+2. **No amplía el contexto.** El tope sigue siendo `FRAGMENTOS_CONTEXTO`. Una pregunta
+   compuesta reparte los mismos 6 huecos entre sus partes en vez de gastarlos todos en la
+   primera, que es lo que ocurría antes: el reranker ordenaba por el promedio de los dos
+   temas y el segundo se quedaba sin evidencia.
+3. **No se activa si no hace falta.** Sobre las 50 oficiales solo se activa en 3, y las
+   tres son compuestas de verdad (p. ej. *"¿Cómo se está empleando la guerra electrónica
+   para interferir sistemas espaciales **y qué incidentes recientes** lo evidencian?"*).
+   Una enumeración como "drones y satélites" no se parte, porque el conector no antecede
+   a un interrogativo.
+
+**Calificación de evidencia.** Antes de redactar se mira el score del cross-encoder del
+mejor fragmento. Por debajo del umbral, el redactor recibe una instrucción de cautela.
+
+El umbral se calibró sobre la base vectorial real, comparando las 50 preguntas oficiales
+contra las 20 fuera de alcance del banco:
+
+| Conjunto | n | mínimo | mediana | máximo |
+| --- | --- | --- | --- | --- |
+| Preguntas oficiales (con evidencia) | 50 | −0,25 | **+4,48** | +10,10 |
+| Fuera de alcance (sin evidencia) | 20 | −5,13 | **−2,14** | +0,25 |
+
+La separación es casi total. Con el umbral en **−0,5**, ninguna de las 50 oficiales queda
+marcada y se detectan 17 de las 20 sin evidencia; subirlo a 0,0 detecta 19/20 pero marca
+una oficial. Se eligió −0,5 por conservador: la corrida completa no se ha podido repetir
+contra el estado actual, así que se prefiere el valor que garantiza cero impacto sobre lo
+ya medido.
+
+**Lo que deliberadamente no hace: abstenerse.** Las implementaciones de referencia de
+RAG agéntico que revisamos usan este mismo score para callar —una de ellas se abstiene en
+el 68,6 % de las preguntas respondibles—. Eso optimiza groundedness, pero aquí *Answer
+Relevancy* pesa el 30 % del bloque de Calidad y una abstención puntúa cero. La cautela
+sube fidelidad sin tocar relevancia; la abstención cambia una por la otra.
+
+### 2.6 Memoria conversacional, y por qué es opcional
+
+La evaluación de ADL manda cada pregunta por separado y el contrato de la §2.4 no tiene
+campo de sesión. Si la memoria estuviera siempre activa, la respuesta a la pregunta 7
+podría depender de la 6 y las métricas de calidad dejarían de medir lo que creen medir.
+
+Por eso **la memoria solo existe cuando el cliente envía `sesion`**: el frontend propio lo
+manda, la evaluación automática no. Ante ADL el agente es estrictamente sin estado y el
+comportamiento medido no cambia.
+
+Resuelve el seguimiento con referencia al turno anterior —*"¿y en Colombia?"*, *"¿cómo se
+compara con eso?"*—, que sin memoria llega solo al índice y no recupera nada útil porque
+el sujeto está en el turno previo. Se reescribe **solo la consulta de búsqueda**: la
+pregunta que ve el redactor, y por tanto `evaluacion.input`, sigue siendo la que escribió
+el usuario. Está acotada en turnos por sesión, en número de sesiones y con caducidad, y
+vive en memoria del proceso: si el contenedor se reinicia se pierde, que es el
+comportamiento correcto para un dato de conversación.
 
 ## 3. Recuperación
 
