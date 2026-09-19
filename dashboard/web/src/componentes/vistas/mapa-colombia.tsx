@@ -86,10 +86,18 @@ export function VistaMapaColombia({
     claveGeo: string;
     claveNombre: string;
   } | null>(null);
-  if (geo.fase === "listo") {
+  const claveGeo = nivel === "municipio" ? "divipola_mpio" : "divipola_dpto";
+  // En el primer render tras cambiar de nivel el recurso aún trae la geometría anterior
+  // (el hook la reemplaza en un efecto), así que solo se adopta si es la del nivel pedido:
+  // pintar la malla municipal con claves departamentales dibuja un mapa que miente.
+  const geoDelNivel =
+    geo.fase === "listo" &&
+    (geo.dato.features[0]?.properties as Record<string, unknown> | undefined)?.[claveGeo] !==
+      undefined;
+  if (geo.fase === "listo" && geoDelNivel) {
     dibujada.current = {
       geojson: geo.dato,
-      claveGeo: nivel === "municipio" ? "divipola_mpio" : "divipola_dpto",
+      claveGeo,
       claveNombre: nivel === "municipio" ? "municipio" : "departamento",
     };
   }

@@ -104,11 +104,15 @@ test.describe("Tablero · Anexo B en la recta final", () => {
         },
       });
     });
-    const copiar = page.getByRole("banner").getByTitle("Copiar el enlace a esta vista, con sus filtros");
+    const copiar = page
+      .getByRole("banner")
+      .getByTitle("Copiar el enlace a esta vista, con sus filtros");
     await expect(copiar).toBeAttached();
     await copiar.click();
     await expect
-      .poll(() => page.evaluate(() => (window as unknown as { __copiado?: string }).__copiado ?? ""))
+      .poll(() =>
+        page.evaluate(() => (window as unknown as { __copiado?: string }).__copiado ?? ""),
+      )
       .toContain(`componente=${V.especificacion.componente}`);
     const portapapeles = await page.evaluate(
       () => (window as unknown as { __copiado?: string }).__copiado ?? "",
@@ -179,7 +183,9 @@ test.describe("Tablero · Anexo B en la recta final", () => {
       "aria-pressed",
       "true",
     );
-    await expect(page.getByRole("status").filter({ hasText: "Anillos alrededor de" })).toBeVisible();
+    await expect(
+      page.getByRole("status").filter({ hasText: "Anillos alrededor de" }),
+    ).toBeVisible();
     await disposicion.getByRole("button", { name: "Niveles" }).click();
     await expect(disposicion.getByRole("button", { name: "Niveles" })).toHaveAttribute(
       "aria-pressed",
@@ -198,7 +204,11 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     await page.goto(`${TABLERO_URL}/?componente=distribucion&variable=alertas_por_municipio`);
     const resultado = (await (await componente).json()) as {
       titulo: string;
-      datos: { total: number; barras: { cuenta: number; refs?: unknown[] }[]; resumen: { mediana: number } };
+      datos: {
+        total: number;
+        barras: { cuenta: number; refs?: unknown[] }[];
+        resumen: { mediana: number };
+      };
     };
     expect(resultado.titulo).toBe("Distribución de alertas por municipio");
     expect(resultado.datos.total).toBe(
@@ -301,10 +311,19 @@ test.describe("Tablero · Anexo B en la recta final", () => {
       await expect(fronteras).toBeVisible({ timeout: 2_000 });
     }).toPass({ timeout: 20_000 });
     await page.keyboard.press("Escape");
-    // Y de vuelta: «Departamentos» aleja la cámara y el nivel lo sigue.
+    // El dibujo es municipal de verdad: 1.122 polígonos del MGN, no solo el rótulo.
+    const dibujo = page.locator("[data-clave-geo]");
+    await expect(dibujo).toHaveAttribute("data-clave-geo", "divipola_mpio");
+    await expect(dibujo).toHaveAttribute("data-rasgos", "1122");
+    // Y de vuelta: «Departamentos» aleja la cámara, el nivel lo sigue y el dibujo también.
+    // Un conmutador se prueba en los dos sentidos: aquí el rótulo volvía y el mapa seguía
+    // trazando la malla municipal con colores departamentales.
     await botonNivel(page, "Departamentos").click();
     await expect(botonNivel(page, "Departamentos")).toHaveAttribute("aria-pressed", "true");
     await expect(municipios).toHaveAttribute("aria-pressed", "false");
+    await expect(dibujo).toHaveAttribute("data-clave-geo", "divipola_dpto");
+    await expect(dibujo).toHaveAttribute("data-rasgos", "33");
+    await expect(lienzo(page)).toContainText("Alertas tempranas por departamento");
   });
 
   test("las referencias [n] de la respuesta abren su fragmento, también en la presentación", async ({
@@ -339,7 +358,9 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     await expect(panel(page)).toContainText(`fragmento ${String(ref.chunk_id)} de ${ref.doc_id}`);
 
     // En la presentación, la misma referencia se lee sin salir del recorrido.
-    await agente(page).getByRole("button", { name: /Presentar el recorrido/ }).click();
+    await agente(page)
+      .getByRole("button", { name: /Presentar el recorrido/ })
+      .click();
     const recorrido = page.getByRole("dialog", { name: "Presentación del recorrido analítico" });
     await recorrido.getByRole("button", { name: /^Referencia 1:/ }).click();
     await expect(recorrido).toContainText("Referencia [1]");
@@ -357,10 +378,14 @@ test.describe("Tablero · Anexo B en la recta final", () => {
   }, testInfo) => {
     await abrirEn(page, { componente: "linea_tiempo" });
     // Sin vistas en el hilo no hay nada que presentar: el botón no se ofrece.
-    await expect(agente(page).getByRole("button", { name: /Presentar el recorrido/ })).toHaveCount(0);
+    await expect(agente(page).getByRole("button", { name: /Presentar el recorrido/ })).toHaveCount(
+      0,
+    );
 
     await preguntarAlAgente(page, guardia);
-    await agente(page).getByRole("button", { name: /Presentar el recorrido/ }).click();
+    await agente(page)
+      .getByRole("button", { name: /Presentar el recorrido/ })
+      .click();
 
     const recorrido = page.getByRole("dialog", { name: "Presentación del recorrido analítico" });
     await expect(recorrido).toBeVisible();
@@ -368,7 +393,9 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     await expect(recorrido).toContainText(INSTRUCCION);
     await expect(recorrido).toContainText(V.respuesta_agente);
     await expect(recorrido).toContainText(V.especificacion.justificacion);
-    await expect(recorrido.getByRole("heading", { level: 2, name: V.resultado.titulo })).toBeVisible();
+    await expect(
+      recorrido.getByRole("heading", { level: 2, name: V.resultado.titulo }),
+    ).toBeVisible();
     await auditarAccesibilidad(page, testInfo, "tablero-recorrido");
 
     await page.keyboard.press("Escape");
