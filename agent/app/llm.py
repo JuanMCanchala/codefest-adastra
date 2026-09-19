@@ -71,6 +71,7 @@ class BedrockLLM:
             config=Config(read_timeout=cfg.llm_timeout_s, retries={"max_attempts": 2}),
         )
         self.presupuesto = _Presupuesto(cfg.presupuesto_tokens)
+        self._razonamiento = cfg.razonamiento_gpt_oss
 
     def completar(
         self,
@@ -84,12 +85,16 @@ class BedrockLLM:
         temperatura: float = 0.2,
     ) -> str:
         self.presupuesto.verificar()
+        extra = {}
+        if "gpt-oss" in modelo:
+            extra["additionalModelRequestFields"] = {"reasoning_effort": self._razonamiento}
         try:
             resp = self._cliente.converse(
                 modelId=modelo,
                 system=[{"text": sistema}],
                 messages=[{"role": "user", "content": [{"text": mensaje}]}],
                 inferenceConfig={"maxTokens": max_tokens, "temperature": temperatura},
+                **extra,
             )
         except Exception as exc:  # botocore agrupa aquí errores de red, cuota y validación
             log.exception("fallo llamando a Bedrock (%s)", modelo)

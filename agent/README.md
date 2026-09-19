@@ -16,9 +16,9 @@ puerto HTTP, como exige el Anexo A.4.
 flowchart LR
     U[Pregunta] --> G{Filtro de seguridad}
     G -- inyección --> R[Rechazo cortés, 0 llamadas]
-    G -- ok --> O[orquestador · gpt-oss-20b]
-    O -- corpus --> C[agente_corpus · gpt-oss-120b]
-    O -- visualización --> V[agente_visualizacion · gpt-oss-20b]
+    G -- ok --> O[orquestador · gpt-oss-120b]
+    O -- corpus --> C[agente_corpus · Llama 3.3 70B]
+    O -- visualización --> V[agente_visualizacion · gpt-oss-120b]
     O -- ambos --> C --> V
     O -- fuera de alcance --> F[Respuesta de alcance]
     C -. buscar_corpus .-> B[(Base vectorial Etapa 1<br/>BGE-M3 + FAISS + reranker)]
@@ -51,18 +51,19 @@ flowchart LR
 Se declaran en Coolify, en _Environment Variables_. **Nunca** se escriben en el código ni en la
 imagen.
 
-| Variable                   | Por defecto               | Descripción                                                                                 |
-| -------------------------- | ------------------------- | ------------------------------------------------------------------------------------------- |
-| `AWS_BEARER_TOKEN_BEDROCK` | —                         | API Key de Bedrock entregada por ADL (**obligatoria**)                                      |
-| `AWS_REGION`               | `us-east-1`               | Región de Bedrock                                                                           |
-| `MODELO_ORQUESTADOR`       | `openai.gpt-oss-20b-1:0`  | ID de modelo del orquestador                                                                |
-| `MODELO_CORPUS`            | `openai.gpt-oss-120b-1:0` | ID de modelo del agente de corpus                                                           |
-| `MODELO_VISUALIZACION`     | `openai.gpt-oss-20b-1:0`  | ID de modelo del agente de visualización                                                    |
-| `PRESUPUESTO_TOKENS`       | `40000000`                | Tope de tokens del proceso, para proteger la bolsa de USD 100                               |
-| `BASE_VECTORIAL_DIR`       | `/data/base_vectorial`    | Ruta de la base vectorial                                                                   |
-| `FRAGMENTOS_CONTEXTO`      | `6`                       | Fragmentos que recibe el redactor                                                           |
-| `GRAFO_EN_RECUPERACION`    | `false`                   | Integra el grafo en la recuperación. Carga GLiNER, así que antes hay que medir la latencia. |
-| `CORS_ORIGINS`             | `*`                       | Orígenes permitidos (frontagent y dashboard)                                                |
+| Variable                   | Por defecto                          | Descripción                                                                                 |
+| -------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `AWS_BEARER_TOKEN_BEDROCK` | —                                    | API Key de Bedrock entregada por ADL (**obligatoria**)                                      |
+| `AWS_REGION`               | `us-east-1`                          | Región de Bedrock                                                                           |
+| `MODELO_ORQUESTADOR`       | `openai.gpt-oss-120b-1:0`            | ID de modelo del orquestador                                                                |
+| `MODELO_CORPUS`            | `us.meta.llama3-3-70b-instruct-v1:0` | ID de modelo del agente de corpus                                                           |
+| `MODELO_VISUALIZACION`     | `openai.gpt-oss-120b-1:0`            | ID de modelo del agente de visualización                                                    |
+| `RAZONAMIENTO_GPT_OSS`     | `low`                                | Esfuerzo de razonamiento de gpt-oss (`low`, `medium`, `high`)                               |
+| `PRESUPUESTO_TOKENS`       | `40000000`                           | Tope de tokens del proceso, para proteger la bolsa de USD 100                               |
+| `BASE_VECTORIAL_DIR`       | `/data/base_vectorial`               | Ruta de la base vectorial                                                                   |
+| `FRAGMENTOS_CONTEXTO`      | `6`                                  | Fragmentos que recibe el redactor                                                           |
+| `GRAFO_EN_RECUPERACION`    | `false`                              | Integra el grafo en la recuperación. Carga GLiNER, así que antes hay que medir la latencia. |
+| `CORS_ORIGINS`             | `*`                                  | Orígenes permitidos (frontagent y dashboard)                                                |
 
 > **Pendiente:** confirmar los IDs de modelo en la consola de Bedrock y elegirlos con los
 > benchmarks de `docs/investigacion/03_arquitectura/benchmarks_modelos_bedrock.md`. La ficha
