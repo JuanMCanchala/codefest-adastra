@@ -1,23 +1,32 @@
 @import "tailwindcss";
 
+/*
+ * Tokens de AeroCode (fuente normativa: DESIGN.md en la raíz del repositorio).
+ * Este bloque es idéntico en frontagent/app/globals.css y dashboard/web/src/estilos.css.
+ */
 @theme {
-  --color-fondo: #080b10;
-  --color-panel: #0e131a;
-  --color-elevado: #141b24;
-  --color-borde: #1e2936;
-  --color-texto: #e9eff7;
-  --color-apagado: #9dacbd;
-  --color-acento: #58a6ff;
-  --color-alerta: #f87171;
-  --color-ok: #4ade80;
-  --color-f1: #f0b429;
-  --color-f2: #38bdf8;
-  --color-f3: #34d399;
+  --color-fondo: #070d19; /* noche */
+  --color-panel: #0b1426; /* casco */
+  --color-elevado: #12203a; /* cabina */
+  --color-borde: #1d2c47; /* hilo */
+  --color-control: #5f7499;
+  --color-texto: #e8edf5;
+  --color-apagado: #a7b4ca;
+  --color-tenue: #8494ae;
+  --color-acento: #e8b64c; /* oro de mando: acción, foco y selección */
+  --color-acento-claro: #f2c96e;
+  --color-senal: #8cb4ff; /* trazable: citas y evidencia */
+  --color-alerta: #f28b7d;
+  --color-ok: #4cc38a;
+  --color-f1: #e08ec0;
+  --color-f2: #56b4e9;
+  --color-f3: #2fc39b;
 
   --font-sans:
-    ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    "IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
   --font-mono:
-    ui-monospace, "Cascadia Mono", "Segoe UI Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    "IBM Plex Mono", ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
 }
 
 @layer base {
@@ -27,6 +36,7 @@
 
   html {
     color-scheme: dark;
+    accent-color: var(--color-acento);
   }
 
   body {
@@ -34,33 +44,64 @@
     color: var(--color-texto);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    caret-color: var(--color-acento);
+  }
+
+  ::selection {
+    background-color: rgb(232 182 76 / 0.35);
+    color: var(--color-texto);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-tenue);
+    opacity: 1;
   }
 
   :focus-visible {
     outline: 2px solid var(--color-acento);
     outline-offset: 2px;
   }
+
+  .font-mono,
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-spin {
+      animation-duration: 2.4s;
+    }
+    * {
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
-@utility cuadricula-fondo {
-  background-image:
-    linear-gradient(to right, rgba(88, 166, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(88, 166, 255, 0.05) 1px, transparent 1px);
-  background-size: 48px 48px;
+/* Barra de mando: franja dorada de 2px, la única raya de color del sistema. */
+@utility franja-mando {
+  box-shadow: inset 0 2px 0 var(--color-acento);
 }
 
 @utility barra-fina {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-borde) transparent;
+  scrollbar-color: var(--color-control) transparent;
 }
 
+/* Controles de MapLibre con los tokens de la sala. */
 .maplibregl-map {
   font-family: var(--font-sans);
 }
 
 .maplibregl-ctrl-group {
   background: var(--color-elevado) !important;
-  border: 1px solid var(--color-borde);
+  border: 1px solid var(--color-control);
+  box-shadow: none !important;
+}
+
+.maplibregl-ctrl-group button {
+  width: 36px !important;
+  height: 36px !important;
 }
 
 .maplibregl-ctrl-group button + button {
@@ -71,16 +112,38 @@
   filter: invert(1) hue-rotate(180deg);
 }
 
+.maplibregl-ctrl-attrib {
+  background: rgb(11 20 38 / 0.9) !important;
+  color: var(--color-apagado);
+  font-size: 12px;
+}
+
+.maplibregl-ctrl-attrib a,
+.maplibregl-ctrl-attrib-inner {
+  color: var(--color-apagado) !important;
+}
+
+.maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+}
+
 .maplibregl-popup-content {
   background: var(--color-elevado) !important;
-  border: 1px solid var(--color-borde);
+  border: 1px solid var(--color-control);
   border-radius: 6px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.5);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
   color: var(--color-texto);
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.4;
   padding: 8px 10px;
 }
 
 .maplibregl-popup-tip {
   display: none;
+}
+
+/* Foco de teclado en los nodos de la red (WCAG 2.4.7). */
+.nodo-red:focus-visible circle {
+  stroke: var(--color-acento);
+  stroke-width: 3;
 }
