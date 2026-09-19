@@ -17,7 +17,9 @@ REGLAS_COMUNES = (
 FENOMENOS = (
     "F1 = IA y capacidades estratégicas en defensa; "
     "F2 = seguridad del entorno espacial (órbita baja, basura espacial, contraespacio); "
-    "F3 = dinámicas territoriales y amenazas regionales en América Latina y Colombia: grupos armados y economías ilícitas, MINERÍA ILEGAL de oro, deforestación y cobertura boscosa en la Amazonía, narcotráfico, fronteras y crimen organizado."
+    "F3 = dinámicas territoriales y amenazas regionales en América Latina y Colombia: "
+    "grupos armados y economías ilícitas, MINERÍA ILEGAL de oro, deforestación y "
+    "cobertura boscosa en la Amazonía, narcotráfico, fronteras y crimen organizado."
 )
 
 ORQUESTADOR = (
