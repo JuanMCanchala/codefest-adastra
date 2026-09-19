@@ -70,6 +70,10 @@ RUN curl -fsSL "$BASE_VECTORIAL_URL" -o /tmp/base.zip \
 
 COPY --chown=agente app ./app
 COPY --chown=agente etapa1 ./etapa1
+# Detecciones precalculadas del Reto 2: sin ellas `AgenteSatelital.disponible` queda en
+# False, el grafo no monta el nodo satelital y toda pregunta por hectáreas de minería
+# ilegal cae al corpus.
+COPY --chown=agente datos ./datos
 COPY --chown=agente agent_card.json config.retrieval.yaml ./
 
 EXPOSE 8000

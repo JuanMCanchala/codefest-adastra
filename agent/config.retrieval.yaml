@@ -24,7 +24,9 @@ retrieval:
   fusion: "rrf"
   rrf_k: 60
   final_fragments: 10
-  final_documents: 3
+  # 0 = no se calcula el top-3 de documentos: el agente solo consume los fragmentos y la
+  # agregacion reconstruye vectores de FAISS para deduplicar, que aqui no se usa.
+  final_documents: 0
   min_fragment_words: 20
   doc_dedup_threshold: 0.90
 

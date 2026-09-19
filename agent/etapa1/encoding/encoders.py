@@ -109,6 +109,24 @@ class BGEM3Encoder(Encoder):
         )
         return out["lexical_weights"]
 
+    def encode_query(self, texts: list[str], batch_size: int = 32):
+        """Denso y disperso de una consulta en UNA sola pasada.
+
+        BGE-M3 calcula las tres representaciones en el mismo forward: pedir el denso con
+        `encode` y despues el disperso con `encode_sparse` hacia pasar la consulta dos
+        veces por un modelo de 568M. Medido en CPU, eran 150-300 ms por pregunta tirados,
+        que es la mitad del presupuesto de latencia una vez cambiado el reranker.
+        """
+        out = self.model.encode(
+            texts,
+            batch_size=batch_size,
+            return_dense=True,
+            return_sparse=True,
+            return_colbert_vecs=False,
+        )
+        dense = _l2_normalize(np.asarray(out["dense_vecs"], dtype=np.float32))
+        return dense, out["lexical_weights"]
+
 
 class STEncoder(Encoder):
     """Encoder generico basado en sentence-transformers. Cubre E5 (con prefijos

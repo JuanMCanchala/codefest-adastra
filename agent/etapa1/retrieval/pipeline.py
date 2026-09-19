@@ -62,12 +62,39 @@ class Retriever:
         self.sparse_indexes = sparse_indexes or {}
         self._chunk_to_idx: dict[str, int] | None = None  # chunk_id -> id interno FAISS
         self._centroid_cache: dict[str, object] = {}
+        self._meta_cache: dict[str, dict] | None = None
 
-    def _search_one(self, name: str, query: str) -> list[tuple[str, float]]:
-        """Ranking [(chunk_id, score)] de un encoder para la consulta."""
+    @property
+    def _meta(self) -> dict[str, dict]:
+        """chunk_id -> metadata, construido una sola vez.
+
+        Los chunk_id son globales, asi que el indice no depende de la consulta.
+        Rehacerlo en cada llamada recorria los 90.613 fragmentos y costaba 16-19 ms
+        por pregunta sin cambiar ningun resultado.
+        """
+        if self._meta_cache is None:
+            cache: dict[str, dict] = {}
+            for store in self.stores.values():
+                for m in store.metadata:
+                    cache.setdefault(m["chunk_id"], m)
+            self._meta_cache = cache
+        return self._meta_cache
+
+    def _encode_query(self, name: str, query: str):
+        """Representacion de la consulta para un encoder: (denso, pesos lexicos).
+
+        Si el encoder sabe dar las dos en una pasada (BGE-M3) y hay indice disperso que
+        las aproveche, se piden juntas. Si no, se pide solo la densa y el disperso queda
+        en None, igual que con cualquier encoder que no lo soporte.
+        """
         enc = self.encoders[name]
+        if self.sparse_indexes.get(name) is not None and hasattr(enc, "encode_query"):
+            return enc.encode_query([query])
+        return enc.encode([query], is_query=True), None
+
+    def _search_one(self, name: str, qvec) -> list[tuple[str, float]]:
+        """Ranking [(chunk_id, score)] de un encoder para la consulta ya codificada."""
         store = self.stores[name]
-        qvec = enc.encode([query], is_query=True)
         scores, idxs = store.search(qvec, top_k=self.cfg["retrieval"]["top_k_faiss"])
         out = []
         for score, idx in zip(scores[0], idxs[0], strict=False):
@@ -159,17 +186,19 @@ class Retriever:
         # 1) ranking por encoder + fusion RRF (Seccion 8.4).
         # Se lleva un peso por ranking: denso y disperso miden relevancia y pesan
         # 1.0; el grafo mide coocurrencia y entra atenuado (ver 1b).
-        rankings = [self._search_one(name, query) for name in self.encoders]
+        # La consulta se codifica UNA vez por encoder: el denso y los pesos lexicos
+        # salen del mismo forward (ver Encoder.encode_query).
+        codificadas = {name: self._encode_query(name, query) for name in self.encoders}
+        rankings = [self._search_one(name, codificadas[name][0]) for name in self.encoders]
         pesos = [1.0] * len(rankings)
 
         # 1a) senal lexical (dispersa) del mismo encoder: recupera coincidencias
         # exactas de siglas y nombres propios que el vector denso diluye.
         for name, sparse in self.sparse_indexes.items():
-            enc = self.encoders.get(name)
-            if sparse is None or enc is None or not hasattr(enc, "encode_sparse"):
+            q_weights = codificadas.get(name, (None, None))[1]
+            if sparse is None or q_weights is None:
                 continue
-            q_weights = enc.encode_sparse([query])[0]
-            sparse_ranking = sparse.search(q_weights, top_k=rcfg["top_k_faiss"])
+            sparse_ranking = sparse.search(q_weights[0], top_k=rcfg["top_k_faiss"])
             if sparse_ranking:
                 rankings.append(sparse_ranking)
                 pesos.append(1.0)
@@ -193,10 +222,7 @@ class Retriever:
         fused = fuse(rankings, method=rcfg["fusion"], rrf_k=rcfg["rrf_k"], weights=pesos)
 
         # indice chunk_id -> metadata (del primer store; los chunk_id son globales)
-        meta_by_id = {}
-        for store in self.stores.values():
-            for m in store.metadata:
-                meta_by_id.setdefault(m["chunk_id"], m)
+        meta_by_id = self._meta
 
         # 2) rerank cross-encoder opcional (toggle, zona gris - ver rerank.py)
         if self.reranker and self.cfg["rerank"]["enabled"]:
@@ -265,21 +291,26 @@ class Retriever:
                 )
             )
 
-        # 4) documentos: agregacion chunk->doc (Seccion 8.6) top-3
-        scored_chunks = [
-            (cid, meta_by_id[cid]["doc_id"], score) for cid, score in fused if cid in meta_by_id
-        ]
-        acfg = self.cfg["aggregation"]
+        # 4) documentos: agregacion chunk->doc (Seccion 8.6) top-3.
+        # Con final_documents = 0 se salta: el agente de la Etapa 2 solo consume
+        # `fragments`, y el filtro de duplicados reconstruye vectores del indice FAISS
+        # (`_select_diverse_docs`), que es trabajo puro de la entrega de la Etapa 1.
+        documents: list[DocResult] = []
         n_docs = rcfg["final_documents"]
-        # Se piden mas candidatos de los necesarios para poder descartar
-        # duplicados sin quedarse corto.
-        ranked_docs = aggregate_documents(
-            scored_chunks,
-            method=acfg["method"],
-            top_n=n_docs * 6,
-            k_chunks=acfg["k_chunks"],
-        )
-        elegidos = self._select_diverse_docs(ranked_docs, scored_chunks, n_docs)
-        documents = [DocResult(rank=i + 1, doc_id=doc_id) for i, doc_id in enumerate(elegidos)]
+        if n_docs > 0:
+            scored_chunks = [
+                (cid, meta_by_id[cid]["doc_id"], score) for cid, score in fused if cid in meta_by_id
+            ]
+            acfg = self.cfg["aggregation"]
+            # Se piden mas candidatos de los necesarios para poder descartar
+            # duplicados sin quedarse corto.
+            ranked_docs = aggregate_documents(
+                scored_chunks,
+                method=acfg["method"],
+                top_n=n_docs * 6,
+                k_chunks=acfg["k_chunks"],
+            )
+            elegidos = self._select_diverse_docs(ranked_docs, scored_chunks, n_docs)
+            documents = [DocResult(rank=i + 1, doc_id=doc_id) for i, doc_id in enumerate(elegidos)]
 
         return QueryResult(query_id=query_id, documents=documents, fragments=fragments)

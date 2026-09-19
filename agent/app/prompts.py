@@ -17,7 +17,7 @@ REGLAS_COMUNES = (
 FENOMENOS = (
     "F1 = IA y capacidades estratégicas en defensa; "
     "F2 = seguridad del entorno espacial (órbita baja, basura espacial, contraespacio); "
-    "F3 = dinámicas territoriales y amenazas regionales en América Latina y Colombia."
+    "F3 = dinámicas territoriales y amenazas regionales en América Latina y Colombia: grupos armados y economías ilícitas, MINERÍA ILEGAL de oro, deforestación y cobertura boscosa en la Amazonía, narcotráfico, fronteras y crimen organizado."
 )
 
 ORQUESTADOR = (
@@ -32,7 +32,12 @@ ORQUESTADOR = (
     "- satelital: pide áreas, hectáreas o extensión medidas sobre imágenes "
     "de minería ilegal o de cobertura boscosa en la Amazonía.\n"
     "- ambos: pide explicación y visualización.\n"
-    "- fuera_de_alcance: no trata de los tres fenómenos."
+    "- fuera_de_alcance: SOLO si el tema no tiene ninguna relación con F1, F2 ni F3 "
+    "(p. ej. recetas, deportes, soporte técnico). Ante la duda elige corpus: un tema "
+    "nombrado en F1, F2 o F3 NUNCA es fuera_de_alcance, por escueto que venga escrito.\n"
+    "Ejemplos: «mineria ilegal en colombia» -> corpus, fenomeno 3. «cuántas hectáreas "
+    "de minería ilegal hay en Eldorado» -> satelital, fenomeno 3. «basura espacial» -> "
+    "corpus, fenomeno 2. «receta de ajiaco» -> fuera_de_alcance."
 )
 
 AGENTE_CORPUS = (
