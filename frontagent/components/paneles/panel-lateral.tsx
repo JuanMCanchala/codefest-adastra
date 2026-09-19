@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 export type Pestana = "evidencia" | "traza";
 
 interface Props {
+  urlTablero: string | null;
   /** En pantallas estrechas el panel solo se muestra cuando se elige su vista. */
   visibleEnMovil: boolean;
   datos: RespuestaAgente | null;
@@ -23,6 +24,7 @@ const PESTANAS: ReadonlyArray<{ clave: Pestana; etiqueta: string }> = [
 ];
 
 export function PanelLateral({
+  urlTablero,
   visibleEnMovil,
   datos,
   nActiva,
@@ -68,7 +70,12 @@ export function PanelLateral({
         className="min-h-0 flex-1"
       >
         {pestana === "evidencia" ? (
-          <PanelEvidencia datos={datos} nActiva={nActiva} onSeleccionar={onSeleccionar} />
+          <PanelEvidencia
+            datos={datos}
+            nActiva={nActiva}
+            urlTablero={urlTablero}
+            onSeleccionar={onSeleccionar}
+          />
         ) : null}
       </div>
 

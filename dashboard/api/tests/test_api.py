@@ -41,6 +41,16 @@ def test_salud(cliente) -> None:
     assert cuerpo["estado"] == "ok"
     assert cuerpo["tablas"]["documentos"] == 1825
     assert cuerpo["tablas"]["fragmentos"] == 90613
+    # Sin CONSOLA_URL no hay enlace a la consola: la interfaz no inventa una dirección.
+    assert cuerpo["consola_url"] is None
+    assert cuerpo["vista_tecnica"] is False
+
+
+def test_salud_publica_la_consola_configurada(cliente, monkeypatch) -> None:
+    """`CONSOLA_URL` llega al navegador por la salud, sin barra final."""
+    cfg = cliente.app.state.cfg
+    monkeypatch.setattr(cfg, "consola_url", "https://consola.ejemplo/", raising=False)
+    assert cliente.get("/api/salud").json()["consola_url"] == "https://consola.ejemplo"
 
 
 def test_catalogo(cliente) -> None:

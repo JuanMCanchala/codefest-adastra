@@ -21,7 +21,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .componentes import CATALOGO, describir_catalogo, ejecutar
 from .db import BaseDatos
 from .evidencia import MAX_LOTE, IndiceTextos
-from .settings import get_settings
+from .settings import Settings, get_settings
 from .visualizar import (
     Instruccion,
     leer_citas,
@@ -98,10 +98,13 @@ app.add_middleware(
 def salud(request: Request) -> dict[str, Any]:
     bd: BaseDatos = request.app.state.bd
     textos: IndiceTextos = request.app.state.textos
+    cfg: Settings = request.app.state.cfg
     return {
         "estado": "ok",
         "tablas": bd.conteos(),
         "textos": {"disponible": textos.disponible, "indexado": textos.listo},
+        "vista_tecnica": cfg.vista_tecnica,
+        "consola_url": cfg.consola_url.rstrip("/") or None,
     }
 
 

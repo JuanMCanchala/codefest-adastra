@@ -33,9 +33,16 @@ USER agente
 
 # Modelos de la recuperación, descargados en la construcción para que el arranque no
 # dependa de la red de Hugging Face durante la evaluación.
+#
+# bge-m3 va COMPLETO, sin ignore_patterns: `BGEM3FlagModel` pide el snapshot entero por
+# dentro y, si falta cualquier archivo -incluidos los ONNX y las imagenes del model card
+# que no usamos-, lo vuelve a bajar en cada arranque en frio. Eran ~500 MB por arranque
+# contra un Hub sin HF_TOKEN, o sea con el limite de peticiones anonimo: si la red de la
+# evaluacion va lenta, el contenedor no llega a sano dentro del start-period. La imagen
+# crece, pero el arranque deja de depender de la red.
 RUN python -c "from huggingface_hub import snapshot_download as d; \
 x = ['onnx/*', '*.onnx', '*.h5', '*.msgpack', 'imgs/*', '*.ot']; \
-d('BAAI/bge-m3', ignore_patterns=x); \
+d('BAAI/bge-m3'); \
 d('cross-encoder/mmarco-mMiniLMv2-L12-H384-v1', ignore_patterns=x + ['openvino/*']); \
 d('proventra/mdeberta-v3-base-prompt-injection', ignore_patterns=x)"
 
@@ -70,6 +77,10 @@ RUN curl -fsSL "$BASE_VECTORIAL_URL" -o /tmp/base.zip \
 
 COPY --chown=agente app ./app
 COPY --chown=agente etapa1 ./etapa1
+# Detecciones precalculadas del Reto 2: sin ellas `AgenteSatelital.disponible` queda en
+# False, el grafo no monta el nodo satelital y toda pregunta por hectáreas de minería
+# ilegal cae al corpus.
+COPY --chown=agente datos ./datos
 COPY --chown=agente agent_card.json config.retrieval.yaml ./
 
 EXPOSE 8000

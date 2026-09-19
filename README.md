@@ -80,7 +80,7 @@ flowchart LR
 | `orquestador`          | Qwen3-Next-80B         | `filtro_seguridad`       | Siempre: filtra ataques, clasifica la intención y reformula la consulta. |
 | `agente_corpus`        | Llama 3.3 70B Instruct | `buscar_corpus`          | Preguntas que se responden con documentos.                               |
 | `agente_visualizacion` | Qwen3-Next-80B         | `seleccionar_componente` | Pedidos de gráficos, mapas, redes o líneas de tiempo.                    |
-| `agente_satelital`     | Qwen3-Next-80B         | `medir_cobertura_eldor`  | Áreas de minería ilegal y cobertura boscosa medidas sobre imágenes.      |
+| `agente_satelital`     | Qwen3-Next-80B         | `medir_cobertura_satelital` | Áreas de minería ilegal medidas sobre imágenes: Colombia (Sentinel-2) y Perú (dron). |
 
 La ruta típica hace **2 llamadas al modelo**. Por ejemplo, una pregunta de F2 usó 2.867 tokens y
 tardó 6,2 s. Una guarda sin LLM (patrones de alta precisión y un clasificador multilingüe en CPU)
@@ -149,7 +149,7 @@ Para cada recurso, sigue **+ New → Private Repository (with Deploy Key)** y co
 
 | Campo                    | `agent`                                                                                    | `frontagent`                                                           | `dashboard`                                                           |
 | ------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Repository URL (SSH)     | `git@github.com:JuanMCanchala/codefest-adastra-final.git`                                  | ídem                                                                   | ídem                                                                  |
+| Repository URL (SSH)     | `git@github.com:fesamu06/codefest-adastra-final.git`                                  | ídem                                                                   | ídem                                                                  |
 | Branch                   | `main`                                                                                     | `main`                                                                 | `main`                                                                |
 | Build Pack               | Dockerfile                                                                                 | Dockerfile                                                             | Dockerfile                                                            |
 | **Base Directory**       | `/agent`                                                                                   | `/frontagent`                                                          | `/dashboard`                                                          |
@@ -192,6 +192,7 @@ Se declaran en **Configuration → Environment Variables**.
 | --------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `AGENT_URL`     | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Sin ella, el valor por defecto `localhost:8000` rompe el chat. |
 | `DASHBOARD_URL` | No            | `https://dashboard.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el botón "abrir en el tablero".                     |
+| `VISTA_TECNICA` | No            | Por defecto apagada. Con `1` la consola muestra la ruta del orquestador, los modelos y los tokens. La que revisa el jurado va limpia; la del equipo se enciende aquí. |
 
 **`dashboard`**
 
@@ -199,8 +200,15 @@ Se declaran en **Configuration → Environment Variables**.
 | ----------------- | ------------- | ----------------------------------------------------------------- |
 | `AGENT_URL`       | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com` |
 | `AGENT_TIMEOUT_S` | No            | Tiempo límite de `POST /chat` en segundos. Por defecto, 90.       |
+| `CONSOLA_URL`     | No            | `https://frontagent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el enlace a la consola de chat. |
 
 `DB_PATH`, `METADATA_PATH`, `GEO_DIR` y `WEB_DIST` ya vienen con su valor en la imagen.
+
+> **Atajo.** `scripts/desplegar_coolify.py` crea las tres aplicaciones con esta misma
+> configuración por la API de Coolify y sincroniza las variables, sin escribir ningún
+> secreto en el repositorio. Es idempotente: se puede correr de nuevo para corregir un
+> valor. Necesita un token de API **con permiso de escritura** y la llave de despliegue ya
+> registrada en Coolify.
 
 ### 3. Orden de despliegue y verificación
 
@@ -239,7 +247,7 @@ docker run -d --name agent --network aerocode -p 8000:8000 \
 # 2. Tablero
 docker build -t aerocode-dashboard ./dashboard
 docker run -d --name dashboard --network aerocode -p 8080:8080 \
-  -e AGENT_URL=http://agent:8000 aerocode-dashboard
+  -e AGENT_URL=http://agent:8000 -e CONSOLA_URL=http://localhost:3000 aerocode-dashboard
 
 # 3. Chat
 docker build -t aerocode-frontagent ./frontagent
@@ -292,13 +300,16 @@ conocimiento propio.
 
 Abre `https://dashboard.aerocode.codefest2026.augusta.avaldigitallabs.com`.
 
-1. **Escribe una instrucción** en la barra superior. El agente elige el componente y los filtros,
-   y el tablero lo dibuja con datos reales, junto con la respuesta y la justificación del agente.
-2. **Ajusta los filtros globales** (fenómeno y rango de años). Se aplican al componente activo.
+1. **Pide lo que quieres ver** en la ventana del agente, abajo a la derecha. El agente elige el
+   componente y los filtros, y el tablero de detrás cambia con la respuesta, junto con la
+   justificación y las cifras del resultado.
+2. **Todo se pide hablando**: el componente, el filtro y el rango de años. No hay mandos
+   manuales que mantener sincronizados con lo que decidió el agente.
 3. **Haz clic en cualquier elemento** (región, celda, punto, nodo o arista). El panel lateral de
    evidencia muestra los fragmentos originales que sustentan el valor.
-4. Usa la **exploración manual** para recorrer el catálogo sin pasar por el agente, y el
-   **historial** para volver a instrucciones anteriores.
+4. La ventana del agente **se arrastra, se amplía y se cierra**. Ampliada enseña el gráfico y sus
+   cifras dentro de la conversación; cerrada queda como una burbuja en la esquina. El historial
+   de la sesión devuelve cualquier análisis anterior sin volver a preguntar.
 
 Instrucciones de ejemplo:
 

@@ -252,6 +252,36 @@ export function filtrosPredeterminados(componente: NombreComponente): Filtros {
   return filtros;
 }
 
+/** Filtros que no son de un componente concreto, sino del rango global. */
+const ETIQUETAS_GLOBALES: Record<string, string> = {
+  desde: "Desde",
+  hasta: "Hasta",
+  fenomeno: "Fenómeno",
+};
+
+/** Nombre legible de un filtro: el del catálogo y, si no está, la clave tal cual. */
+export function etiquetaFiltro(componente: NombreComponente, clave: string): string {
+  const definicion = definicionDe(componente).filtros.find((f) => f.clave === clave);
+  return definicion?.etiqueta ?? ETIQUETAS_GLOBALES[clave] ?? clave;
+}
+
+/** Valor legible de un filtro: la etiqueta de la opción elegida y, si no, el valor tal cual. */
+export function valorFiltro(
+  componente: NombreComponente,
+  clave: string,
+  valor: unknown,
+): string {
+  if (valor === null || valor === undefined || valor === "") {
+    return "—";
+  }
+  const texto =
+    typeof valor === "string" || typeof valor === "number" || typeof valor === "boolean"
+      ? String(valor)
+      : JSON.stringify(valor);
+  const definicion = definicionDe(componente).filtros.find((f) => f.clave === clave);
+  return definicion?.opciones?.find((o) => o.valor === texto)?.etiqueta ?? texto;
+}
+
 export const ETIQUETAS_FAMILIA: Record<DefinicionComponente["familia"], string> = {
   espacial: "Espacial",
   temporal: "Temporal",

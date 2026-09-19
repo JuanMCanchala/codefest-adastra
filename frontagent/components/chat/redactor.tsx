@@ -1,9 +1,8 @@
 "use client";
 
-import { SendHorizontal } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { useState, type FormEvent, type KeyboardEvent } from "react";
 
-import { Boton } from "@/components/ui/boton";
 
 const MAX_CARACTERES = 4000;
 
@@ -42,7 +41,7 @@ export function Redactor({ deshabilitado, onEnviar }: Props) {
       onSubmit={alEnviarFormulario}
     >
       <div className="mx-auto w-full max-w-5xl">
-      <div className="flex items-end gap-2 rounded-md border border-control bg-fondo p-2 focus-within:border-acento focus-within:ring-1 focus-within:ring-acento">
+      <div className="flex items-end gap-2 rounded-xl border border-borde bg-fondo py-2 pl-3 pr-2 focus-within:border-control">
         <label className="sr-only" htmlFor="pregunta">
           Escriba su consulta
         </label>
@@ -54,19 +53,18 @@ export function Redactor({ deshabilitado, onEnviar }: Props) {
           value={texto}
           disabled={deshabilitado}
           placeholder="Pregunte sobre IA estratégica, entorno espacial o dinámicas territoriales…"
-          className="barra-fina max-h-40 min-h-16 flex-1 resize-y bg-transparent px-2 py-1 text-base text-texto focus:outline-none disabled:opacity-60"
+          className="barra-fina max-h-40 min-h-12 flex-1 resize-y bg-transparent py-1 text-sm text-texto focus:outline-none disabled:opacity-60"
           onChange={(evento) => setTexto(evento.target.value)}
           onKeyDown={alPresionarTecla}
         />
-        <Boton
+        <button
           type="submit"
-          variante="primario"
-          tamano="icono"
           disabled={deshabilitado || texto.trim().length === 0}
           aria-label="Enviar consulta"
+          className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-acento text-fondo transition-colors hover:bg-acento-claro disabled:pointer-events-none disabled:opacity-30"
         >
-          <SendHorizontal aria-hidden="true" className="size-4" />
-        </Boton>
+          <ArrowUp aria-hidden="true" className="size-4" />
+        </button>
       </div>
       <p className="mt-2 flex justify-between gap-4 text-xs text-tenue">
         <span>Enter envía · Shift + Enter salto de línea</span>

@@ -5,22 +5,28 @@
  * Este bloque es idéntico en frontagent/app/globals.css y dashboard/web/src/estilos.css.
  */
 @theme {
-  --color-fondo: #070d19; /* noche */
-  --color-panel: #0b1426; /* casco */
-  --color-elevado: #12203a; /* cabina */
-  --color-borde: #1d2c47; /* hilo */
-  --color-control: #5f7499;
-  --color-texto: #e8edf5;
-  --color-apagado: #a7b4ca;
-  --color-tenue: #8494ae;
-  --color-acento: #e8b64c; /* oro de mando: acción, foco y selección */
-  --color-acento-claro: #f2c96e;
-  --color-senal: #8cb4ff; /* trazable: citas y evidencia */
-  --color-alerta: #f28b7d;
-  --color-ok: #4cc38a;
-  --color-f1: #e08ec0;
-  --color-f2: #56b4e9;
-  --color-f3: #2fc39b;
+  /*
+   * Escala neutra pura, tomada de los sistemas de producto que mejor envejecen
+   * (Vercel Geist y Linear): la interfaz es gris y el único color de la pantalla es el
+   * dato. La acción se marca con luminosidad, no con matiz, así que el gráfico nunca
+   * compite con un botón.
+   */
+  --color-fondo: #0a0a0a; /* página */
+  --color-panel: #111111; /* superficie */
+  --color-elevado: #1a1a1a; /* superficie elevada y estado hover */
+  --color-borde: #262626;
+  --color-control: #404040; /* borde de los campos */
+  --color-texto: #ededed;
+  --color-apagado: #a1a1a1;
+  --color-tenue: #8f8f8f;
+  --color-acento: #fafafa; /* acción, foco y selección: blanco, sin matiz */
+  --color-acento-claro: #ffffff;
+  --color-senal: #3291ff; /* trazable: citas y evidencia */
+  --color-alerta: #e5484d;
+  --color-ok: #46a758;
+  --color-f1: #b087d6;
+  --color-f2: #6aa9f0;
+  --color-f3: #63b37a;
 
   --font-sans:
     "IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial,
@@ -48,7 +54,7 @@
   }
 
   ::selection {
-    background-color: rgb(232 182 76 / 0.35);
+    background-color: rgb(250 250 250 / 0.22);
     color: var(--color-texto);
   }
 
@@ -76,11 +82,6 @@
       scroll-behavior: auto !important;
     }
   }
-}
-
-/* Barra de mando: franja dorada de 2px, la única raya de color del sistema. */
-@utility franja-mando {
-  box-shadow: inset 0 2px 0 var(--color-acento);
 }
 
 @utility barra-fina {
@@ -112,8 +113,14 @@
   filter: invert(1) hue-rotate(180deg);
 }
 
+/* Los iconos de MapLibre vienen en negro: solo hay que invertirlos sobre fondo oscuro. */
+:root[data-tema="claro"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon,
+:root[data-tema="claro"] .maplibregl-ctrl-attrib-button {
+  filter: none;
+}
+
 .maplibregl-ctrl-attrib {
-  background: rgb(11 20 38 / 0.9) !important;
+  background: var(--color-panel) !important;
   color: var(--color-apagado);
   font-size: 12px;
 }
@@ -146,4 +153,33 @@
 .nodo-red:focus-visible circle {
   stroke: var(--color-acento);
   stroke-width: 3;
+}
+
+/*
+ * Modo claro. El oscuro sigue siendo el de partida (proyector y penumbra); el claro es para
+ * pantalla con luz y para imprimir. Mismos nombres de token: ningún componente sabe en qué
+ * modo está.
+ */
+:root[data-tema="claro"] {
+  color-scheme: light;
+  --color-fondo: #ffffff;
+  --color-panel: #fafafa;
+  --color-elevado: #f1f1f1;
+  --color-borde: #e4e4e4;
+  --color-control: #8f8f8f;
+  --color-texto: #171717;
+  --color-apagado: #525252;
+  --color-tenue: #6b6b6b;
+  --color-acento: #171717;
+  --color-acento-claro: #000000;
+  --color-senal: #0060d0;
+  --color-alerta: #c92a2a;
+  --color-ok: #10804a;
+  --color-f1: #7048c4;
+  --color-f2: #1f6fd0;
+  --color-f3: #17794a;
+}
+
+:root[data-tema="claro"] ::selection {
+  background-color: rgb(23 23 23 / 0.14);
 }

@@ -10,6 +10,11 @@ frecuente sin enrutador queda en dos llamadas (orquestador + especialista); con
 enrutador puede quedar en una sola. Un intento de inyección se rechaza sin gastar
 ninguna. El verificador de citas, determinista, es el cuarto agente: no llama a
 ningún modelo.
+
+El agente satelital responde sobre hectareas de mineria ilegal y
+cobertura boscosa con detecciones precalculadas, sin pasar por el corpus. Solo se
+monta si hay detecciones ELDOR en disco; si no, esa ruta cae al corpus, que si tiene
+evidencia textual sobre monitoreo de mineria (F3-CEOBS-008).
 """
 
 from __future__ import annotations
@@ -21,7 +26,13 @@ from typing import Any, Protocol, TypedDict
 from langgraph.graph import END, StateGraph
 
 from . import prompts
-from .agents import AgenteCorpus, AgenteVisualizacion, Decision, Orquestador
+from .agents import (
+    AgenteCorpus,
+    AgenteSatelital,
+    AgenteVisualizacion,
+    Decision,
+    Orquestador,
+)
 from .contract import ChatResponse, Evaluacion
 from .guard import RECHAZO, Nivel, evaluar, sanear_salida
 from .llm import LLM, ErrorModelo, PresupuestoAgotado
@@ -74,7 +85,13 @@ class Sistema:
             self.router = RouterEmbeddings(recuperador)
         else:
             self.router = None
+        # Cuarto agente, opcional: solo existe si hay detecciones ELDOR precalculadas.
+        self.satelital = AgenteSatelital(llm, cfg) if cfg.agente_satelital else None
         self._grafo = self._construir()
+
+    @property
+    def _satelital_activo(self) -> bool:
+        return self.satelital is not None and self.satelital.disponible
 
     # ------------------------------------------------------------------ nodos
     def _n_guarda(self, s: Estado) -> Estado:
@@ -166,12 +183,15 @@ class Sistema:
             )
         return nuevo
 
+    def _n_satelital(self, s: Estado) -> Estado:
+        r = self.satelital.responder(s["pregunta"], s["tracker"])
+        return {"respuesta": r.texto}
+
     def _n_fuera(self, s: Estado) -> Estado:
         return {"respuesta": prompts.FUERA_DE_ALCANCE}
 
     # ------------------------------------------------------------------ grafo
-    @staticmethod
-    def _nodo_por_ruta(ruta: str) -> str:
+    def _nodo_por_ruta(self, ruta: str) -> str:
         # ``ruta`` ya viene acotada a RUTAS por Orquestador.decidir y por RouterEmbeddings;
         # una clave fuera de ese conjunto es un error de programación y debe fallar aquí.
         # `visualizacion` tambien entra por el corpus: sin eso `retrieval_context` iba
@@ -183,6 +203,8 @@ class Sistema:
             "corpus": "corpus",
             "ambos": "corpus",
             "visualizacion": "corpus",
+            # Sin detecciones en disco la ruta satelital cae al corpus.
+            "satelital": "satelital" if self._satelital_activo else "corpus",
             "fuera_de_alcance": "fuera",
         }[ruta]
 
@@ -195,6 +217,8 @@ class Sistema:
         g.add_node("corpus", self._n_corpus)
         g.add_node("verificador", self._n_verificador)
         g.add_node("visualizacion", self._n_visual)
+        if self._satelital_activo:
+            g.add_node("satelital", self._n_satelital)
         g.add_node("fuera", self._n_fuera)
         g.set_entry_point("guarda")
         g.add_conditional_edges("guarda", lambda s: END if s.get("respuesta") else "memoria")
@@ -215,6 +239,8 @@ class Sistema:
             lambda s: "visualizacion" if s["decision"].ruta in {"ambos", "visualizacion"} else END,
         )
         g.add_edge("visualizacion", END)
+        if self._satelital_activo:
+            g.add_edge("satelital", END)
         g.add_edge("fuera", END)
         return g.compile()
 

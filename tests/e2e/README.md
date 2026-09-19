@@ -61,7 +61,7 @@ levantan así:
 docker network create aerocode
 docker run -d --name agente-prueba  --network aerocode -p 8000:8000 codefest-agent
 docker run -d --name tablero-prueba --network aerocode -p 8080:8080 \
-  -e AGENT_URL=http://agente-prueba:8000 codefest-dashboard
+  -e AGENT_URL=http://agente-prueba:8000 -e CONSOLA_URL=http://localhost:3000 codefest-dashboard
 docker run -d --name chat-prueba    --network aerocode -p 3000:3000 \
   -e AGENT_URL=http://agente-prueba:8000 -e DASHBOARD_URL=http://localhost:8080 codefest-frontagent
 ```

@@ -32,6 +32,7 @@ reconstruir**.
 | --------------- | ----------------------- | -------------------------------------------------------------------------------------- |
 | `AGENT_URL`     | `http://localhost:8000` | Base del agente del Reto 1. El proxy consulta `POST {AGENT_URL}/chat` y `GET {AGENT_URL}/health`. |
 | `DASHBOARD_URL` | _(vacío)_               | Base del tablero del Reto 2. Si está vacía, la tarjeta de visualización oculta el botón. |
+| `VISTA_TECNICA` | `0` | Detalles internos en la interfaz: ruta del orquestador, consumo de tokens, modelos y parámetros de las herramientas. La consola que revisa el jurado va limpia |
 | `PORT`          | `3000`                  | Puerto HTTP del contenedor.                                                            |
 
 ## Rutas propias

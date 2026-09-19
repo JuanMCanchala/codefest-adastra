@@ -17,7 +17,8 @@ export interface ClicGrafico {
 interface Props {
   /** Opción completa de ECharts; se aplica con `notMerge` en cada cambio. */
   opcion: echarts.EChartsOption;
-  altura: number;
+  /** Alto en píxeles, o `true` para crecer con `--alto-vista` como hacen los mapas. */
+  altura: number | "vista";
   /** Descripción textual del gráfico para lectores de pantalla. */
   descripcion: string;
   onClic?: (clic: ClicGrafico) => void;
@@ -87,7 +88,7 @@ export function Grafico({ opcion, altura, descripcion, onClic }: Props) {
   return (
     <div
       ref={contenedor}
-      style={{ height: `${String(altura)}px` }}
+      style={{ height: altura === "vista" ? "var(--alto-vista, 420px)" : `${String(altura)}px` }}
       className="w-full"
       role="img"
       aria-label={descripcion}

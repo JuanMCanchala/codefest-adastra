@@ -1,4 +1,4 @@
-"""Agentes del sistema: orquestador, agente de corpus y agente de visualización.
+"""Agentes del sistema: orquestador, agente de corpus, agente satelital y de visualización.
 
 Cada agente hace como máximo una llamada al modelo: la eficiencia (tokens, número de
 interacciones y latencia) se puntúa frente a los demás equipos (§2.5.2).
@@ -15,7 +15,10 @@ from typing import Any
 from pydantic import ValidationError
 
 from . import prompts
+from .amw.colombia import Colombia
+from .amw.colombia import cargar as cargar_colombia
 from .catalogo import SpecVisualizacion, describir_catalogo
+from .eldor.evidencia import Deteccion, agregado, cargar_detecciones
 from .escaneo import clave_chunk, sanear_fragmentos
 from .guard import datamarcar, delimitar
 from .llm import LLM
@@ -26,7 +29,7 @@ from .tracker import Tracker
 
 log = logging.getLogger(__name__)
 
-RUTAS = {"corpus", "visualizacion", "ambos", "fuera_de_alcance"}
+RUTAS = {"corpus", "visualizacion", "satelital", "ambos", "fuera_de_alcance"}
 _JSON = re.compile(r"\{.*\}", re.DOTALL)
 
 
@@ -172,6 +175,122 @@ class AgenteCorpus:
             max_tokens=self._cfg.llm_max_tokens_respuesta,
         )
         return RespuestaCorpus(texto=texto, fragmentos=fragmentos)
+
+
+#: Señales de que la pregunta es sobre Colombia y no sobre los sitios peruanos.
+_SENAL_COLOMBIA = (
+    "colombia",
+    "colombiano",
+    "colombiana",
+    "putumayo",
+    "guainía",
+    "guainia",
+    "caquetá",
+    "caqueta",
+    "vaupés",
+    "vaupes",
+    "inírida",
+    "inirida",
+    "resguardo",
+    "divipola",
+)
+
+
+class AgenteSatelital:
+    """Cuarto agente: mide minería ilegal y cobertura boscosa sobre imágenes.
+
+    Su evidencia no son fragmentos de texto sino áreas medidas, y se apoya en **dos**
+    fuentes porque ningún modelo cubre las dos cosas:
+
+    - `app.amw` — **Colombia**. Detecciones sobre Sentinel-2 (10 m/px) de Amazon Mining
+      Watch, con serie 2018-2026 por departamento, resguardo indígena, área protegida y
+      municipio con DIVIPOLA.
+    - `app.eldor` — **Perú**. Segmentación de ortomosaicos de dron (5 cm/px) del conjunto
+      ELDOR. Es la única parte validada contra máscaras anotadas, así que sostiene la
+      calidad del método; no sirve para Colombia, donde no existe imagen a esa resolución
+      (la medición está en `docs/investigacion/03_arquitectura/deteccion_satelital_eldor.md`).
+
+    La procedencia cumple el papel de `doc_id`/`chunk_id`: fuente, modelo, sensor, periodo
+    y —según la fuente— sitio y bbox o código DIVIPOLA. Las cifras se calculan fuera de
+    línea; aquí solo se leen y se redactan.
+
+    Sin datos de ninguna de las dos fuentes, `disponible` es False y el grafo no lo enruta.
+    """
+
+    nombre = "agente_satelital"
+
+    def __init__(
+        self,
+        llm: LLM,
+        cfg: Settings,
+        detecciones: dict[str, Deteccion] | None = None,
+        colombia: Colombia | None = None,
+    ):
+        self._llm, self._cfg = llm, cfg
+        self._det = cargar_detecciones() if detecciones is None else detecciones
+        self._col = cargar_colombia() if colombia is None else colombia
+
+    @property
+    def disponible(self) -> bool:
+        return bool(self._det) or self._col.disponible
+
+    def _es_sobre_colombia(self, pregunta: str) -> bool:
+        texto = pregunta.lower()
+        return any(s in texto for s in _SENAL_COLOMBIA)
+
+    def _seleccionar(self, pregunta: str) -> list[Deteccion]:
+        """Sitios peruanos nombrados en la pregunta; si no se nombra ninguno, todos."""
+        texto = pregunta.lower()
+        nombrados = [d for sid, d in self._det.items() if sid.lower() in texto]
+        return nombrados or list(self._det.values())
+
+    def responder(self, pregunta: str, tracker: Tracker) -> RespuestaCorpus:
+        tracker.agente(self.nombre)
+        sobre_colombia = self._es_sobre_colombia(pregunta)
+        # Una pregunta sobre Colombia no arrastra los sitios peruanos: mezclarlos
+        # invitaría a presentar hectáreas de Madre de Dios como si fueran colombianas.
+        elegidos = [] if sobre_colombia else self._seleccionar(pregunta)
+        usar_colombia = self._col.disponible and (sobre_colombia or not elegidos)
+
+        mediciones: list[str] = []
+        if usar_colombia:
+            mediciones.append(
+                f"[Colombia] {self._col.resumen()} Procedencia: {self._col.referencia()}"
+            )
+        mediciones += [f"[{d.sitio}] {d.resumen()} Procedencia: {d.referencia()}" for d in elegidos]
+
+        total = agregado({d.sitio: d for d in elegidos})
+        tracker.herramienta(
+            "medir_cobertura_satelital",
+            {"colombia": usar_colombia, "sitios_peru": [d.sitio for d in elegidos]},
+            (f"Colombia {self._col.acumulado_ha} ha acumuladas; " if usar_colombia else "")
+            + f"{total.get('sitios', 0)} sitios de Perú, "
+            f"{total.get('area_mineria_ha', 0)} ha de huella minera",
+        )
+        if not mediciones:
+            return RespuestaCorpus(texto=prompts.SIN_EVIDENCIA)
+
+        # Las mediciones entran a `retrieval_context`: es la evidencia contra la que se
+        # mide la fidelidad de la respuesta (§2.5, bloque A).
+        tracker.recuperado(mediciones)
+        contexto = "\n\n".join(mediciones)
+        if len(elegidos) > 1:
+            contexto += (
+                f"\n\nAGREGADO de los {total['sitios']} sitios de Perú: "
+                f"{total['area_total_ha']} ha segmentadas, "
+                f"{total['area_mineria_ha']} ha de huella minera, "
+                f"{total['area_bosque_ha']} ha de bosque primario, "
+                f"{total['area_intervenida_ha']} ha intervenidas."
+            )
+        texto = self._llm.completar(
+            tracker=tracker,
+            agente=self.nombre,
+            modelo=self._cfg.modelo_satelital,
+            sistema=prompts.AGENTE_SATELITAL,
+            mensaje=delimitar("MEDICIONES", contexto) + "\n\n" + delimitar("PREGUNTA", pregunta),
+            max_tokens=self._cfg.llm_max_tokens_respuesta,
+        )
+        return RespuestaCorpus(texto=texto)
 
 
 class AgenteVisualizacion:

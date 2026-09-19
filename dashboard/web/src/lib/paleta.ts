@@ -1,19 +1,23 @@
 import { TEMA } from "@/lib/tema";
 
 /**
- * Escala secuencial viridis: perceptualmente uniforme y legible con cualquier tipo de
- * daltonismo (Anexo B: la lectura no puede depender solo del matiz).
+ * Escala de semáforo: verde (poco) → ámbar → rojo (mucho).
+ *
+ * Es la lectura que espera cualquiera ante un mapa de alertas, así que se prefiere a una
+ * rampa de un solo matiz. Para no depender solo del matiz —verde y rojo son justo el par
+ * que peor distingue la protanopia—, la claridad sube y baja de forma monótona a lo largo
+ * de la rampa y la leyenda sigue dando el rango en números (Anexo B).
  */
 
-export const VIRIDIS: readonly string[] = [
-  "#440154",
-  "#46327e",
-  "#365c8d",
-  "#277f8e",
-  "#1fa187",
-  "#4ac16d",
-  "#a0da39",
-  "#fde725",
+export const ESCALA_SECUENCIAL: readonly string[] = [
+  "#2f9e44",
+  "#5cb338",
+  "#94c11f",
+  "#d4c000",
+  "#f0a202",
+  "#ee7b06",
+  "#e2521a",
+  "#c92a2a",
 ] as const;
 
 export interface Tramo {
@@ -48,42 +52,50 @@ export function tramosLineales(maximo: number): Tramo[] {
   return tramos;
 }
 
-/** Fracción de la rampa viridis que se omite en el extremo oscuro. */
-export const INICIO_ESCALA = 0.3;
+/** La rampa de semáforo se usa entera: el verde del extremo bajo es parte de la lectura. */
+export const INICIO_ESCALA = 0;
 
 /** Rampa visible sobre el fondo oscuro, para gráficos que interpolan por su cuenta. */
-export const VIRIDIS_VISIBLE: readonly string[] = VIRIDIS.slice(2);
+export const ESCALA_VISIBLE: readonly string[] = ESCALA_SECUENCIAL;
 
 /** Interpola la rampa en [0, 1]. */
 export function colorEnEscala(posicion: number): string {
   const acotada = Math.min(1, Math.max(0, posicion));
-  // Sobre fondo azul noche el primer tercio de viridis se confunde con "sin dato":
-  // la escala empieza en el azul medio para que el tramo más bajo siga siendo visible.
   const t = INICIO_ESCALA + (1 - INICIO_ESCALA) * acotada;
-  const indice = Math.round(t * (VIRIDIS.length - 1));
-  return VIRIDIS[indice] ?? TEMA.senal;
+  const indice = Math.round(t * (ESCALA_SECUENCIAL.length - 1));
+  return ESCALA_SECUENCIAL[indice] ?? TEMA.senal;
 }
 
 /** Color de un valor dentro de [0, maximo]; el 0 usa el color de "sin dato". */
 export function colorPorValor(valor: number, maximo: number): string {
   if (valor <= 0 || maximo <= 0) {
-    return SIN_DATO;
+    return sinDato();
   }
   return colorEnEscala(Math.sqrt(valor / maximo));
 }
 
-export const SIN_DATO = TEMA.sinDato;
+/**
+ * Relleno de las regiones sin dato. Es una función y no una constante porque el modo
+ * (claro u oscuro) se decide en tiempo de ejecución: capturarlo al cargar el módulo lo
+ * dejaba clavado en el color del primer modo.
+ */
+export function sinDato(): string {
+  return TEMA.sinDato;
+}
 
-/** Paleta categórica apta para daltonismo (Okabe–Ito, orden estable). */
+/**
+ * Paleta categórica apta para daltonismo (Okabe–Ito, orden estable), rebajada en
+ * saturación para convivir con una interfaz gris sin perder la separación entre matices.
+ */
 export const CATEGORICA: readonly string[] = [
-  "#56b4e9",
-  "#e69f00",
-  "#009e73",
-  "#f0e442",
-  "#0072b2",
-  "#d55e00",
-  "#cc79a7",
-  "#bbbbbb",
+  "#6aa9f0",
+  "#d9a45c",
+  "#4fa98c",
+  "#d7cf7a",
+  "#5b8bc4",
+  "#cf7a55",
+  "#c08cb0",
+  "#9a9a9a",
 ] as const;
 
 export function colorCategoria(indice: number): string {

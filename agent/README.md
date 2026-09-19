@@ -23,7 +23,7 @@ flowchart LR
     O -- satelital --> S[agente_satelital · Qwen3-Next-80B]
     O -- fuera de alcance --> F[Respuesta de alcance]
     C -. buscar_corpus .-> B[(Base vectorial Etapa 1<br/>BGE-M3 + FAISS + reranker)]
-    S -. medir_cobertura_eldor .-> E[(Detecciones ELDOR<br/>áreas segmentadas + procedencia)]
+    S -. medir_cobertura_satelital .-> E[(Colombia: Amazon Mining Watch<br/>Perú: ELDOR)]
 ```
 
 - **Eficiencia (§2.5.2):** la ruta típica hace dos llamadas al modelo. El filtro de seguridad
@@ -39,19 +39,25 @@ flowchart LR
   en `extras.citas` enviando `"incluir_extras": true`. La evaluación automática no los pide y recibe
   el contrato exacto.
 
-- **Agente satelital (opcional).** Cuarto agente: responde con áreas medidas al segmentar
-  ortomosaicos de dron de minas de oro amazónicas con el modelo ELDOR. Las cifras se calculan
-  fuera de línea (`scripts/eldor_precalcular.py`) y aquí solo se leen, así que la latencia del
-  chat no cambia y la imagen no carga `torch`. Su trazabilidad no es `doc_id`/`chunk_id` sino
-  sitio + CRS + rectángulo geográfico + fecha de vuelo + checkpoint. Si no hay detecciones en
-  `datos/eldor/`, el agente no se registra y la ruta cae al corpus. Viabilidad, métricas medidas
-  y límites: [`docs/investigacion/03_arquitectura/deteccion_satelital_eldor.md`](../docs/investigacion/03_arquitectura/deteccion_satelital_eldor.md).
+- **Agente satelital (opcional).** Cuarto agente: responde con áreas medidas sobre imágenes,
+  desde **dos** fuentes, porque ningún modelo cubre las dos. **Colombia**: detecciones sobre
+  Sentinel-2 de Amazon Mining Watch (MIT), 664 ha acumuladas con serie 2018-2026 por
+  departamento, resguardo indígena, área protegida y municipio con DIVIPOLA. **Perú**:
+  segmentación de ortomosaicos de dron del conjunto ELDOR, la única parte validada contra
+  máscaras anotadas (mIoU 0,267-0,271). ELDOR no sirve para Colombia —se derrumba por debajo
+  de 0,30 m/px y no hay imagen colombiana a esa resolución— y el agente nunca mezcla las
+  cifras de un país con las del otro. Todo se calcula fuera de línea y aquí solo se lee, así
+  que la latencia del chat no cambia y la imagen no carga `torch`. La trazabilidad no es
+  `doc_id`/`chunk_id` sino fuente + modelo + periodo + (sitio y bbox | DIVIPOLA). Sin datos en
+  `datos/eldor/` ni en `datos/amw/`, el agente no se registra y la ruta cae al corpus.
+  Mediciones y límites:
+  [`docs/investigacion/03_arquitectura/deteccion_satelital_eldor.md`](../docs/investigacion/03_arquitectura/deteccion_satelital_eldor.md).
 
 | Módulo             | Responsabilidad                                               |
 | ------------------ | ------------------------------------------------------------- |
 | `app/contract.py`  | Contrato de respuesta de la §2.4                              |
 | `app/graph.py`     | Grafo LangGraph y armado de la respuesta                      |
-| `app/agents.py`    | Orquestador, agente de corpus y agente de visualización       |
+| `app/agents.py`    | Orquestador, agente de corpus, agente satelital y de visualización |
 | `app/planner.py`   | Descomposición determinista de preguntas compuestas           |
 | `app/memoria.py`   | Memoria conversacional por sesión, opcional                   |
 | `app/prompts.py`   | Prompts de sistema                                            |
@@ -61,7 +67,8 @@ flowchart LR
 | `app/tracker.py`   | Contabilidad de llamadas, tokens, herramientas y latencia     |
 | `app/retrieval.py` | Adaptador de la base vectorial de la Etapa 1                  |
 | `etapa1/`          | Código de recuperación traído de la Etapa 1 (ver su README)   |
-| `app/eldor/`       | Detección de minería ilegal sobre imágenes de dron (ELDOR)    |
+| `app/eldor/`       | Perú: segmentación de ortomosaicos de dron (ELDOR)            |
+| `app/amw/`         | Colombia: detecciones sobre Sentinel-2 (Amazon Mining Watch)  |
 
 ## Variables de entorno
 
@@ -87,7 +94,7 @@ imagen.
 | `MODELO_INYECCION`         | `proventra/mdeberta-v3-base-prompt-injection`                                            | Clasificador de la segunda capa de seguridad. Alternativa medida: `meta-llama/Llama-Prompt-Guard-2-86M`     |
 | `UMBRAL_INYECCION`         | `0.5`                                                                                    | Probabilidad mínima para tratar la pregunta como ataque                                                     |
 | `HF_TOKEN`                 | —                                                                                        | Solo para modelos de acceso restringido (Prompt Guard 2). Va en Coolify, nunca en la imagen ni en el código |
-| `AGENTE_SATELITAL`         | `true`                                                                                   | Activa el cuarto agente. Requiere detecciones precalculadas en `datos/eldor/`                               |
+| `AGENTE_SATELITAL`         | `true`                                                                                   | Activa el cuarto agente. Requiere datos en `datos/amw/` (Colombia) o `datos/eldor/` (Perú)                  |
 | `CORS_ORIGINS`             | `*`                                                                                      | Orígenes permitidos (frontagent y dashboard)                                                                |
 
 ### Cambiar el clasificador de inyección

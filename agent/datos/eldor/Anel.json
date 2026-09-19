@@ -1,0 +1,62 @@
+{
+  "procedencia": {
+    "sitio": "Anel",
+    "crs": "EPSG:32719",
+    "bbox_lon": [
+      -69.714044,
+      -69.699976
+    ],
+    "bbox_lat": [
+      -12.713767,
+      -12.701071
+    ],
+    "resolucion_m_px": 0.05662,
+    "fecha_captura": "2022-04-08",
+    "particion": "test"
+  },
+  "modelo": {
+    "repo": "IRSC/ELDOR-checkpoints",
+    "checkpoint": "segmentation/checkpoints/segformer_b2_baseline2_augv2_weighted_ce_dice/best.pt",
+    "arquitectura": "SegFormer MiT-B2",
+    "base": "nvidia/segformer-b2-finetuned-ade-512-512",
+    "tile_px": 512
+  },
+  "cobertura": {
+    "pixeles_evaluados": 336607080,
+    "area_total_ha": 107.9103,
+    "area_por_clase_ha": {
+      "Edificación": 0.2397,
+      "Balsa minera": 0.0089,
+      "Bosque primario": 31.7404,
+      "Maquinaria pesada": 0.0001,
+      "Cuerpos de agua": 17.0657,
+      "Cultivo agrícola": 3.6327,
+      "Montículos compactos": 0.3517,
+      "Montículos de cascajo": 4.6645,
+      "Pasto": 0.0276,
+      "Regeneración natural tipo 1": 20.954,
+      "Regeneración natural tipo 2": 10.9829,
+      "Suelo desnudo": 18.2422
+    }
+  },
+  "validacion": {
+    "iou_por_clase": {
+      "Fondo": 0.0,
+      "Edificación": 0.4887,
+      "Balsa minera": 0.0995,
+      "Bosque primario": 0.292,
+      "Maquinaria pesada": 0.0,
+      "Cuerpos de agua": 0.5585,
+      "Cultivo agrícola": 0.4379,
+      "Montículos compactos": 0.0,
+      "Montículos de cascajo": 0.6091,
+      "Pasto": 0.0,
+      "Regeneración natural tipo 1": 0.4191,
+      "Regeneración natural tipo 2": 0.1862,
+      "Suelo desnudo": 0.6512,
+      "Tolva": 0.0
+    },
+    "miou_presentes": 0.2673,
+    "exactitud_pixel": 0.5451
+  }
+}

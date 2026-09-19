@@ -1,0 +1,57 @@
+{
+  "procedencia": {
+    "sitio": "ElEngano",
+    "crs": "EPSG:32719",
+    "bbox_lon": [
+      -69.962478,
+      -69.949966
+    ],
+    "bbox_lat": [
+      -13.020161,
+      -13.007312
+    ],
+    "resolucion_m_px": 0.057233,
+    "fecha_captura": "2022-03-03",
+    "particion": "test"
+  },
+  "modelo": {
+    "repo": "IRSC/ELDOR-checkpoints",
+    "checkpoint": "segmentation/checkpoints/segformer_b2_baseline2_augv2_weighted_ce_dice/best.pt",
+    "arquitectura": "SegFormer MiT-B2",
+    "base": "nvidia/segformer-b2-finetuned-ade-512-512",
+    "tile_px": 512
+  },
+  "cobertura": {
+    "pixeles_evaluados": 312307750,
+    "area_total_ha": 102.3,
+    "area_por_clase_ha": {
+      "Edificación": 0.003,
+      "Bosque primario": 54.867,
+      "Cuerpos de agua": 8.8278,
+      "Cultivo agrícola": 1.93,
+      "Montículos compactos": 0.4157,
+      "Montículos de cascajo": 0.0917,
+      "Pasto": 0.0074,
+      "Regeneración natural tipo 1": 19.81,
+      "Regeneración natural tipo 2": 2.9386,
+      "Suelo desnudo": 13.4088
+    }
+  },
+  "validacion": {
+    "iou_por_clase": {
+      "Fondo": 0.0,
+      "Edificación": 0.0,
+      "Bosque primario": 0.8865,
+      "Cuerpos de agua": 0.7448,
+      "Cultivo agrícola": 0.2645,
+      "Montículos compactos": 0.0,
+      "Montículos de cascajo": 0.0,
+      "Pasto": 0.0,
+      "Regeneración natural tipo 1": 0.3179,
+      "Regeneración natural tipo 2": 0.1133,
+      "Suelo desnudo": 0.65
+    },
+    "miou_presentes": 0.2706,
+    "exactitud_pixel": 0.7926
+  }
+}

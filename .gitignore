@@ -7,3 +7,4 @@ data/
 node_modules/
 dashboard/datos/.cache/
 REPARTO_RETO1_COMPANERO.md
+.cache/

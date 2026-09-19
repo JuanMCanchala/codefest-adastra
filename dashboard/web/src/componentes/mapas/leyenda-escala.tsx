@@ -1,4 +1,4 @@
-import { SIN_DATO, tramosLineales } from "@/lib/paleta";
+import { sinDato, tramosLineales } from "@/lib/paleta";
 import { formatearEntero } from "@/lib/utils";
 
 interface Props {
@@ -17,7 +17,7 @@ export function LeyendaEscala({ maximo, unidad }: Props) {
           <span
             aria-hidden="true"
             className="size-3 rounded-sm border border-borde"
-            style={{ backgroundColor: SIN_DATO }}
+            style={{ backgroundColor: sinDato() }}
           />
           <span className="font-mono text-xs text-apagado">0 · sin registro</span>
         </li>

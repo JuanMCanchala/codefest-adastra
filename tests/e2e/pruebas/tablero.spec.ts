@@ -27,16 +27,6 @@ const FENOMENOS = [
   { clave: "F3", nombre: "Dinámicas territoriales" },
 ] as const;
 
-/** Copia literal de `dashboard/web/src/componentes/instruccion/barra-instruccion.tsx`. */
-const SUGERENCIAS: readonly string[] = [
-  "Muéstrame las alertas tempranas por departamento con minería ilegal desde 2020",
-  "¿Cómo evolucionan los documentos de seguridad espacial por año?",
-  "Cruza las entidades más mencionadas con las organizaciones que las publican",
-  "¿Qué países concentran las menciones en el fenómeno de IA militar?",
-  "Red de entidades alrededor del ELN",
-  "Prioriza departamentos por conteo de alertas con corte en 2022",
-];
-
 /** Filtros globales iniciales de `lib/filtros.ts`. */
 const ANIO_DESDE = 2015;
 const ANIO_HASTA = 2026;
@@ -88,19 +78,32 @@ interface CuerpoComponente {
  * ------------------------------------------------------------------------------------- */
 
 const estadoApi = (page: Page) => page.getByRole("banner").getByRole("status");
-const modo = (page: Page) => page.getByRole("navigation", { name: "Modo de trabajo" });
-const lienzo = (page: Page) =>
-  page.getByRole("region").filter({ has: page.getByText("Método:") });
-const respuestaAgente = (page: Page) =>
-  page.getByRole("region", { name: "Respuesta del agente" });
+/** Ventana flotante del agente: preguntar, ajustar y lo que contestó. */
+const agente = (page: Page) => page.getByRole("region", { name: "Agente" });
+/** Componente activo: `section` con el título de la API como nombre accesible. */
+const lienzo = (page: Page) => page.locator("section[aria-labelledby='titulo-componente']");
 const panel = (page: Page) => page.getByRole("complementary", { name: "Panel de evidencia" });
 const tablaRegiones = (page: Page) =>
   page.getByRole("table").filter({ hasText: "Región" });
 const campoInstruccion = (page: Page) =>
   page.getByRole("textbox", { name: "Instrucción en lenguaje natural" });
 const botonVisualizar = (page: Page) => page.getByRole("button", { name: /Visualizar|Analizando/ });
-const historial = (page: Page) =>
-  page.getByRole("region", { name: "Historial de instrucciones" });
+const botonPantallaCompleta = (page: Page) =>
+  lienzo(page).getByRole("button", { name: /pantalla completa/i });
+const botonMostrarEvidencia = (page: Page) =>
+  page.getByRole("button", { name: "Evidencia", exact: true });
+
+/**
+ * Enciende la vista técnica como lo hace el despliegue: `VISTA_TECNICA=1` en el contenedor
+ * llega a la interfaz en `GET /api/salud`, así que basta con simular esa respuesta.
+ */
+async function conVistaTecnica(page: Page): Promise<void> {
+  await page.route("**/api/salud", async (ruta) => {
+    const respuesta = await ruta.fetch();
+    const cuerpo = (await respuesta.json()) as Record<string, unknown>;
+    await ruta.fulfill({ json: { ...cuerpo, vista_tecnica: true } });
+  });
+}
 
 function esMovil(testInfo: TestInfo): boolean {
   return testInfo.project.name === "movil";
@@ -147,9 +150,43 @@ async function conRecalculo(
   };
 }
 
-async function irAExploracion(page: Page): Promise<void> {
-  await modo(page).getByRole("button", { name: "Exploración" }).click();
-  await expect(page.getByRole("heading", { name: "Exploración manual" })).toBeVisible();
+/**
+ * Abre la ayuda del componente. En escritorio basta pasar el ratón; en una pantalla táctil
+ * no hay hover, así que el icono se enfoca al tocarlo y el globo se abre por `focus-within`.
+ */
+async function abrirAyuda(page: Page, nombre: string, testInfo: TestInfo): Promise<void> {
+  const icono = lienzo(page).getByRole("note", { name: nombre });
+  if (esMovil(testInfo)) {
+    await icono.tap();
+  } else {
+    await icono.hover();
+  }
+}
+
+/**
+ * Abre el tablero en un componente concreto con sus filtros.
+ *
+ * No hay mandos manuales: el componente, los filtros y los años se piden hablando, y eso
+ * llega al agente, que en las pruebas siempre va simulado. La URL es la otra entrada real
+ * al mismo estado (es la que usa el enlace desde la consola de chat), así que es la que
+ * ejercita cada componente sin gastar una llamada a modelos.
+ */
+async function abrirTableroEn(
+  page: Page,
+  parametros: Record<string, string | number>,
+): Promise<{ cuerpo: CuerpoComponente; resultado: Resultado }> {
+  const consulta = new URLSearchParams(
+    Object.entries(parametros).map(([clave, valor]) => [clave, String(valor)]),
+  );
+  const componente = page.waitForResponse(
+    (r) => r.url().includes("/api/componente") && r.request().method() === "POST",
+  );
+  await page.goto(`${TABLERO_URL}/?${consulta.toString()}`);
+  const respuesta = await componente;
+  return {
+    cuerpo: respuesta.request().postDataJSON() as CuerpoComponente,
+    resultado: (await respuesta.json()) as Resultado,
+  };
 }
 
 /* ---------------------------------------------------------------------------------------
@@ -157,9 +194,9 @@ async function irAExploracion(page: Page): Promise<void> {
  * ------------------------------------------------------------------------------------- */
 
 test.describe("Tablero · carga inicial", () => {
-  test("muestra marca, estado de la API, modo instrucción y el mapa de Colombia por defecto", async ({
+  test("muestra marca, enlace a la consola, el agente y el mapa de Colombia por defecto", async ({
     page,
-  }) => {
+  }, testInfo) => {
     const salud = page.waitForResponse((r) => r.url().includes("/api/salud"));
     const componente = page.waitForResponse(
       (r) => r.url().includes("/api/componente") && r.request().method() === "POST",
@@ -171,45 +208,43 @@ test.describe("Tablero · carga inicial", () => {
       /AeroCode.*Analítica visual/,
     );
 
-    // Estado de la API leído en vivo de /api/salud.
+    // Con la API sana el encabezado no anuncia nada: el recuento de fragmentos no le
+    // sirve a quien revisa y competía con la vista.
     const cuerpoSalud = (await (await salud).json()) as {
       estado: string;
       tablas: Record<string, number>;
+      consola_url?: string | null;
     };
     expect(cuerpoSalud.estado).toBe("ok");
-    await expect(estadoApi(page)).toHaveText(
-      `API en línea · ${entero(cuerpoSalud.tablas["fragmentos"] ?? 0)} fragmentos indexados`,
-    );
+    await expect(estadoApi(page)).toHaveCount(0);
+    await expect(page.getByRole("banner")).not.toContainText("fragmentos");
 
-    // El modo de instrucción es el predeterminado.
-    await expect(modo(page).getByRole("button", { name: "Instrucción" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    await expect(modo(page).getByRole("button", { name: "Exploración" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
-    await expect(page.getByRole("heading", { name: "¿Qué quiere ver?" })).toBeVisible();
+    // El enlace a la consola de chat solo existe si el despliegue la publicó (CONSOLA_URL).
+    const enlaceConsola = page.getByRole("banner").getByRole("link", { name: "Consola de chat" });
+    if (cuerpoSalud.consola_url) {
+      await expect(enlaceConsola).toHaveAttribute("href", cuerpoSalud.consola_url);
+    } else {
+      await expect(enlaceConsola).toHaveCount(0);
+    }
+
+    // El agente abre listo para preguntar: no hay modos en la barra superior.
+    await expect(page.getByRole("navigation", { name: "Modo de trabajo" })).toHaveCount(0);
+    await expect(agente(page).getByRole("tab")).toHaveCount(0);
     await expect(campoInstruccion(page)).toBeEditable();
     await expect(botonVisualizar(page)).toBeDisabled();
-    for (const sugerencia of SUGERENCIAS) {
-      await expect(page.getByRole("button", { name: sugerencia })).toBeEnabled();
-    }
 
-    // Filtros globales: los tres fenómenos y el rango inicial.
-    await expect(page.getByRole("button", { name: "Los tres" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    // No hay mandos manuales en ninguna parte: ni selector de componente, ni campos de
+    // años, ni filtros. Todo se pide hablando.
+    await expect(page.getByLabel("Componente", { exact: true })).toHaveCount(0);
+    await expect(page.getByLabel("Desde")).toHaveCount(0);
+    await expect(page.getByLabel("Hasta")).toHaveCount(0);
+    // El fenómeno lo decide el agente: ya no hay selector en pantalla.
+    await expect(page.getByRole("button", { name: "Los tres" })).toHaveCount(0);
     for (const fenomeno of FENOMENOS) {
-      const boton = page.getByRole("button", {
-        name: `${fenomeno.clave} · ${fenomeno.nombre}`,
-      });
-      await expect(boton).toHaveAttribute("aria-pressed", "false");
+      await expect(
+        page.getByRole("button", { name: `${fenomeno.clave} · ${fenomeno.nombre}` }),
+      ).toHaveCount(0);
     }
-    await expect(page.getByLabel("Desde")).toHaveValue(String(ANIO_DESDE));
-    await expect(page.getByLabel("Hasta")).toHaveValue(String(ANIO_HASTA));
 
     // La primera petición pide el mapa de departamentos con el rango global.
     const respuesta = await componente;
@@ -224,17 +259,24 @@ test.describe("Tablero · carga inicial", () => {
 
     // Encabezado del lienzo: título de la API, nombre del componente y fenómenos.
     await expect(page.getByRole("heading", { level: 2, name: resultado.titulo })).toBeVisible();
-    await expect(lienzo(page)).toContainText("mapa_colombia");
-    await expect(lienzo(page)).toContainText("Los tres fenómenos");
-    for (const [clave, valor] of Object.entries(resultado.filtros_aplicados)) {
-      await expect(lienzo(page)).toContainText(`${clave}: ${String(valor)}`);
-    }
+    // Los filtros se leen con los nombres del catálogo, no con las claves de la API, y el
+    // rango de años se declara en texto porque sus campos están en el agente.
+    await expect(lienzo(page)).toContainText("Nivel territorial: Departamento");
+    await expect(lienzo(page)).toContainText(`${String(ANIO_DESDE)}–${String(ANIO_HASTA)}`);
 
-    // Pie: nota de método y total de evidencia, tal como los devolvió la API.
-    await expect(lienzo(page)).toContainText(resultado.nota_metodo);
-    await expect(lienzo(page)).toContainText(
-      `${entero(resultado.total_evidencia)} fragmentos de evidencia`,
-    );
+    // Nada de identificadores internos ni de nota de método en la vista principal.
+    await expect(page.getByRole("button", { name: "Vista técnica" })).toHaveCount(0);
+    await expect(lienzo(page)).not.toContainText("mapa_colombia");
+    await expect(lienzo(page)).not.toContainText("nivel:");
+    const nota = lienzo(page).getByText(resultado.nota_metodo);
+    await expect(nota).toBeHidden();
+
+    // La nota de método se lee al pasar el ratón por el icono de ayuda.
+    await abrirAyuda(page, "Mapa de Colombia", testInfo);
+    await expect(nota).toBeVisible();
+    await expect(
+      lienzo(page).getByText("Alertas tempranas por territorio", { exact: false }),
+    ).toBeVisible();
 
     // Tabla de ranking: una fila por territorio, con su cifra exacta.
     const cuerpoTabla = tablaRegiones(page).locator("tbody tr");
@@ -244,18 +286,26 @@ test.describe("Tablero · carga inicial", () => {
     await expect(cuerpoTabla.first()).toContainText(entero(mayor.alertas));
 
     // Panel lateral: evidencia del componente completo mientras no hay selección.
-    await expect(panel(page)).toContainText("Componente completo");
-    await expect(panel(page)).toContainText(resultado.nota_metodo);
-    await expect(panel(page)).toContainText(
-      `${entero(resultado.total_evidencia)} fragmentos en total`,
-    );
+    await expect(panel(page).getByRole("heading", { name: "Evidencia" })).toBeVisible();
     const enPanel = Math.min(resultado.evidencia.length, MAX_PANEL);
-    await expect(panel(page)).toContainText(`${entero(enPanel)} en este panel`);
-    await expect(panel(page)).toContainText("evidencia del componente");
     await expect(panel(page).getByRole("listitem")).toHaveCount(enPanel);
+    await expect(panel(page)).not.toContainText("fragmentos en total");
 
-    // El historial arranca vacío.
-    await expect(historial(page)).toContainText("Todavía no hay instrucciones en esta sesión.");
+    // El agente arranca sin conversación: una línea y nada más.
+    await expect(agente(page)).toContainText("Pida lo que quiere ver");
+    await expect(agente(page).getByRole("listitem")).toHaveCount(0);
+  });
+
+  test("la burbuja se cierra y se vuelve a abrir desde la esquina", async ({ page }) => {
+    await abrirTablero(page);
+    await expect(campoInstruccion(page)).toBeVisible();
+
+    await agente(page).getByRole("button", { name: "Cerrar el agente" }).click();
+    await expect(agente(page)).toHaveCount(0);
+    await esperarSinDesbordeHorizontal(page);
+
+    await page.getByRole("button", { name: "Abrir el agente" }).click();
+    await expect(campoInstruccion(page)).toBeVisible();
   });
 
   test("el indicador informa cuando la API de salud no responde", async ({ page, consola }) => {
@@ -264,7 +314,7 @@ test.describe("Tablero · carga inicial", () => {
       ruta.fulfill({ status: 500, json: { detail: "base no disponible" } }),
     );
     await page.goto(TABLERO_URL);
-    await expect(estadoApi(page)).toHaveText("API no disponible");
+    await expect(estadoApi(page)).toHaveText("Corpus no disponible");
     // El componente se sigue pidiendo: la salud es informativa, no un portero.
     await expect(page.getByRole("heading", { level: 2, name: /Alertas tempranas/ })).toBeVisible();
   });
@@ -292,6 +342,35 @@ test.describe("Tablero · carga inicial", () => {
     await alerta.getByRole("button", { name: "Reintentar" }).click();
     await expect(page.getByRole("heading", { level: 2, name: /Alertas tempranas/ })).toBeVisible();
     expect(intentos).toBe(2);
+  });
+});
+
+test.describe("Tablero · vista técnica", () => {
+  test("revela los detalles internos, los recuerda y se puede volver a apagar", async ({
+    page,
+  }) => {
+    await conVistaTecnica(page);
+    const resultado = await abrirTablero(page);
+
+    // Identificador interno del componente, que la vista del oficial no necesita.
+    await expect(lienzo(page)).toContainText(resultado.componente);
+  });
+
+  test("con la vista técnica encendida la respuesta del agente muestra tokens", async ({
+    page,
+    guardia,
+  }) => {
+    await guardia.simular(page, "**/api/visualizar", { json: V });
+    await conVistaTecnica(page);
+    await abrirTablero(page);
+
+    await campoInstruccion(page).fill("Departamentos con más alertas por minería ilegal");
+    await campoInstruccion(page).press("Enter");
+
+    const respuesta = agente(page);
+    await expect(respuesta).toContainText(V.especificacion.componente);
+    // La traza trae {input, output, total}: el total no se cuenta dos veces.
+    await expect(respuesta).toContainText(`${entero(V.traza.tokens["total"] ?? 0)} tokens`);
   });
 });
 
@@ -325,11 +404,9 @@ test.describe("Tablero · trazabilidad", () => {
     const respuesta = await evidencia;
 
     await expect(panel(page)).toContainText(fila.nombre);
-    await expect(panel(page)).toContainText(`${entero(fila.alertas)} alertas`);
-    await expect(panel(page)).toContainText(
-      `${entero(chunkIdsDe(fila.refs ?? []).length)} en este panel`,
+    await expect(panel(page).getByRole("listitem")).toHaveCount(
+      chunkIdsDe(fila.refs ?? []).length,
     );
-    await expect(panel(page)).not.toContainText("evidencia del componente");
 
     // Los fragmentos son los de la API, con su texto real.
     const fragmentos = (await respuesta.json()) as FilaEvidencia[] | { fragmentos: FilaEvidencia[] };
@@ -337,18 +414,17 @@ test.describe("Tablero · trazabilidad", () => {
     expect(lista.length).toBeGreaterThan(0);
     const primero = lista[0]!;
     const item = panel(page).getByRole("listitem").first();
-    await expect(item).toContainText(`doc ${primero.doc_id}`);
-    await expect(item).toContainText(`chunk ${String(primero.chunk_id)}`);
+    await expect(item).toContainText(
+      `fragmento ${String(primero.chunk_id)} de ${primero.doc_id}`,
+    );
     const texto = ((primero as unknown as { texto?: string }).texto ?? "").slice(0, 60).trim();
     if (texto) {
-      await expect(item.locator("blockquote")).toContainText(texto);
-    } else {
-      await expect(item.locator("blockquote")).not.toBeEmpty();
+      await expect(item).toContainText(texto);
     }
 
     // Quitar la selección devuelve el panel a la evidencia del componente.
     await panel(page).getByRole("button", { name: "Quitar la selección" }).click();
-    await expect(panel(page)).toContainText("Componente completo");
+    await expect(panel(page).getByRole("heading", { level: 2 })).not.toContainText(fila.nombre);
     await expect(boton).toHaveAttribute("aria-pressed", "false");
   });
 
@@ -383,39 +459,60 @@ test.describe("Tablero · trazabilidad", () => {
     expect(nombre.length).toBeGreaterThan(0);
 
     await page.mouse.click(caja.x + caja.width / 2, caja.y + caja.height / 2);
-    await expect(panel(page)).not.toContainText("Componente completo");
-    await expect(panel(page)).toContainText(/alertas|Sin alertas registradas/);
+    await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText(/^Evidencia · .+/);
   });
 
-  test("abre con el fondo analítico, sin teselas remotas, y el HUD se enciende a petición", async ({
+  test("el mapa se dibuja sin pedir una sola tesela a un tercero", async ({
     page,
   }, testInfo) => {
     test.skip(esMovil(testInfo), "El mapa solo ocupa la mitad del lienzo en escritorio.");
 
-    // PRODUCT.md: al abrir, la SPA no debe pedir una sola tesela a un tercero.
-    let teselas = 0;
+    // PRODUCT.md: sin mapas base ni recursos remotos que dependan de tokens.
+    const remotas: string[] = [];
     page.on("request", (peticion) => {
-      if (/arcgisonline\.com|cartocdn\.com/.test(peticion.url())) {
-        teselas += 1;
+      const url = peticion.url();
+      if (!url.startsWith(TABLERO_URL) && !url.startsWith("data:")) {
+        remotas.push(url);
       }
     });
 
     await abrirTablero(page);
     await expect(page.locator("canvas.maplibregl-canvas")).toBeVisible();
+    expect(remotas, "la SPA no debe salir a la red fuera de su propio origen").toEqual([]);
+  });
+});
 
-    const bases = page.getByRole("group", { name: "Mapa base" });
-    await expect(bases.getByRole("button", { name: "Analítico" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    expect(teselas).toBe(0);
+test.describe("Tablero · mandos de la vista", () => {
+  test("pantalla completa deja solo el componente y se sale con Escape", async ({ page }) => {
+    await abrirTablero(page);
+    await expect(panel(page)).toBeVisible();
 
-    const hud = page.getByRole("button", { name: "HUD" });
-    await expect(hud).toHaveAttribute("aria-pressed", "false");
-    await hud.click();
-    await expect(hud).toHaveAttribute("aria-pressed", "true");
-    // La lectura de coordenadas repite en cifras lo que el mapa dice con color.
-    await expect(page.getByText(/^Z \d+\.\d{2}$/)).toBeVisible();
+    await botonPantallaCompleta(page).click();
+    await expect(botonPantallaCompleta(page)).toHaveAttribute("aria-pressed", "true");
+    // Sin panel de evidencia: el gráfico ocupa la pantalla. El agente se queda encima, que
+    // es justo lo que permite seguir cambiando la vista mientras se proyecta.
+    await expect(panel(page)).toHaveCount(0);
+    await expect(agente(page)).toBeVisible();
+    await expect(tablaRegiones(page)).toBeVisible();
+    await esperarSinDesbordeHorizontal(page);
+
+    await page.keyboard.press("Escape");
+    await expect(botonPantallaCompleta(page)).toHaveAttribute("aria-pressed", "false");
+    await expect(panel(page)).toBeVisible();
+  });
+
+  test("la evidencia se oculta y se vuelve a mostrar desde el componente", async ({ page }) => {
+    await abrirTablero(page);
+    await expect(panel(page)).toBeVisible();
+
+    await panel(page).getByRole("button", { name: "Ocultar la evidencia" }).click();
+    await expect(panel(page)).toHaveCount(0);
+    await esperarSinDesbordeHorizontal(page);
+
+    // Queda la pestaña del borde para volver a abrirla.
+    await botonMostrarEvidencia(page).click();
+    await expect(panel(page)).toBeVisible();
+    await expect(botonMostrarEvidencia(page)).toHaveCount(0);
   });
 });
 
@@ -423,48 +520,63 @@ test.describe("Tablero · trazabilidad", () => {
  * Filtros globales
  * ------------------------------------------------------------------------------------- */
 
-test.describe("Tablero · filtros globales", () => {
-  test("elegir un fenómeno vuelve a pedir el componente y el encabezado lo declara", async ({
+test.describe("Tablero · enlace de la cita a su referencia", () => {
+  test("pulsar el documento de un fragmento abre todos los fragmentos de ese documento", async ({
     page,
   }) => {
-    await abrirTablero(page);
+    const resultado = await abrirTablero(page);
+    const fila = (resultado.datos as FilaMapa[]).find((f) => (f.refs ?? []).length > 0)!;
+    const docId = fila.refs![0]!.doc_id;
 
+    await expect(panel(page).getByRole("listitem").first()).toBeVisible();
+    const documento = panel(page).getByRole("listitem").first().getByRole("button").first();
+    const etiqueta = (await documento.getAttribute("title")) ?? "";
+    expect(etiqueta).toMatch(/^Ver todos los fragmentos de /);
+    const docPulsado = etiqueta.replace("Ver todos los fragmentos de ", "");
+
+    const { cuerpo, resultado: nuevo } = await conRecalculo(page, async () => {
+      await documento.click();
+    });
+    expect(cuerpo.componente).toBe("panel_evidencia");
+    expect(cuerpo.filtros["doc_id"]).toBe(docPulsado);
+    expect(nuevo.titulo).toContain("documento");
+    const fragmentos = nuevo.datos as FilaEvidencia[];
+    expect(fragmentos.length).toBeGreaterThan(0);
+    expect(new Set(fragmentos.map((f) => f.doc_id))).toEqual(new Set([docPulsado]));
+    expect(docId.length).toBeGreaterThan(0);
+  });
+});
+
+test.describe("Tablero · filtros globales", () => {
+  test("el fenómeno llega en la URL y el encabezado lo declara", async ({ page }) => {
     const f2 = FENOMENOS[1];
-    const { cuerpo, resultado } = await conRecalculo(page, async () => {
-      await page.getByRole("button", { name: `${f2.clave} · ${f2.nombre}` }).click();
-    });
-    expect(cuerpo.fenomeno).toBe(2);
-    expect(resultado.fenomeno).toBe(2);
-    await expect(
-      page.getByRole("button", { name: `${f2.clave} · ${f2.nombre}` }),
-    ).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByRole("button", { name: "Los tres" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
+    const componente = page.waitForResponse(
+      (r) => r.url().includes("/api/componente") && r.request().method() === "POST",
     );
-    await expect(lienzo(page)).toContainText(`${f2.clave} · ${f2.nombre}`);
+    await page.goto(`${TABLERO_URL}/?componente=linea_tiempo&fenomeno=2`);
+    const respuesta = await componente;
 
-    // Volver a "Los tres" quita el filtro.
-    const vuelta = await conRecalculo(page, async () => {
-      await page.getByRole("button", { name: "Los tres" }).click();
+    expect(respuesta.request().postDataJSON()).toMatchObject({
+      componente: "linea_tiempo",
+      fenomeno: 2,
     });
-    expect(vuelta.cuerpo.fenomeno).toBeNull();
-    await expect(lienzo(page)).toContainText("Los tres fenómenos");
+    await expect(lienzo(page)).toContainText(f2.clave);
   });
 
   test("el rango de años viaja a la API y queda escrito en la nota de método", async ({
     page,
-  }) => {
-    await abrirTablero(page);
-
-    const { cuerpo, resultado } = await conRecalculo(page, async () => {
-      await page.getByLabel("Desde").fill("2020");
-      await page.getByLabel("Desde").blur();
+  }, testInfo) => {
+    const { cuerpo, resultado } = await abrirTableroEn(page, {
+      componente: "mapa_colombia",
+      desde: 2020,
     });
     expect(cuerpo.filtros).toMatchObject({ desde: 2020, hasta: ANIO_HASTA });
     expect(resultado.nota_metodo).toContain(`entre 2020 y ${String(ANIO_HASTA)}`);
-    await expect(lienzo(page)).toContainText(`desde: 2020`);
-    await expect(lienzo(page)).toContainText(resultado.nota_metodo);
+
+    // El rango se declara en la cabecera, que es donde se comprueba lo que se está viendo.
+    await expect(lienzo(page)).toContainText(`2020–${String(ANIO_HASTA)}`);
+    await abrirAyuda(page, "Mapa de Colombia", testInfo);
+    await expect(lienzo(page).getByText(resultado.nota_metodo)).toBeVisible();
   });
 });
 
@@ -472,76 +584,62 @@ test.describe("Tablero · filtros globales", () => {
  * Exploración manual
  * ------------------------------------------------------------------------------------- */
 
-test.describe("Tablero · exploración manual", () => {
-  test("cambia de componente y aplica los filtros propios de cada uno", async ({ page }) => {
-    await abrirTablero(page);
-    await irAExploracion(page);
-
-    // Los ocho componentes del catálogo están ofrecidos.
-    const catalogo = page
-      .getByRole("region", { name: "Exploración manual" })
-      .getByRole("button", { name: /Mapa|Línea|Matriz|Red|Cuadrantes|Composición|Panel/ });
-    await expect(catalogo).toHaveCount(8);
-
-    const cambio = await conRecalculo(page, async () => {
-      await page.getByRole("button", { name: /Panel de evidencia/ }).first().click();
+test.describe("Tablero · componentes y filtros", () => {
+  test("cada componente se abre con sus filtros propios y su evidencia", async ({ page }) => {
+    // Regresión: el grafo guarda «eln» y quien revisa escribe «ELN».
+    const { cuerpo, resultado } = await abrirTableroEn(page, {
+      componente: "panel_evidencia",
+      entidad: "ELN",
     });
-    expect(cambio.cuerpo.componente).toBe("panel_evidencia");
-    expect(cambio.cuerpo.filtros).toEqual({ limite: 12 });
-    await expect(lienzo(page)).toContainText("panel_evidencia");
+    expect(cuerpo.componente).toBe("panel_evidencia");
+    expect(cuerpo.filtros).toMatchObject({ entidad: "ELN", limite: 12 });
+    await expect(lienzo(page).getByRole("note", { name: "Panel de evidencia" })).toBeVisible();
 
-    // Regresión: el grafo guarda «eln» y el jurado escribe «ELN».
-    const filtrado = await conRecalculo(page, async () => {
-      await page.getByLabel("Entidad", { exact: true }).fill("ELN");
-      await page.getByLabel("Entidad", { exact: true }).blur();
-    });
-    expect(filtrado.cuerpo.filtros).toMatchObject({ entidad: "ELN" });
-    const filas = filtrado.resultado.datos as FilaEvidencia[];
+    const filas = resultado.datos as FilaEvidencia[];
     expect(filas.length, "la entidad en mayúsculas debe devolver fragmentos").toBeGreaterThan(0);
     await expect(page.getByRole("heading", { level: 2, name: /Fragmentos de la entidad/ })).toBeVisible();
     await expect(lienzo(page)).toContainText(`doc ${filas[0]!.doc_id}`);
 
     // Cada fragmento del componente abre su propia evidencia en el panel.
     await lienzo(page).getByRole("button").filter({ hasText: `doc ${filas[0]!.doc_id}` }).first().click();
-    await expect(panel(page)).toContainText(`doc ${filas[0]!.doc_id}`);
-    await expect(panel(page)).toContainText("1 en este panel");
-
-    // Restablecer devuelve los filtros predeterminados del componente.
-    const restablecido = await conRecalculo(page, async () => {
-      await page.getByRole("button", { name: "Restablecer filtros" }).click();
-    });
-    expect(restablecido.cuerpo.filtros).toEqual({ limite: 12 });
-    await expect(page.getByLabel("Entidad", { exact: true })).toHaveValue("");
+    await expect(panel(page)).toContainText(`de ${filas[0]!.doc_id}`);
   });
 
-  test("el rango de años se deshabilita en los componentes que no lo usan", async ({ page }) => {
-    await abrirTablero(page);
-    await expect(page.getByLabel("Desde")).toBeEnabled();
-    await irAExploracion(page);
-
-    await conRecalculo(page, async () => {
-      await page.getByRole("button", { name: /Matriz de calor/ }).first().click();
-    });
-    await expect(page.getByText("no aplica a este componente")).toBeVisible();
-    await expect(page.getByLabel("Desde")).toBeDisabled();
-    await expect(page.getByLabel("Hasta")).toBeDisabled();
-
+  test("un componente sin años no recibe el rango global", async ({ page }) => {
+    const { cuerpo } = await abrirTableroEn(page, { componente: "matriz_calor" });
+    expect(cuerpo.filtros["desde"]).toBeUndefined();
+    expect(cuerpo.filtros["hasta"]).toBeUndefined();
     // Y el gráfico se describe para lectores de pantalla.
     await expect(page.getByRole("img", { name: /^Matriz de \d+ filas por \d+ columnas/ })).toBeVisible();
   });
 
   test("un filtro sin resultados muestra el vacío honesto, no un error", async ({ page }) => {
-    await abrirTablero(page);
-    await irAExploracion(page);
-
-    const { resultado } = await conRecalculo(page, async () => {
-      await page.getByLabel("Economía ilícita").fill("economía que no existe en el corpus");
-      await page.getByLabel("Economía ilícita").blur();
+    const { resultado } = await abrirTableroEn(page, {
+      componente: "panel_evidencia",
+      doc_id: "DOC-QUE-NO-EXISTE",
     });
     expect(resultado.datos).toEqual([]);
-    await expect(page.getByText("Sin alertas para estos filtros")).toBeVisible();
+    await expect(page.getByText("Ningún fragmento coincide")).toBeVisible();
     await expect(page.getByRole("alert")).toHaveCount(0);
     await expect(panel(page)).toContainText("Sin fragmentos que mostrar");
+  });
+
+  test("un filtro que la API descarta se avisa sin encender la vista técnica", async ({
+    page,
+  }) => {
+    // El vocabulario de `economia` es cerrado: un valor inventado se descarta y el
+    // componente responde con el conjunto completo, que hay que declarar.
+    const { resultado } = await abrirTableroEn(page, {
+      componente: "mapa_colombia",
+      economia: "economía que no existe en el corpus",
+    });
+    expect(resultado.filtros_ignorados).toContain("economia");
+
+    await expect(lienzo(page)).toBeVisible();
+    const aviso = lienzo(page).getByRole("status");
+    await expect(aviso).toContainText("Sin filtrar por economía ilícita");
+    await expect(aviso).toContainText("se muestra el conjunto completo");
+    await expect(aviso).not.toContainText("Claves descartadas");
   });
 });
 
@@ -575,7 +673,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     // Espera honesta mientras el orquestador consulta al agente.
     const espera = page
       .getByRole("status")
-      .filter({ hasText: "El orquestador está consultando al agente de visualización…" });
+      .filter({ hasText: "Consultando al agente de visualización…" });
     await expect(espera).toBeVisible();
     await expect(campoInstruccion(page)).toBeDisabled();
     await expect(botonVisualizar(page)).toBeDisabled();
@@ -588,46 +686,48 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await expect(espera).toBeHidden();
 
     // Respuesta textual del agente, componente elegido y justificación.
-    const respuesta = respuestaAgente(page);
+    const respuesta = agente(page);
     await expect(respuesta).toContainText(V.respuesta_agente);
-    await expect(respuesta).toContainText("Componente elegido");
-    await expect(respuesta).toContainText(
-      `Mapa de Colombia · ${V.especificacion.componente}`,
-    );
+    await expect(respuesta).toContainText("Mapa de Colombia");
+    await expect(respuesta).not.toContainText(V.especificacion.componente);
     await expect(respuesta).toContainText(V.especificacion.justificacion);
     for (const agente of V.traza.agentes_invocados) {
       await expect(respuesta).toContainText(agente);
     }
-    // La traza trae {input, output, total}: el total no se cuenta dos veces.
-    await expect(respuesta).toContainText(`${entero(V.traza.tokens["total"] ?? 0)} tokens`);
     await expect(respuesta).toContainText(latencia(V.traza.latencia_ms));
+    await expect(respuesta).not.toContainText("tokens");
 
     // El resultado que ya calculó el agente se muestra sin repetir /api/componente.
     await expect(
       page.getByRole("heading", { level: 2, name: V.resultado.titulo }),
     ).toBeVisible();
-    for (const [clave, valor] of Object.entries(V.resultado.filtros_aplicados)) {
-      await expect(lienzo(page)).toContainText(`${clave}: ${String(valor)}`);
-    }
-    await expect(lienzo(page)).toContainText(V.resultado.nota_metodo);
+    await expect(lienzo(page)).toContainText(
+      `Economía ilícita: ${String(V.resultado.filtros_aplicados["economia"])}`,
+    );
     expect(recalculos, "la especificación ya traía su resultado calculado").toBe(0);
 
-    // Los filtros globales quedan sincronizados con lo que decidió el agente.
-    const f3 = FENOMENOS[2];
-    await expect(
-      page.getByRole("button", { name: `${f3.clave} · ${f3.nombre}` }),
-    ).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByLabel("Desde")).toHaveValue(
-      String(V.resultado.filtros_aplicados["desde"]),
+    // Las cifras del resultado se leen junto a la respuesta, sin interpretar el gráfico.
+    await expect(respuesta).toContainText("Evidencia");
+    await expect(respuesta).toContainText(
+      `${entero(V.resultado.total_evidencia)} fragmentos`,
     );
 
-    // Y la instrucción queda en el historial, marcada como activa.
-    const entrada = historial(page).getByRole("listitem").first();
-    await expect(entrada).toContainText(INSTRUCCION);
-    await expect(entrada).toContainText(V.especificacion.componente);
-    await expect(entrada.getByRole("button")).toHaveAttribute("aria-current", "true");
+    // Los filtros globales quedan sincronizados con lo que decidió el agente.
+    await expect(lienzo(page)).toContainText(FENOMENOS[2].clave);
     await expect(campoInstruccion(page)).toBeEnabled();
     await expect(campoInstruccion(page)).toHaveValue("");
+
+    // Y la instrucción queda en el historial, marcada como activa.
+    const entrada = agente(page).getByRole("listitem").first();
+    await expect(entrada).toContainText(INSTRUCCION);
+    await expect(entrada.getByRole("button")).toHaveAttribute("aria-current", "true");
+
+    // El rango que decidió el agente queda declarado en la cabecera del componente.
+    await expect(lienzo(page)).toContainText(
+      `${String(V.resultado.filtros_aplicados["desde"])}–${String(
+        V.resultado.filtros_aplicados["hasta"],
+      )}`,
+    );
   });
 
   test("una instrucción de ejemplo se envía al hacer clic y el historial la recupera", async ({
@@ -637,23 +737,25 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     const visualizar = await guardia.simular(page, "**/api/visualizar", { json: V });
     await abrirTablero(page);
 
-    const sugerida = SUGERENCIAS[0]!;
-    await page.getByRole("button", { name: sugerida }).click();
+    const instruccion = "Alertas tempranas por departamento con minería ilegal";
+    await campoInstruccion(page).fill(instruccion);
+    await campoInstruccion(page).press("Enter");
     await expect(page.getByRole("heading", { level: 2, name: V.resultado.titulo })).toBeVisible();
-    expect(visualizar.cuerpos()).toEqual([{ instruccion: sugerida }]);
+    expect(visualizar.cuerpos()).toEqual([{ instruccion }]);
 
-    // Un cambio de componente en exploración deja el análisis atrás…
-    await irAExploracion(page);
+    // Abrir un documento desde la evidencia deja el análisis atrás…
+    await expect(panel(page).getByRole("listitem").first()).toBeVisible();
     await conRecalculo(page, async () => {
-      await page.getByRole("button", { name: /Composición del corpus/ }).first().click();
+      await panel(page).getByRole("listitem").first().getByRole("button").first().click();
     });
-    await expect(lienzo(page)).toContainText("composicion_corpus");
+    await expect(
+      lienzo(page).getByRole("note", { name: "Panel de evidencia" }),
+    ).toBeVisible();
 
     // …y el historial lo devuelve tal como lo entregó el agente, sin volver a preguntar.
-    await modo(page).getByRole("button", { name: "Instrucción" }).click();
-    await historial(page).getByRole("button").first().click();
+    await agente(page).getByRole("listitem").first().getByRole("button").click();
     await expect(page.getByRole("heading", { level: 2, name: V.resultado.titulo })).toBeVisible();
-    await expect(respuestaAgente(page)).toContainText(V.respuesta_agente);
+    await expect(agente(page)).toContainText(V.respuesta_agente);
     expect(visualizar.peticiones).toHaveLength(1);
   });
 
@@ -676,7 +778,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await expect(alerta).toContainText("no se pudo contactar al agente");
     // El componente que ya estaba no se pierde.
     await expect(page.getByRole("heading", { level: 2, name: inicial.titulo })).toBeVisible();
-    await expect(historial(page).getByRole("listitem").first()).toContainText("error");
+    await expect(agente(page).getByRole("listitem").first()).toContainText("error");
 
     // Se puede volver a intentar.
     await campoInstruccion(page).fill(INSTRUCCION);
@@ -703,14 +805,14 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await campoInstruccion(page).fill("¿Qué dice el corpus sobre la minería ilegal?");
     await campoInstruccion(page).press("Enter");
 
-    await expect(respuestaAgente(page)).toContainText(
+    await expect(agente(page)).toContainText(
       "La pregunta no pide un gráfico: el corpus responde con texto.",
     );
-    await expect(respuestaAgente(page)).toContainText(
-      "El agente no propuso ninguna visualización",
-    );
+    await expect(agente(page)).toContainText("No propuso ninguna visualización");
     await expect(page.getByRole("heading", { level: 2, name: inicial.titulo })).toBeVisible();
-    await expect(historial(page).getByRole("listitem").first()).toContainText("solo texto");
+    await expect(agente(page).getByRole("listitem").first()).toContainText(
+      "¿Qué dice el corpus sobre la minería ilegal?",
+    );
   });
 
   test("una instrucción vacía o solo con espacios no llega al agente", async ({
@@ -730,7 +832,9 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
 
     await page.waitForTimeout(500);
     expect(visualizar.peticiones).toHaveLength(0);
-    await expect(page.getByRole("status").filter({ hasText: "orquestador" })).toHaveCount(0);
+    await expect(
+      page.getByRole("status").filter({ hasText: "Consultando al agente" }),
+    ).toHaveCount(0);
   });
 });
 
@@ -751,11 +855,7 @@ test.describe("Tablero · presentación", () => {
     await expect(panel(page)).toContainText(fila.nombre);
     await esperarSinDesbordeHorizontal(page);
 
-    await irAExploracion(page);
-    await esperarSinDesbordeHorizontal(page);
-    await conRecalculo(page, async () => {
-      await page.getByRole("button", { name: /Red de entidades/ }).first().click();
-    });
+    await abrirTableroEn(page, { componente: "red_entidades" });
     await expect(page.getByRole("group", { name: /Red de \d+ entidades/ })).toBeVisible();
     await esperarSinDesbordeHorizontal(page);
   });
@@ -772,16 +872,14 @@ test.describe("Tablero · presentación", () => {
     await expect(panel(page)).toContainText(fila.nombre);
     await auditarAccesibilidad(page, testInfo, "tablero-evidencia");
 
-    await irAExploracion(page);
-    await auditarAccesibilidad(page, testInfo, "tablero-exploracion");
+    // La ventana ampliada es otra superficie entera: conversación y gráfico a la vez.
+    await agente(page).getByRole("button", { name: "Ampliar el panel del agente" }).click();
+    await expect(agente(page).getByRole("button", { name: "Reducir el panel del agente" })).toBeVisible();
+    await auditarAccesibilidad(page, testInfo, "tablero-agente-ampliado");
   });
 
   test("la red de entidades se explora con el teclado", async ({ page }) => {
-    await abrirTablero(page);
-    await irAExploracion(page);
-    await conRecalculo(page, async () => {
-      await page.getByRole("button", { name: /Red de entidades/ }).first().click();
-    });
+    await abrirTableroEn(page, { componente: "red_entidades" });
 
     const nodos = page.getByRole("group", { name: /Red de \d+ entidades/ }).getByRole("button");
     await expect(nodos.first()).toBeVisible();

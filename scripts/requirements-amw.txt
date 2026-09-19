@@ -1,0 +1,4 @@
+# Dependencias de scripts/amw_colombia.py.
+# No van en la imagen del agente: en tiempo de respuesta solo se lee
+# agent/datos/amw/colombia.json.
+shapely==2.1.2

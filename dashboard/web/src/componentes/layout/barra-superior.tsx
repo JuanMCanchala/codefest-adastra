@@ -1,107 +1,63 @@
-import { Compass, Radar, Terminal } from "lucide-react";
-import type { ReactNode } from "react";
+import { ArrowUpRight, Moon, Sun } from "lucide-react";
 
 import { obtenerSalud } from "@/api/cliente";
+import { alternarTema, useModoTema } from "@/lib/tema";
 import { useRecurso } from "@/lib/usar-recurso";
-import { cn, formatearEntero } from "@/lib/utils";
 
-export type Modo = "instruccion" | "manual";
-
-interface Props {
-  modo: Modo;
-  onCambiarModo: (modo: Modo) => void;
-}
-
-/** Encabezado con la identidad del producto, el estado de la API y el selector de modo. */
-export function BarraSuperior({ modo, onCambiarModo }: Props) {
+/**
+ * Encabezado: marca y salida hacia la consola de chat.
+ *
+ * No lleva selector de modo (preguntar y ajustar viven en la ventana del agente) ni
+ * anuncio del corpus: mientras la API responde, el dato ya está en la vista. El estado
+ * solo aparece cuando falla, que es cuando dice algo.
+ */
+export function BarraSuperior() {
   const salud = useRecurso("salud", (senal) => obtenerSalud(senal));
-  const fragmentos = salud.fase === "listo" ? (salud.dato.tablas["fragmentos"] ?? 0) : 0;
+  const modo = useModoTema();
+  const urlConsola = salud.fase === "listo" ? (salud.dato.consola_url ?? null) : null;
 
   return (
-    <header className="franja-mando sticky top-0 z-20 border-b border-borde bg-panel">
-      <div className="mx-auto flex max-w-[1800px] flex-wrap items-center gap-x-4 gap-y-2 px-4 pb-2.5 pt-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-acento/50 bg-acento/10 text-acento">
-            <Radar aria-hidden="true" className="size-5" />
-          </span>
-          <div className="min-w-0">
-            <h1 className="text-lg font-semibold leading-tight tracking-[-0.01em]">
-              <span className="text-acento">AeroCode</span>
-              <span aria-hidden="true" className="mx-2 text-control">
-                /
-              </span>
-              Analítica visual
-            </h1>
-            <p className="hidden text-sm text-apagado sm:block">
-              Cada dato abre su fragmento · uso académico, CODEFEST AD ASTRA 2026
-            </p>
-          </div>
-        </div>
+    <header className="flex shrink-0 items-center gap-4 border-b border-borde bg-panel px-4 py-2.5">
+      <h1 className="min-w-0 truncate text-sm font-semibold tracking-[-0.01em]">
+        AeroCode
+        <span aria-hidden="true" className="mx-2 text-tenue">
+          /
+        </span>
+        <span className="font-normal text-apagado">Analítica visual</span>
+      </h1>
 
-        <nav
-          className="ml-auto flex items-center gap-1 rounded-md border border-borde bg-fondo p-1"
-          aria-label="Modo de trabajo"
-        >
-          <BotonModo
-            activo={modo === "instruccion"}
-            etiqueta="Instrucción"
-            onClick={() => onCambiarModo("instruccion")}
-            icono={<Terminal aria-hidden="true" className="size-3.5" />}
-          />
-          <BotonModo
-            activo={modo === "manual"}
-            etiqueta="Exploración"
-            onClick={() => onCambiarModo("manual")}
-            icono={<Compass aria-hidden="true" className="size-3.5" />}
-          />
-        </nav>
+      <div className="ml-auto flex items-center gap-3">
+        {salud.fase === "error" ? (
+          <p className="inline-flex items-center gap-2 text-sm text-alerta" role="status">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-alerta" />
+            Corpus no disponible
+          </p>
+        ) : null}
 
-        <p
-          className="inline-flex h-9 items-center gap-2 rounded-md border border-borde bg-fondo px-3 text-sm text-apagado"
-          role="status"
+        <button
+          type="button"
+          onClick={alternarTema}
+          aria-label={modo === "oscuro" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+          title={modo === "oscuro" ? "Modo claro" : "Modo oscuro"}
+          className="inline-flex size-7 items-center justify-center rounded-md text-apagado transition-colors hover:bg-elevado hover:text-texto"
         >
-          <span
-            aria-hidden="true"
-            className={cn(
-              "size-2 rounded-full",
-              salud.fase === "listo"
-                ? "bg-ok"
-                : salud.fase === "error"
-                  ? "bg-alerta"
-                  : "bg-tenue animate-pulse",
-            )}
-          />
-          {salud.fase === "listo"
-            ? `API en línea · ${formatearEntero(fragmentos)} fragmentos indexados`
-            : salud.fase === "error"
-              ? "API no disponible"
-              : "Verificando la API…"}
-        </p>
+          {modo === "oscuro" ? (
+            <Sun aria-hidden="true" className="size-4" />
+          ) : (
+            <Moon aria-hidden="true" className="size-4" />
+          )}
+        </button>
+
+        {urlConsola ? (
+          <a
+            href={urlConsola}
+            className="inline-flex items-center gap-1.5 text-sm text-apagado transition-colors hover:text-texto"
+          >
+            Consola de chat
+            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          </a>
+        ) : null}
       </div>
     </header>
-  );
-}
-
-interface PropsBotonModo {
-  activo: boolean;
-  etiqueta: string;
-  icono: ReactNode;
-  onClick: () => void;
-}
-
-function BotonModo({ activo, etiqueta, icono, onClick }: PropsBotonModo) {
-  return (
-    <button
-      type="button"
-      aria-pressed={activo}
-      onClick={onClick}
-      className={cn(
-        "inline-flex h-8 items-center gap-1.5 rounded px-3 text-sm font-medium transition-colors",
-        activo ? "bg-acento/15 text-texto ring-1 ring-acento/60" : "text-apagado hover:text-texto",
-      )}
-    >
-      {icono}
-      {etiqueta}
-    </button>
   );
 }
