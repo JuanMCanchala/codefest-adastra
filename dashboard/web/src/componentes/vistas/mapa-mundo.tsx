@@ -94,6 +94,7 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<F
           zoomMaximo={6}
           seleccionada={seleccionada}
           onClicRegion={seleccionarPais}
+          globo
         />
         <div className="pointer-events-none absolute bottom-9 left-3">
           <LeyendaEscala maximo={maximo} unidad="menciones en el corpus" />

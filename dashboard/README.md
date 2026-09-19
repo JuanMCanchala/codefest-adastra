@@ -56,6 +56,18 @@ Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `compos
 `total_evidencia`), `refs` ≤ 20 por elemento cliqueable, `top` ≤ 30 (≤ 60 nodos en la red),
 `limite` ≤ 20 en `panel_evidencia`.
 
+### Mapa base y HUD
+
+Los dos componentes espaciales comparten `MapaCoropleta`. Sobre el lienzo hay dos controles:
+
+- **Mapa base** (`web/src/lib/mapa-base.ts`): `Analítico` (predeterminado, sin descargas),
+  `Callejero` (CARTO) y `Satélite` (Esri World Imagery). Ninguno pide llave. Las capas raster
+  entran al estilo apagadas, así que sin encenderlas no se pide una sola tesela; si una falla,
+  el mapa vuelve al fondo analítico y lo avisa. La elección se recuerda en `localStorage`.
+- **HUD**: coordenadas del centro, retícula y encuadre de la región seleccionada con su conteo.
+
+`mapa_mundo` se dibuja con la proyección de globo de MapLibre y su atmósfera.
+
 ## Variables de entorno
 
 | Variable | Valor en la imagen | Descripción |
