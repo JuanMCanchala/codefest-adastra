@@ -280,3 +280,60 @@ def test_tipo_de_entidad_en_mayusculas_se_normaliza(cliente) -> None:
     esperadas = filas("organizacion")
     assert esperadas
     assert filas("Organizacion") == esperadas
+
+
+# --- Vocabulario de las alertas escrito a mano -------------------------------------
+# Las fichas de la Defensoría guardan «Inminencia» y «Minería ilegal»; el jurado escribe
+# «inminencia» y «mineria ilegal». Antes devolvían el mapa vacío, que para quien evalúa es
+# indistinguible de un fallo.
+
+
+@pytest.mark.parametrize(
+    ("filtro", "escrito", "esperado"),
+    [
+        ("economia", "mineria ilegal", "Minería ilegal"),
+        ("economia", "MINERIA ILEGAL", "Minería ilegal"),
+        ("economia", "mineria", "Minería ilegal"),
+        ("economia", "narcotrafico", "Narcotráfico"),
+        ("economia", "gota a gota", "Préstamos gota a gota"),
+        ("tipo_alerta", "inminencia", "Inminencia"),
+        ("tipo_alerta", "ESTRUCTURAL", "Estructural"),
+    ],
+)
+def test_alertas_resuelven_tildes_y_mayusculas(cliente, filtro, escrito, esperado) -> None:
+    cuerpo = cliente.post(
+        "/api/componente", json={"componente": "mapa_colombia", "filtros": {filtro: escrito}}
+    ).json()
+    assert cuerpo["filtros_aplicados"][filtro] == esperado
+    assert cuerpo["datos"], "el filtro se resolvió pero el componente salió vacío"
+    assert filtro not in cuerpo["filtros_ignorados"]
+
+
+@pytest.mark.parametrize(
+    ("filtro", "escrito"),
+    [("economia", "pesca ilegal"), ("tipo_alerta", "urgente")],
+)
+def test_filtro_de_alerta_inexistente_se_descarta_y_se_informa(cliente, filtro, escrito) -> None:
+    """Sin valor parecido en la base se enseña el mapa completo y se dice que el filtro no
+    se aplicó, en vez de devolver un componente en blanco."""
+    cuerpo = cliente.post(
+        "/api/componente", json={"componente": "mapa_colombia", "filtros": {filtro: escrito}}
+    ).json()
+    assert filtro in cuerpo["filtros_ignorados"]
+    # `filtros_aplicados` se serializa con exclude_none, así que el filtro descartado
+    # desaparece del bloque en lugar de aparecer en nulo.
+    assert filtro not in cuerpo["filtros_aplicados"]
+    assert cuerpo["datos"]
+
+
+@pytest.mark.parametrize(
+    "escrito", ["FARC", "ELN", "Clan del Golfo", "Chocó", "China", "Defensoría del Pueblo"]
+)
+def test_entidades_con_mayusculas_devuelven_red(cliente, escrito) -> None:
+    """La tabla `entidades` guarda los nombres en minúscula: sin normalizar, todo nombre
+    propio escrito como lo escribiría una persona devolvía cero nodos."""
+    cuerpo = cliente.post(
+        "/api/componente", json={"componente": "red_entidades", "filtros": {"entidad": escrito}}
+    ).json()
+    assert cuerpo["datos"]["nodos"], f"«{escrito}» no resolvió a ninguna entidad"
+    assert cuerpo["datos"]["aristas"]

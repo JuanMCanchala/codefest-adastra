@@ -84,9 +84,7 @@ def agente_falso() -> Iterator[str]:
 @pytest.fixture(scope="session")
 def cliente(agente_falso: str) -> Iterator[TestClient]:
     with TestClient(app) as prueba:
-        prueba.app.state.cfg = prueba.app.state.cfg.model_copy(
-            update={"agent_url": agente_falso}
-        )
+        prueba.app.state.cfg = prueba.app.state.cfg.model_copy(update={"agent_url": agente_falso})
         if prueba.app.state.textos.disponible:
             # Espera el índice de offsets de metadata.jsonl para que no compita con las
             # mediciones de latencia de los componentes.

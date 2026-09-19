@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import unicodedata
 from collections.abc import Iterable
 from typing import Any, NamedTuple
 
@@ -84,6 +85,68 @@ def normalizar_entidades[F: FiltrosBase](bd: BaseDatos, filtros: F) -> F:
         if isinstance(valor, str) and valor.strip():
             cambios[campo] = _resolver(bd, sql, valor)
     return filtros.model_copy(update=cambios) if cambios else filtros
+
+
+# Las fichas de alertas guardan su vocabulario tal y como lo escribe la Defensoría
+# («Inminencia», «Minería ilegal»), pero el jurado y el agente escriben «inminencia» o
+# «mineria ilegal». SQLite compara `=` distinguiendo mayúsculas y su `LIKE` solo ignora el
+# caso en ASCII, así que una tilde o una mayúscula devolvían el componente vacío: correcto
+# pero en blanco, que para quien evalúa es indistinguible de un fallo. El vocabulario de
+# estas columnas es cerrado y diminuto (2 tipos, 5 economías), así que se compara en Python
+# sin tildes y en minúsculas.
+VOCABULARIO = {
+    "tipo_alerta": ("SELECT DISTINCT tipo FROM alertas WHERE tipo IS NOT NULL", None),
+    "economia": (
+        "SELECT DISTINCT economias_ilicitas FROM alertas WHERE economias_ilicitas IS NOT NULL",
+        ";",
+    ),
+}
+
+
+def _plano(texto: str) -> str:
+    descompuesto = unicodedata.normalize("NFD", texto.strip().lower())
+    return "".join(c for c in descompuesto if unicodedata.category(c) != "Mn")
+
+
+def _valores(bd: BaseDatos, sql: str, separador: str | None) -> list[str]:
+    """Vocabulario real de la columna. `economias_ilicitas` guarda varias por fila,
+    separadas por `;`, así que se parten antes de comparar."""
+    vistos: list[str] = []
+    for fila in bd.consultar(sql):
+        bruto = str(fila[0])
+        for parte in bruto.split(separador) if separador else [bruto]:
+            limpio = parte.strip()
+            if limpio:
+                vistos.append(limpio)
+    return list(dict.fromkeys(vistos))
+
+
+def normalizar_vocabulario[F: FiltrosBase](
+    bd: BaseDatos, filtros: F, campos: Iterable[str], ignorados: list[str]
+) -> tuple[F, list[str]]:
+    """Lleva cada filtro al valor exacto de la base. Si no hay ninguno parecido, se
+    descarta y se informa en ``filtros_ignorados``: mejor enseñar el mapa completo y
+    decir que ese filtro no se aplicó que devolver un componente en blanco."""
+    cambios: dict[str, Any] = {}
+    fuera = list(ignorados)
+    for campo in campos:
+        pedido = getattr(filtros, campo, None)
+        if not isinstance(pedido, str) or not pedido.strip():
+            continue
+        sql, separador = VOCABULARIO[campo]
+        objetivo = _plano(pedido)
+        valores = _valores(bd, sql, separador)
+        exacto = next((v for v in valores if _plano(v) == objetivo), None)
+        parcial = next((v for v in valores if objetivo in _plano(v)), None)
+        elegido = exacto or parcial
+        if elegido is None:
+            cambios[campo] = None
+            fuera.append(campo)
+        elif elegido != pedido:
+            cambios[campo] = elegido
+    if not cambios:
+        return filtros, ignorados
+    return filtros.model_copy(update=cambios), sorted(set(fuera))
 
 
 def refs(pares: Iterable[tuple[str, int]]) -> list[dict[str, Any]]:
