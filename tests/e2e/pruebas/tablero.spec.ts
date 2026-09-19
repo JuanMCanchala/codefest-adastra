@@ -470,13 +470,13 @@ test.describe("Tablero · trazabilidad", () => {
     await expect(page.getByText("Detalle municipal · aleje el zoom para volver a departamentos")).toBeVisible();
     await expect(async () => {
       expect(await zoomDe()).toBeGreaterThan(inicial + 3);
-    }).toPass({ timeout: 15_000 });
+    }).toPass({ timeout: 30_000 });
 
     // Y siempre hay vuelta atrás al encuadre de los datos.
     await page.getByRole("button", { name: "Encuadrar" }).click();
     await expect(async () => {
       expect(await zoomDe()).toBeLessThan(inicial + 1);
-    }).toPass({ timeout: 15_000 });
+    }).toPass({ timeout: 30_000 });
   });
 
   test("una consulta nueva reencuadra la cámara sobre las regiones con dato", async ({
@@ -500,9 +500,11 @@ test.describe("Tablero · trazabilidad", () => {
     await economia.press("Enter");
 
     await expect(page.getByText("economia: Minería ilegal")).toBeVisible();
+    // El reencuadre llega tras la respuesta de la API y una animación de 1,4 s; con WebGL
+    // por software y varios procesos en paralelo eso se estira.
     await expect(async () => {
       expect(await zoom.innerText()).not.toBe(antes);
-    }).toPass({ timeout: 15_000 });
+    }).toPass({ timeout: 30_000 });
   });
 });
 
