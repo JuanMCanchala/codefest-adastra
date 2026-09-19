@@ -28,6 +28,8 @@ const panel = (page: Page) => page.getByRole("complementary", { name: "Panel de 
 const campoInstruccion = (page: Page) =>
   page.getByRole("textbox", { name: "Instrucción en lenguaje natural" });
 const botonVisualizar = (page: Page) => page.getByRole("button", { name: /Visualizar|Analizando/ });
+const botonNivel = (page: Page, nombre: "Departamentos" | "Municipios") =>
+  page.getByRole("group", { name: "Nivel del mapa" }).getByRole("button", { name: nombre });
 const nodosRed = (page: Page) =>
   page.getByRole("group", { name: /Red de \d+ entidades/ }).getByRole("button");
 
@@ -232,7 +234,7 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     // es lo que hace una persona (Anexo B.4.2, «agregación según el nivel de acercamiento»).
     await abrirEn(page, { componente: "mapa_colombia" });
     await cerrarAgente(page);
-    await expect(page.getByText(/Departamentos · acerque el zoom/)).toBeVisible();
+    await expect(botonNivel(page, "Departamentos")).toHaveAttribute("aria-pressed", "true");
     // Rueda del ratón sobre el lienzo, como una persona: los mandos del mapa se vuelven a
     // montar al cambiar de nivel y un clic sobre ellos se queda sin elemento.
     const mapa = page.locator("canvas.maplibregl-canvas").first();
@@ -240,7 +242,10 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     await expect(async () => {
       await page.mouse.move(caja.x + caja.width / 2, caja.y + caja.height / 2);
       await page.mouse.wheel(0, -400);
-      await expect(page.getByText(/Detalle municipal/)).toBeVisible({ timeout: 2_000 });
+      // El botón refleja lo que hizo la rueda: botón y zoom son la misma verdad.
+      await expect(botonNivel(page, "Municipios")).toHaveAttribute("aria-pressed", "true", {
+        timeout: 2_000,
+      });
     }).toPass({ timeout: 30_000 });
     // Al cruzar el umbral el mapa baja la geometría municipal y vuelve a montar sus mandos:
     // se espera a que la red se calme antes de abrir el menú, o el menú se cierra solo.
@@ -260,11 +265,46 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     // En el nivel departamental no hay nivel superior que dibujar: el interruptor no se ofrece.
     await abrirEn(page, { componente: "mapa_colombia" });
     await cerrarAgente(page);
-    await expect(page.getByText(/Departamentos · acerque el zoom/)).toBeVisible();
+    await expect(botonNivel(page, "Departamentos")).toHaveAttribute("aria-pressed", "true");
     await page.getByTitle("Fondo del mapa y capas").click();
     await expect(
       page.getByRole("menuitemcheckbox", { name: /Fronteras departamentales/ }),
     ).toHaveCount(0);
+  });
+
+  test("el botón «Municipios» baja al detalle municipal sin tocar la rueda (B.4.2)", async ({
+    page,
+  }, testInfo) => {
+    test.skip(esMovil(testInfo), "El nivel municipal exige el zoom de una pantalla de escritorio.");
+    await abrirEn(page, { componente: "mapa_colombia" });
+    await cerrarAgente(page);
+    const municipios = botonNivel(page, "Municipios");
+    await expect(municipios).toHaveAttribute("aria-pressed", "false");
+    // La respuesta municipal se pide a la API al pulsar: el control cambia el nivel de verdad.
+    const respuesta = page.waitForResponse((r) => {
+      if (!r.url().includes("/api/componente")) return false;
+      const cuerpo = r.request().postDataJSON() as { filtros?: { nivel?: string } } | null;
+      return cuerpo?.filtros?.nivel === "municipio";
+    });
+    await municipios.click();
+    expect((await respuesta).ok()).toBe(true);
+    await expect(municipios).toHaveAttribute("aria-pressed", "true");
+    await expect(lienzo(page)).toContainText(/municipios?/i);
+    // Con el botón el cambio de nivel ocurre de golpe: los mandos del mapa se remontan y el
+    // menú «Capas» tiene que sobrevivir igual que cuando se llega con la rueda.
+    await page.waitForLoadState("networkidle");
+    const fronteras = page.getByRole("menuitemcheckbox", { name: /Fronteras departamentales/ });
+    await expect(async () => {
+      if ((await fronteras.count()) === 0) {
+        await page.getByTitle("Fondo del mapa y capas").click();
+      }
+      await expect(fronteras).toBeVisible({ timeout: 2_000 });
+    }).toPass({ timeout: 20_000 });
+    await page.keyboard.press("Escape");
+    // Y de vuelta: «Departamentos» aleja la cámara y el nivel lo sigue.
+    await botonNivel(page, "Departamentos").click();
+    await expect(botonNivel(page, "Departamentos")).toHaveAttribute("aria-pressed", "true");
+    await expect(municipios).toHaveAttribute("aria-pressed", "false");
   });
 
   test("las referencias [n] de la respuesta abren su fragmento, también en la presentación", async ({

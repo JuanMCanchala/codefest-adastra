@@ -34,7 +34,12 @@ interface Peticion {
 
 type EstadoVista =
   | { fase: "inactivo" }
-  | { fase: "cargando" }
+  /**
+   * Mientras se recalcula el mismo componente se sigue dibujando el resultado anterior: si
+   * el lienzo pasara a «Cargando», el mapa se desmontaría y al volver arrancaría a nivel
+   * país, con lo que bajar a municipios devolvía al usuario a departamentos.
+   */
+  | { fase: "cargando"; previo: ResultadoComponente | null }
   | { fase: "listo"; resultado: ResultadoComponente }
   | { fase: "error"; mensaje: string };
 
@@ -185,7 +190,15 @@ function Tablero() {
     control.current?.abort();
     const controlador = new AbortController();
     control.current = controlador;
-    setVista({ fase: "cargando" });
+    setVista((actual) => ({
+      fase: "cargando",
+      previo:
+        actual.fase === "listo" && actual.resultado.componente === objetivo.componente
+          ? actual.resultado
+          : actual.fase === "cargando" && actual.previo?.componente === objetivo.componente
+            ? actual.previo
+            : null,
+    }));
     calcularComponente(construirCuerpo(objetivo, filtrosGlobales), controlador.signal)
       .then((resultado) => {
         if (!controlador.signal.aborted) {
@@ -361,6 +374,11 @@ function Tablero() {
 
   const evidenciaGlobal: readonly Ref[] = vista.fase === "listo" ? vista.resultado.evidencia : [];
 
+  /** Lo que se dibuja: el resultado listo, o el anterior mientras llega el nuevo. */
+  const resultadoVisible: ResultadoComponente | null =
+    vista.fase === "listo" ? vista.resultado : vista.fase === "cargando" ? vista.previo : null;
+  const recargando = vista.fase === "cargando" && resultadoVisible !== null;
+
   /** Una referencia pulsada en la conversación tiene que verse: si el panel estaba oculto, vuelve. */
   const seleccionarDesdeAgente = useCallback((nueva: Seleccion) => {
     setSeleccion(nueva);
@@ -376,7 +394,7 @@ function Tablero() {
 
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          {vista.fase === "cargando" ? (
+          {vista.fase === "cargando" && !resultadoVisible ? (
             <Cargando />
           ) : vista.fase === "error" ? (
             <AvisoError
@@ -386,16 +404,16 @@ function Tablero() {
                 ejecutar(peticion, globales);
               }}
             />
-          ) : vista.fase === "listo" ? (
+          ) : resultadoVisible ? (
             <div
               className={cn(
                 "flex min-h-0 flex-1 flex-col transition-opacity",
-                enviando && "opacity-60",
+                (enviando || recargando) && "opacity-60",
               )}
-              aria-busy={enviando}
+              aria-busy={enviando || recargando}
             >
               <LienzoComponente
-                resultado={vista.resultado}
+                resultado={resultadoVisible}
                 motivo={motivo}
                 seleccion={seleccion}
                 onSeleccionar={setSeleccion}

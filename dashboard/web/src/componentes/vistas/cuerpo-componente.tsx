@@ -38,13 +38,14 @@ export function CuerpoComponente({
    * Identidad de la consulta para la cámara de los mapas: al cambiar, el mapa reencuadra
    * sobre las regiones con dato. Se deriva del propio resultado —qué se pidió y qué filtros
    * se aplicaron—, así que otra instrucción del agente mueve la cámara y un simple cambio
-   * de nivel del mapa, que no toca ninguno de los dos, la deja quieta.
+   * de nivel del mapa la deja quieta: el nivel va en los filtros aplicados, así que se quita
+   * antes de comparar, o cada bajada a municipios reencuadraría con tope departamental y el
+   * mapa rebotaría al nivel anterior.
    */
-  const enfoque = JSON.stringify([
-    resultado.componente,
-    resultado.fenomeno,
-    resultado.filtros_aplicados ?? null,
-  ]);
+  const filtrosSinNivel = Object.fromEntries(
+    Object.entries(resultado.filtros_aplicados ?? {}).filter(([clave]) => clave !== "nivel"),
+  );
+  const enfoque = JSON.stringify([resultado.componente, resultado.fenomeno, filtrosSinNivel]);
 
   const comunes = {
     titulo: resultado.titulo,

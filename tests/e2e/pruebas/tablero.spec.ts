@@ -462,7 +462,16 @@ test.describe("Tablero · trazabilidad", () => {
 
     const mapa = page.locator("canvas.maplibregl-canvas");
     await expect(mapa).toBeVisible();
-    await expect(page.getByText("acerque el zoom para ver municipios")).toBeVisible();
+    // El nivel es un control con estado, no un cartel (Anexo B.4.2).
+    const nivel = page.getByRole("group", { name: "Nivel del mapa" });
+    await expect(nivel.getByRole("button", { name: "Departamentos" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await expect(nivel.getByRole("button", { name: "Municipios" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
 
     // La leyenda da los rangos en números, no solo en color.
     await expect(page.getByText("0 · sin registro")).toBeVisible();
