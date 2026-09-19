@@ -1,4 +1,4 @@
-"""Piezas comunes a los componentes: filtros tolerantes, refs y evidencia acotada."""
+"""Piezas comunes a los componentes: filtros tolerantes, refs, evidencia y cifras."""
 
 from __future__ import annotations
 
@@ -183,3 +183,12 @@ def evidencia(pares: Iterable[tuple[str, int]], total: int | None = None) -> tup
     unicos = list(dict.fromkeys(pares))
     lista = [{"doc_id": d, "chunk_id": c} for d, c in unicos[:MAX_EVIDENCIA]]
     return lista, len(unicos) if total is None else total
+
+
+def miles(n: int) -> str:
+    """`69999` → `69.999`: separador de miles como se escribe en español.
+
+    Se aplica solo al número. Formatear la frase entera y cambiarle después las comas por
+    puntos convierte la prosa en una ristra de puntos.
+    """
+    return f"{n:,}".replace(",", ".")

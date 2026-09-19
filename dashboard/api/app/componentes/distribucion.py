@@ -16,7 +16,7 @@ from pydantic import Field
 
 from ..db import BaseDatos
 from ..evidencia import IndiceTextos
-from .base import FiltrosBase, Salida, evidencia, refs, resolver_filtros
+from .base import FiltrosBase, Salida, evidencia, miles, refs, resolver_filtros
 
 Variable = Literal[
     "fragmentos_por_documento",
@@ -79,10 +79,6 @@ class Filtros(FiltrosBase):
     fenomeno: int | None = Field(default=None, ge=1, le=3)
     # Barras del histograma. Pocas esconden la forma; muchas la fragmentan.
     barras: int = Field(default=12, ge=4, le=30)
-
-
-def _miles(n: int) -> str:
-    return f"{n:,}".replace(",", ".")
 
 
 def _percentil(valores: list[int], p: float) -> int:
@@ -185,11 +181,11 @@ def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salid
         evidencia=lista,
         total_evidencia=total_evidencia,
         nota_metodo=(
-            f"Histograma de {titulo_variable}: {_miles(len(medidas))} {sujetos} contados sobre "
+            f"Histograma de {titulo_variable}: {miles(len(medidas))} {sujetos} contados sobre "
             f"las tablas de la base, repartidos en {len(cubos)} barras de ancho igual"
             + (
-                f"; la última acumula la cola desde {_miles(bordes[-1])} hasta el máximo "
-                f"({_miles(valores[-1])}), "
+                f"; la última acumula la cola desde {miles(bordes[-1])} hasta el máximo "
+                f"({miles(valores[-1])}), "
                 "recortada en el percentil 99 para que la forma se vea"
                 if recortado
                 else ""

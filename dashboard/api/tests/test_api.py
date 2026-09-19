@@ -244,6 +244,73 @@ def test_pais_desconocido_se_ignora(cliente) -> None:
     assert cuerpo["datos"]["serie"], "el filtro descartado no debería dejar la serie vacía"
 
 
+def test_nota_de_crecimiento_se_lee_como_una_frase(cliente) -> None:
+    """La nota separa con comas: el punto de los miles no se le come a la prosa."""
+    respuesta = cliente.post("/api/componente", json={"componente": "poblacion_orbital"})
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    nota = cuerpo["nota_metodo"]
+    assert "CC BY 4.0, actualizado" in nota, f"la nota perdió sus comas: {nota}"
+    assert "carga útil, etapa, componente, desecho" in nota
+    filas = cuerpo["datos"]["procedencia"]["filas"]
+    assert f"{filas:,}".replace(",", ".") in nota, "el separador de miles no es el español"
+
+
+def test_en_orbita_declara_que_no_lo_filtra_el_pais(cliente) -> None:
+    """Con un país aplicado, la cifra global sigue siendo global y la nota lo dice.
+
+    `en_orbita_por_regimen` se precalcula sin dimensión de país, así que no se puede
+    recortar. Lo que sí se puede es no dejar que se lea como el total de ese país.
+    """
+    sin_filtro = cliente.post("/api/componente", json={"componente": "poblacion_orbital"}).json()
+    if sin_filtro["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    respuesta = cliente.post(
+        "/api/componente",
+        json={"componente": "poblacion_orbital", "filtros": {"pais": "US"}},
+    )
+    cuerpo = respuesta.json()
+    assert cuerpo["filtros_ignorados"] == []
+    datos = cuerpo["datos"]
+    assert datos["pais_aplicado"] is True
+    assert datos["total_lanzados"] < sin_filtro["datos"]["total_lanzados"], "el país no filtró"
+    assert datos["total_en_orbita"] == sin_filtro["datos"]["total_en_orbita"]
+    assert "catálogo entero" in cuerpo["nota_metodo"]
+
+
+def test_un_pais_no_filtrable_no_se_da_por_aplicado(cliente) -> None:
+    """`serie` agrupa la cola de países en OTROS: CO no es filtrable y se avisa."""
+    respuesta = cliente.post(
+        "/api/componente",
+        json={"componente": "poblacion_orbital", "filtros": {"pais": "CO"}},
+    )
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    assert cuerpo["filtros_ignorados"] == ["pais"]
+    assert cuerpo["datos"]["pais_aplicado"] is False
+
+
+def test_asat_dice_cuantos_ensayos_deja_fuera(cliente) -> None:
+    """El `top` por defecto recorta la lista: el total sin recortar viaja con ella."""
+    respuesta = cliente.post(
+        "/api/componente", json={"componente": "poblacion_orbital", "filtros": {"vista": "asat"}}
+    )
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de población orbital en este árbol")
+    datos = cuerpo["datos"]
+    assert datos["asat_totales"] > len(datos["asat"]), "este caso deja de probar el recorte"
+    assert f"de los {datos['asat_totales']}" in cuerpo["nota_metodo"]
+
+    completo = cliente.post(
+        "/api/componente",
+        json={"componente": "poblacion_orbital", "filtros": {"vista": "asat", "top": 26}},
+    ).json()
+    assert len(completo["datos"]["asat"]) == completo["datos"]["asat_totales"]
+
+
 def test_colombia_tiene_tres_objetos(cliente) -> None:
     """GCAT solo atribuye tres objetos a Colombia: Libertad-1, FACSAT y FACSAT-2."""
     respuesta = cliente.post(

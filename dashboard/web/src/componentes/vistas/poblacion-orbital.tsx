@@ -47,6 +47,9 @@ function VistaCrecimiento({
   datos: Extract<DatosPoblacionOrbital, { vista: "crecimiento" }>;
 }) {
   const { serie, en_orbita_por_regimen: regimenes, procedencia } = datos;
+  // «En órbita hoy» sale de un agregado sin dimensión de país: con el filtro puesto sigue
+  // siendo el total del catálogo entero, y junto a uno filtrado hay que decirlo.
+  const globalConFiltro = datos.pais_aplicado;
 
   const opcionSerie = useMemo<EChartsOption>(() => {
     const anios = [...new Set(serie.map((s: PuntoSerieOrbital) => s.anio))].sort((a, b) => a - b);
@@ -116,7 +119,10 @@ function VistaCrecimiento({
   const ultimoAnio = Math.max(...serie.map((s) => s.anio));
 
   const cifras = [
-    { etiqueta: "En órbita hoy", valor: formatearEntero(totalEnOrbita) },
+    {
+      etiqueta: globalConFiltro ? "En órbita hoy (todo el catálogo)" : "En órbita hoy",
+      valor: formatearEntero(totalEnOrbita),
+    },
     { etiqueta: "Catalogados en el rango", valor: formatearEntero(totalCatalogado) },
     { etiqueta: "Último año con lanzamientos", valor: String(ultimoAnio) },
   ];
@@ -143,6 +149,12 @@ function VistaCrecimiento({
           altura={200}
           descripcion={`${formatearEntero(totalEnOrbita)} objetos en órbita hoy, repartidos por régimen orbital y tipo.`}
         />
+        {globalConFiltro ? (
+          <p className="text-xs text-apagado">
+            Estas barras son las del catálogo entero: el estado actual no viene desglosado por
+            país, así que el filtro de país solo recorta la serie de arriba.
+          </p>
+        ) : null}
       </div>
       {procedencia ? (
         <p className="font-mono text-[11px] leading-relaxed text-apagado">
@@ -162,6 +174,7 @@ function VistaAsat({
   onSeleccionar: PropsVista<unknown>["onSeleccionar"];
 }) {
   const { asat: ensayos, procedencia } = datos;
+  const recortado = datos.asat_totales > ensayos.length;
 
   const opcion = useMemo<EChartsOption>(() => {
     const orden = [...ensayos].reverse();
@@ -228,6 +241,12 @@ function VistaAsat({
         } con ${formatearEntero(ensayos[0]?.catalogados ?? 0)} desechos catalogados.`}
         onClic={alClic}
       />
+      {recortado ? (
+        <p className="text-xs text-apagado">
+          El gráfico enseña los {ensayos.length} ensayos con más desechos catalogados de{" "}
+          {datos.asat_totales} con padre cierto en GCAT.
+        </p>
+      ) : null}
       <ul className="flex flex-col gap-1 text-xs text-apagado">
         {ensayos
           .filter((e) => e.refs.length === 0)

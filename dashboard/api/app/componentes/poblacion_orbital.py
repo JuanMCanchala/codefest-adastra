@@ -24,7 +24,7 @@ from pydantic import Field
 from ..db import BaseDatos
 from ..evidencia import IndiceTextos
 from ..settings import get_settings
-from .base import FiltrosBase, Salida, evidencia, refs, resolver_filtros
+from .base import FiltrosBase, Salida, evidencia, miles, refs, resolver_filtros
 
 log = logging.getLogger(__name__)
 
@@ -80,6 +80,9 @@ def _salida_vacia() -> Salida:
             "vista": "crecimiento",
             "serie": [],
             "en_orbita_por_regimen": [],
+            "total_lanzados": 0,
+            "total_en_orbita": 0,
+            "pais_aplicado": False,
             "asat": [],
             "colombia": [],
             "inspectores": [],
@@ -113,23 +116,34 @@ def _vista_crecimiento(
     bd: BaseDatos, datos: dict[str, Any], f: Filtros, ignorados: list[str]
 ) -> tuple[Salida, list[str]]:
     serie = [s for s in datos["serie"] if f.desde <= s["anio"] <= f.hasta]
+    # `serie` solo nombra a los ~12 países con más objetos: el resto cae en OTROS, así que un
+    # país con pocos objetos (CO, entre ellos) no es filtrable aquí y se reporta como ignorado.
+    pais_aplicado = False
     if f.pais:
         paises_validos = _paises_en(datos["serie"])
         if f.pais not in paises_validos:
             ignorados = sorted({*ignorados, "pais"})
         else:
             serie = [s for s in serie if s["pais"] == f.pais]
+            pais_aplicado = True
 
     total_lanzados = sum(s["lanzados"] for s in serie)
+    # El agregado precalculado no lleva dimensión de país, así que esta cifra es siempre la
+    # del catálogo entero. Al lado de un total que sí está filtrado, callarlo la hace mentir.
     total_en_orbita = sum(r["n"] for r in datos["en_orbita_por_regimen"])
     p = datos["procedencia"]
+    alcance = (
+        f"es el total del catálogo entero, no solo de {f.pais}, y tampoco depende del rango "
+        "de años elegido"
+        if pais_aplicado
+        else "no depende del rango de años elegido"
+    )
     nota = (
-        f"Objetos catalogados por GCAT ({p['fuente'].split('—')[0].strip()}, "
-        f"{p['licencia']}, actualizado {p['actualizado']}), agrupados por año de lanzamiento, "
-        "tipo (carga útil, etapa, componente, desecho) y país de responsabilidad. "
-        "«En órbita hoy» son los objetos con estado activo en el catálogo a la fecha de "
-        "actualización, por régimen orbital; no depende del rango de años elegido. "
-        f"{p['filas']:,} objetos catalogados en total.".replace(",", ".")
+        f"Objetos catalogados por GCAT ({p['licencia']}, actualizado {p['actualizado']}), "
+        "agrupados por año de lanzamiento, tipo (carga útil, etapa, componente, desecho) y "
+        "país de responsabilidad. «En órbita hoy» son los objetos con estado activo en el "
+        f"catálogo a la fecha de actualización, por régimen orbital; {alcance}. "
+        f"{miles(p['filas'])} objetos catalogados en total."
     )
     if f.desde > 1957 or f.hasta < 2026:
         nota += f" Serie recortada a {f.desde}-{f.hasta}."
@@ -142,6 +156,7 @@ def _vista_crecimiento(
             "en_orbita_por_regimen": datos["en_orbita_por_regimen"],
             "total_lanzados": total_lanzados,
             "total_en_orbita": total_en_orbita,
+            "pais_aplicado": pais_aplicado,
             "procedencia": p,
         },
         evidencia=[],
@@ -161,6 +176,9 @@ def _vista_asat(
             ignorados = sorted({*ignorados, "pais"})
         else:
             ensayos = [e for e in ensayos if e["pais"] == f.pais]
+    # Cuántos hay antes de recortar: el gráfico enseña los `top` con más desechos, y la
+    # vista lo dice en vez de dar 10 de 21 ensayos por el total.
+    ensayos_con_datos = len(ensayos)
     ensayos = ensayos[: f.top]
 
     pares_totales: list[tuple[str, int]] = []
@@ -181,12 +199,18 @@ def _vista_asat(
         "muestran con sus cifras de GCAT y sin evidencia del corpus, en vez de inventar un "
         "vínculo."
     )
+    if ensayos_con_datos > len(ensayos):
+        nota += (
+            f" Se enseñan los {len(ensayos)} ensayos con más desechos catalogados de los "
+            f"{ensayos_con_datos} que GCAT atribuye a un padre cierto."
+        )
 
     salida = Salida(
         titulo="Desechos de ensayos antisatélite",
         datos={
             "vista": "asat",
             "asat": filas,
+            "asat_totales": ensayos_con_datos,
             "procedencia": p,
         },
         evidencia=lista,

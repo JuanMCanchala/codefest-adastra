@@ -320,10 +320,19 @@ export type DatosPoblacionOrbital =
       procedencia: ProcedenciaOrbital | null;
       serie: PuntoSerieOrbital[];
       en_orbita_por_regimen: ConteoRegimenOrbital[];
-      total_lanzados?: number;
-      total_en_orbita?: number;
+      total_lanzados: number;
+      /** Objetos con estado activo en el catálogo entero: no lo recorta ningún filtro. */
+      total_en_orbita: number;
+      /** Si el país pedido sí recortó la serie; solo entonces las dos cifras miden cosas distintas. */
+      pais_aplicado: boolean;
     }
-  | { vista: "asat"; procedencia: ProcedenciaOrbital | null; asat: EnsayoAsat[] }
+  | {
+      vista: "asat";
+      procedencia: ProcedenciaOrbital | null;
+      asat: EnsayoAsat[];
+      /** Ensayos con datos antes de recortar a `top`. */
+      asat_totales: number;
+    }
   | { vista: "colombia"; procedencia: ProcedenciaOrbital | null; colombia: ObjetoColombiaOrbital[] }
   | {
       vista: "inspectores";
