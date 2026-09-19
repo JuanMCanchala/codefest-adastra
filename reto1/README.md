@@ -2,4 +2,4 @@
 
 Asistente con GUI, mínimo dos agentes, que responde preguntas sobre los tres fenómenos.
 
-**Entrega:** sábado 18 de septiembre, 08:00.
+**Entrega:** sábado 19 de septiembre, 08:00 a 12:30.

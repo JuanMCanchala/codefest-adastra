@@ -5,8 +5,8 @@ vectorial de la Etapa 1 ([codefest-adastra-2026](https://github.com/JuanMCanchal
 
 | Componente | Enunciado | Entrega |
 |---|---|---|
-| [`reto1/`](reto1/) | Asistente conversacional (con GUI) compuesto por **mínimo dos agentes** que responda preguntas de los tres fenómenos. | Sábado 18 de septiembre, 08:00 |
-| [`reto2/`](reto2/) | Módulo de analítica visual que genere visualizaciones útiles para el análisis de los tres fenómenos. **Mínimo un agente**, integrado con el asistente conversacional. | Sábado 18 de septiembre, 12:30 |
+| [`reto1/`](reto1/) | Asistente conversacional (con GUI) compuesto por **mínimo tres agentes en total (orquestador, agente de corpus y agente de visualización)** que responda preguntas de los tres fenómenos. | Sábado 19 de septiembre, 08:00 (ventana de evaluación hasta las 12:30) |
+| [`reto2/`](reto2/) | Módulo de analítica visual que genere visualizaciones útiles para el análisis de los tres fenómenos. **Mínimo un agente**, integrado con el asistente conversacional. | Sábado 19 de septiembre, 12:30 |
 
 Requisitos transversales:
 
