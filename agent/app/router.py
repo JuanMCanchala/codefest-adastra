@@ -19,13 +19,30 @@ from typing import Protocol
 # Frases de referencia por ruta, varias por ruta para promediar y no depender de una
 # única formulación. Los prototipos y el umbral se afinan con el harness (Parte 1), no
 # a ojo: ver agent/eval/.
+#
+# Los de "corpus" cubren los tres fenómenos a propósito (dos por fenómeno, tomados del
+# fraseo real de las preguntas oficiales en agent/eval/datos/preguntas_reto.jsonl). La
+# primera versión solo tenía ejemplos de F1 (IA/defensa) y el baseline mostró la
+# consecuencia: el router activaba en apenas 4/50 preguntas porque F2 (espacio) y F3
+# (dinámicas territoriales) quedaban con similitud baja contra un prototipo que no
+# cubría su vocabulario.
 _PROTOTIPOS: dict[str, list[str]] = {
     "corpus": [
-        "¿Qué dicen los informes sobre la inteligencia artificial en la defensa?",
-        "¿Cómo ha evolucionado el uso de drones en conflictos recientes?",
-        "¿Qué riesgos representa la dependencia de tecnología extranjera?",
-        "Explica la relación entre la escasez de talento y las capacidades militares",
-        "¿Qué lecciones dejan los conflictos recientes sobre el empleo de IA?",
+        # F1 — IA y capacidades estratégicas en defensa
+        "¿Cómo están empleando los sistemas no tripulados potenciados por IA para "
+        "aumentar la efectividad de las operaciones militares?",
+        "¿Qué riesgos representa la escasez de talento especializado en inteligencia "
+        "artificial para el desarrollo de capacidades de defensa?",
+        # F2 — seguridad del entorno espacial
+        "¿Qué capacidades contraespaciales representan actualmente la mayor amenaza "
+        "para los sistemas satelitales?",
+        "¿Cuál ha sido el impacto de las pruebas antisatélite sobre la generación de "
+        "desechos orbitales?",
+        # F3 — dinámicas territoriales y amenazas regionales en América Latina
+        "¿Cómo utilizan los grupos armados ilegales el control territorial para "
+        "sustituir funciones del Estado?",
+        "¿De qué manera el narcotráfico financia el fortalecimiento y la expansión "
+        "territorial de los grupos armados?",
     ],
     "visualizacion": [
         "Muéstrame en un mapa las alertas tempranas por departamento",
