@@ -197,7 +197,7 @@ export function VistaRedEntidades({ datos, onSeleccionar }: PropsVista<DatosRedE
       ) : (
         <svg
           viewBox={`0 0 ${String(ANCHO)} ${String(ALTO)}`}
-          className="h-[540px] w-full"
+          className="h-[var(--alto-vista,540px)] w-full"
           role="group"
           aria-label={`Red de ${String(disposicion.nodos.length)} entidades y ${String(
             disposicion.aristas.length,

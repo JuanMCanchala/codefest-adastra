@@ -80,7 +80,7 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<F
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div className="relative h-[520px] border-b border-borde lg:border-b-0 lg:border-r">
+      <div className="relative h-[var(--alto-vista,520px)] border-b border-borde lg:border-b-0 lg:border-r">
         <MapaCoropleta
           geojson={geo.dato}
           claveGeo="iso3"
@@ -99,7 +99,7 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<F
           <LeyendaEscala maximo={maximo} unidad="menciones en el corpus" />
         </div>
       </div>
-      <div className="barra-fina max-h-[520px] overflow-y-auto">
+      <div className="barra-fina max-h-[var(--alto-vista,520px)] overflow-y-auto">
         <TablaRanking
           filas={filasTabla}
           unidad="menciones"
