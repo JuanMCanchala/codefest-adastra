@@ -1,3 +1,5 @@
+import { TEMA } from "@/lib/tema";
+
 /**
  * Escala secuencial viridis: perceptualmente uniforme y legible con cualquier tipo de
  * daltonismo (Anexo B: la lectura no puede depender solo del matiz).
@@ -20,27 +22,46 @@ export interface Tramo {
   color: string;
 }
 
-/** Devuelve tramos de igual amplitud sobre [0, maximo], con al menos un tramo. */
-export function tramosLineales(maximo: number, cantidad = 6): Tramo[] {
+/**
+ * Tramos de la leyenda derivados de la misma función que colorea el mapa (`colorPorValor`),
+ * de modo que cada color de la leyenda cubre exactamente los conteos que pinta.
+ */
+export function tramosLineales(maximo: number): Tramo[] {
   const tope = Math.max(1, Math.ceil(maximo));
-  const n = Math.max(1, Math.min(cantidad, tope));
-  const paso = tope / n;
   const tramos: Tramo[] = [];
-  for (let i = 0; i < n; i += 1) {
-    tramos.push({
-      desde: i === 0 ? 1 : Math.round(i * paso) + 1,
-      hasta: Math.round((i + 1) * paso),
-      color: colorEnEscala((i + 0.5) / n),
-    });
+  const agregar = (valor: number) => {
+    const color = colorPorValor(valor, tope);
+    const ultimo = tramos[tramos.length - 1];
+    if (ultimo && ultimo.color === color) {
+      ultimo.hasta = valor;
+    } else {
+      tramos.push({ desde: valor, hasta: valor, color });
+    }
+  };
+  if (tope <= 20000) {
+    for (let valor = 1; valor <= tope; valor += 1) agregar(valor);
+  } else {
+    // Muestreo fino para topes muy altos; los extremos se ajustan al entero más cercano.
+    const pasos = 20000;
+    for (let i = 1; i <= pasos; i += 1) agregar(Math.max(1, Math.round((i / pasos) * tope)));
   }
   return tramos;
 }
 
+/** Fracción de la rampa viridis que se omite en el extremo oscuro. */
+export const INICIO_ESCALA = 0.3;
+
+/** Rampa visible sobre el fondo oscuro, para gráficos que interpolan por su cuenta. */
+export const VIRIDIS_VISIBLE: readonly string[] = VIRIDIS.slice(2);
+
 /** Interpola la rampa en [0, 1]. */
 export function colorEnEscala(posicion: number): string {
   const acotada = Math.min(1, Math.max(0, posicion));
-  const indice = Math.round(acotada * (VIRIDIS.length - 1));
-  return VIRIDIS[indice] ?? "#58a6ff";
+  // Sobre fondo azul noche el primer tercio de viridis se confunde con "sin dato":
+  // la escala empieza en el azul medio para que el tramo más bajo siga siendo visible.
+  const t = INICIO_ESCALA + (1 - INICIO_ESCALA) * acotada;
+  const indice = Math.round(t * (VIRIDIS.length - 1));
+  return VIRIDIS[indice] ?? TEMA.senal;
 }
 
 /** Color de un valor dentro de [0, maximo]; el 0 usa el color de "sin dato". */
@@ -51,7 +72,7 @@ export function colorPorValor(valor: number, maximo: number): string {
   return colorEnEscala(Math.sqrt(valor / maximo));
 }
 
-export const SIN_DATO = "#1b2531";
+export const SIN_DATO = TEMA.sinDato;
 
 /** Paleta categórica apta para daltonismo (Okabe–Ito, orden estable). */
 export const CATEGORICA: readonly string[] = [
@@ -66,5 +87,5 @@ export const CATEGORICA: readonly string[] = [
 ] as const;
 
 export function colorCategoria(indice: number): string {
-  return CATEGORICA[indice % CATEGORICA.length] ?? "#58a6ff";
+  return CATEGORICA[indice % CATEGORICA.length] ?? TEMA.senal;
 }

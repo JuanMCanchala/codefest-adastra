@@ -4,12 +4,13 @@ import { useEffect, useRef } from "react";
 
 import { SIN_DATO, colorPorValor } from "@/lib/paleta";
 import { formatearEntero } from "@/lib/utils";
+import { TEMA } from "@/lib/tema";
 
 /** Fondo sin mapa base remoto: la SPA no depende de tokens ni de teselas externas. */
 const ESTILO: StyleSpecification = {
   version: 8,
   sources: {},
-  layers: [{ id: "lienzo", type: "background", paint: { "background-color": "#0a0e14" } }],
+  layers: [{ id: "lienzo", type: "background", paint: { "background-color": TEMA.mapaFondo } }],
 };
 
 const FUENTE = "regiones";
@@ -78,8 +79,14 @@ export function MapaCoropleta({
   const alClic = useRef(onClicRegion);
   const alZoom = useRef(onZoom);
 
+  // Los manejadores de MapLibre se registran una sola vez: leen los valores vigentes por ref.
+  const valoresVigentes = useRef(valores);
+  const maximoVigente = useRef(maximo);
+
   alClic.current = onClicRegion;
   alZoom.current = onZoom;
+  valoresVigentes.current = valores;
+  maximoVigente.current = maximo;
 
   useEffect(() => {
     const nodo = contenedor.current;
@@ -124,27 +131,31 @@ export function MapaCoropleta({
     }
     const preparar = () => {
       const fuente = instancia.getSource(FUENTE);
+      // El color se calcula aquí también: si los datos llegaron antes de que el estilo
+      // cargara, el efecto de color ya corrió sin capa y el mapa quedaba sin colorear.
+      const color = expresionColor(valoresVigentes.current, maximoVigente.current, claveGeo);
       if (fuente) {
         (fuente as maplibregl.GeoJSONSource).setData(geojson);
+        instancia.setPaintProperty(CAPA_RELLENO, "fill-color", color);
       } else {
         instancia.addSource(FUENTE, { type: "geojson", data: geojson });
         instancia.addLayer({
           id: CAPA_RELLENO,
           type: "fill",
           source: FUENTE,
-          paint: { "fill-color": SIN_DATO, "fill-opacity": 0.92 },
+          paint: { "fill-color": color, "fill-opacity": 0.95 },
         });
         instancia.addLayer({
           id: CAPA_BORDE,
           type: "line",
           source: FUENTE,
-          paint: { "line-color": "#1e2936", "line-width": 0.6 },
+          paint: { "line-color": TEMA.fondo, "line-width": 0.7 },
         });
         instancia.addLayer({
           id: CAPA_FOCO,
           type: "line",
           source: FUENTE,
-          paint: { "line-color": "#e9eff7", "line-width": 2 },
+          paint: { "line-color": TEMA.acento, "line-width": 2.5 },
           filter: ["==", ["get", claveGeo], ""],
         });
 
@@ -160,7 +171,7 @@ export function MapaCoropleta({
           instancia.getCanvas().style.cursor = "pointer";
           const clave = leerTexto(rasgo.properties, claveGeo);
           const nombre = leerTexto(rasgo.properties, claveNombre) || clave;
-          const valor = valores.get(clave) ?? 0;
+          const valor = valoresVigentes.current.get(clave) ?? 0;
           globo.current
             .setLngLat(evento.lngLat)
             .setHTML(
@@ -179,7 +190,7 @@ export function MapaCoropleta({
     } else {
       void instancia.once("load", preparar);
     }
-  }, [claveGeo, claveNombre, geojson, unidad, valores]);
+  }, [claveGeo, claveNombre, geojson, unidad]);
 
   useEffect(() => {
     const instancia = mapa.current;

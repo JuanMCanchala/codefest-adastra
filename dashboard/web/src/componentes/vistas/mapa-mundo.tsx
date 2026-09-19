@@ -79,7 +79,7 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<F
   }
 
   return (
-    <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="relative h-[520px] border-b border-borde lg:border-b-0 lg:border-r">
         <MapaCoropleta
           geojson={geo.dato}
@@ -95,7 +95,7 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<F
           seleccionada={seleccionada}
           onClicRegion={seleccionarPais}
         />
-        <div className="pointer-events-none absolute bottom-3 left-3">
+        <div className="pointer-events-none absolute bottom-9 left-3">
           <LeyendaEscala maximo={maximo} unidad="menciones en el corpus" />
         </div>
       </div>
