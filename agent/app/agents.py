@@ -130,6 +130,12 @@ class AgenteVisualizacion:
             datos = extraer_json(salida)
             if datos.get("fenomeno") is None:
                 datos["fenomeno"] = decision.fenomeno
+            # Un valor con "|" es la lista de alternativas copiada del catálogo, no un filtro.
+            datos["filtros"] = {
+                k: v
+                for k, v in (datos.get("filtros") or {}).items()
+                if v not in (None, "") and not (isinstance(v, str) and "|" in v)
+            }
             spec = SpecVisualizacion(**datos)
         except (ValueError, json.JSONDecodeError, ValidationError, TypeError):
             log.warning("especificación de visualización inválida")

@@ -42,7 +42,8 @@ AGENTE_VISUALIZACION = (
     "filtros. Responde SOLO con un JSON de una línea:\n"
     '{"componente": "<id del catálogo>", "fenomeno": 1|2|3|null, "filtros": {...}, '
     '"titulo": "<título breve>", "justificacion": "<una frase>"}\n'
-    "No inventes datos ni puntajes: el sistema calcula los valores a partir del corpus."
+    "Incluye SOLO los filtros que el usuario pidió, con UN valor exacto de los listados; "
+    "omite los demás. No inventes datos ni puntajes: el sistema calcula los valores."
 )
 
 FUERA_DE_ALCANCE = (
