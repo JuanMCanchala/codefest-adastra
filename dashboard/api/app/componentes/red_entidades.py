@@ -8,7 +8,7 @@ from pydantic import Field
 
 from ..db import BaseDatos
 from ..evidencia import IndiceTextos
-from .base import FiltrosBase, Salida, evidencia, resolver_filtros
+from .base import FiltrosBase, Salida, evidencia, normalizar_entidades, resolver_filtros
 
 MAX_NODOS = 60
 
@@ -47,15 +47,6 @@ SELECT r.origen AS origen, r.destino AS destino, r.relacion AS relacion, r.peso 
  LIMIT :limite
 """
 
-# El grafo guarda las entidades en minúsculas; se prefiere la coincidencia exacta y, si
-# no existe, la entidad más mencionada que contenga el texto pedido.
-RESOLVER_ENTIDAD = """
-SELECT entidad FROM entidades
- WHERE entidad = :exacta OR entidad LIKE :patron
- ORDER BY (entidad = :exacta) DESC, n_fragmentos DESC
- LIMIT 1
-"""
-
 NODOS = """
 SELECT e.entidad AS id, e.tipo AS tipo, e.n_fragmentos AS menciones
   FROM entidades e WHERE e.entidad IN (SELECT value FROM json_each(:seleccion))
@@ -72,10 +63,7 @@ class Filtros(FiltrosBase):
 
 def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salida, Filtros, list]:
     f, ignorados = resolver_filtros(Filtros, filtros)
-    if f.entidad:
-        texto = f.entidad.strip().lower()
-        filas = bd.consultar(RESOLVER_ENTIDAD, {"exacta": texto, "patron": f"%{texto}%"})
-        f = f.model_copy(update={"entidad": filas[0]["entidad"] if filas else texto})
+    f = normalizar_entidades(bd, f)
     params = {**f.model_dump(), "limite": f.top * 6}
 
     seleccion: list[str] = []

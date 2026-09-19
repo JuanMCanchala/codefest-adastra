@@ -6,7 +6,7 @@ from pydantic import Field
 
 from ..db import BaseDatos
 from ..evidencia import IndiceTextos
-from .base import FiltrosBase, Salida, evidencia, resolver_filtros
+from .base import FiltrosBase, Salida, evidencia, normalizar_entidades, resolver_filtros
 
 MAX_FRAGMENTO = 800
 
@@ -104,6 +104,7 @@ def _seleccionar(bd: BaseDatos, f: Filtros, params: dict) -> tuple[list, str, st
 
 def calcular(bd: BaseDatos, filtros: dict, textos: IndiceTextos) -> tuple[Salida, Filtros, list]:
     f, ignorados = resolver_filtros(Filtros, filtros)
+    f = normalizar_entidades(bd, f)
     params = f.model_dump()
     filas, total_sql, criterio = _seleccionar(bd, f, params)
 

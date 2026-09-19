@@ -15,7 +15,7 @@ from pydantic import Field
 
 from ..db import BaseDatos
 from ..evidencia import IndiceTextos
-from .base import FiltrosBase, Salida, evidencia, refs, resolver_filtros
+from .base import FiltrosBase, Salida, evidencia, normalizar_entidades, refs, resolver_filtros
 
 FILAS = {
     "entidad": """
@@ -103,6 +103,7 @@ class Filtros(FiltrosBase):
 
 def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salida, Filtros, list]:
     f, ignorados = resolver_filtros(Filtros, filtros)
+    f = normalizar_entidades(bd, f)
     params = f.model_dump()
     filas = [fila["clave"] for fila in bd.consultar(FILAS[f.filas], params) if fila["clave"]]
     columnas = [fila["clave"] for fila in bd.consultar(COLUMNAS, params) if fila["clave"]]

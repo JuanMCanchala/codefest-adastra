@@ -10,7 +10,7 @@ from pydantic import Field
 
 from ..db import BaseDatos
 from ..evidencia import IndiceTextos
-from .base import FiltrosBase, Salida, evidencia, resolver_filtros
+from .base import FiltrosBase, Salida, evidencia, normalizar_entidades, resolver_filtros
 
 SERIES = """
 SELECT d.fenomeno AS fenomeno, d.anio AS anio, COUNT(*) AS documentos
@@ -73,6 +73,7 @@ def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salid
     f, ignorados = resolver_filtros(Filtros, filtros)
     if f.desde > f.hasta:
         f = f.model_copy(update={"desde": f.hasta, "hasta": f.desde})
+    f = normalizar_entidades(bd, f)
     params = f.model_dump()
 
     series = [dict(fila) for fila in bd.consultar(SERIES, params)]

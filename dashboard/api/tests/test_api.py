@@ -242,3 +242,41 @@ def test_red_con_entidad_central_y_tipo_incluye_vecinos_de_otros_tipos(cliente):
     ).json()
     tipos = {n["tipo"] for n in r2["datos"]["nodos"]}
     assert "organizacion" in tipos
+
+
+@pytest.mark.parametrize(
+    ("componente", "cuenta"),
+    [
+        ("linea_tiempo", lambda d: len(d["reapariciones"])),
+        ("panel_evidencia", len),
+        ("red_entidades", lambda d: len(d["nodos"])),
+    ],
+)
+def test_entidad_en_mayusculas_da_el_mismo_resultado(cliente, componente, cuenta) -> None:
+    """El grafo guarda «eln»; el jurado y el agente escriben «ELN»."""
+
+    def pedir(entidad: str) -> int:
+        cuerpo = cliente.post(
+            "/api/componente",
+            json={"componente": componente, "filtros": {"entidad": entidad}},
+        ).json()
+        return cuenta(cuerpo["datos"])
+
+    minusculas = pedir("eln")
+    assert minusculas > 0, "la entidad de control debe existir en la base"
+    assert pedir("ELN") == minusculas
+    assert pedir("  Eln  ") == minusculas
+
+
+def test_tipo_de_entidad_en_mayusculas_se_normaliza(cliente) -> None:
+    def filas(tipo: str) -> list[str]:
+        cuerpo = cliente.post(
+            "/api/componente",
+            json={"componente": "matriz_calor", "filtros": {"tipo_entidad": tipo, "top": 10}},
+        ).json()
+        assert not cuerpo["filtros_ignorados"]
+        return cuerpo["datos"]["filas"]
+
+    esperadas = filas("organizacion")
+    assert esperadas
+    assert filas("Organizacion") == esperadas

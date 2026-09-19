@@ -25,6 +25,11 @@ dashboard/
 - `componentes/` valida los filtros de cada componente con pydantic. Las claves desconocidas y
   los valores imposibles se descartan y se informan en `filtros_ignorados`; la respuesta nunca
   falla por un filtro mal escrito por el agente.
+- Los filtros `entidad` y `tipo_entidad` se normalizan antes de consultar
+  (`componentes/base.py`): el grafo de la Etapa 1 guarda las entidades en minúsculas (`eln`,
+  `farc-ep`) y tanto el jurado como el agente escriben `ELN` o `FARC-EP`. Se baja a minúsculas
+  y, si no hay coincidencia exacta, se toma la entidad más mencionada que contenga el texto
+  pedido. El título y la nota de método declaran la entidad que realmente se consultó.
 - `evidencia.py` recorre `metadata.jsonl` (~200 MB) una sola vez al arrancar, en segundo plano,
   para anotar el desplazamiento de byte de cada `chunk_id`; después cada fragmento se lee con un
   `seek` a su línea. El archivo nunca se carga en memoria.
