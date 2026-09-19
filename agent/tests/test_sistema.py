@@ -86,11 +86,13 @@ def test_ruta_corpus_cumple_contrato_y_suma_tokens():
     assert r.respuesta == r.evaluacion.actual_output
     assert r.evaluacion.input == "¿Qué dejó la prueba ASAT de 2007?"
     assert r.evaluacion.retrieval_context == [f.texto for f in FRAG]
-    assert [t.name for t in r.evaluacion.tools_called] == ["buscar_corpus"]
+    # El verificador de citas (Parte 2, cuarto agente) corre siempre después del
+    # agente de corpus. No llama a ningún modelo: no suma interacciones ni tokens.
+    assert [t.name for t in r.evaluacion.tools_called] == ["buscar_corpus", "verificar_citas"]
     m = r.metadata
     assert m.estado == "ok"
     assert m.num_interacciones == 2 == len(llm.llamadas)
-    assert m.agentes_invocados == ["orquestador", "agente_corpus"]
+    assert m.agentes_invocados == ["orquestador", "agente_corpus", "verificador_citas"]
     assert m.tokens.total == sum(a.total for a in m.tokens_por_agente) == 240
 
 
