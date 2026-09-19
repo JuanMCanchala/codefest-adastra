@@ -701,6 +701,12 @@ Eso cambia la forma que toma la coordinación, y conviene decir exactamente cuá
   preguntado nada» y el panel de evidencia espera vacío hasta que se elige una región o se
   pregunta. El rótulo desaparece con la primera consulta o el primer cambio de componente a
   mano; una URL con componente ya es una vista elegida y no lo lleva.
+- **Se vuelve al arranque sin rastro.** Como la dirección se reescribe con cada vista, al
+  recargar seguiría ahí la última consulta; por eso una recarga (`esRecarga`, vía
+  `PerformanceNavigationTiming`) descarta el estado de la URL y devuelve el tablero a su
+  vista de partida. Abrir o pegar un enlace sí sigue siendo elegir una vista y se respeta.
+  «Reiniciar», en la barra superior, hace lo mismo sin recargar y además vacía el hilo del
+  agente: en una demostración recargar cuesta un parpadeo del proyector y una reconexión.
 - **El desvío al documento tiene vuelta.** Pulsar el título de un fragmento abre el documento
   entero en `panel_evidencia`, y el lienzo ofrece «Volver a {vista}», que restaura la petición
   anterior con sus filtros tal cual. Un solo nivel y explícito: la vuelta atrás del

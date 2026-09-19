@@ -43,16 +43,29 @@ type EstadoVista =
   | { fase: "listo"; resultado: ResultadoComponente }
   | { fase: "error"; mensaje: string };
 
-const PETICION_INICIAL: Peticion = {
-  componente: "mapa_colombia",
-  filtros: filtrosPredeterminados("mapa_colombia"),
-};
+/** Con qué abre el tablero. Función y no constante: cada reinicio estrena sus filtros. */
+function peticionInicial(): Peticion {
+  return { componente: "mapa_colombia", filtros: filtrosPredeterminados("mapa_colombia") };
+}
 
 /** Claves que no son filtros de un componente, sino del estado global. */
 const CLAVES_GLOBALES = new Set(["componente", "fenomeno", "desde", "hasta"]);
 
 function esComponente(valor: string | null): valor is NombreComponente {
   return valor !== null && CATALOGO.some((definicion) => definicion.componente === valor);
+}
+
+/**
+ * Si se llegó recargando y no navegando.
+ *
+ * Hace falta porque la dirección se reescribe sola con cada vista, así que al recargar
+ * seguiría ahí la última consulta y el tablero arrancaría con ella: la vista rotulada y el
+ * panel de evidencia lleno de algo que nadie acaba de preguntar. Recargar es empezar de
+ * cero; abrir o pegar un enlace sigue siendo elegir una vista, y eso se respeta.
+ */
+function esRecarga(): boolean {
+  const [entrada] = performance.getEntriesByType("navigation");
+  return (entrada as PerformanceNavigationTiming | undefined)?.type === "reload";
 }
 
 /**
@@ -64,6 +77,11 @@ function estadoDeLaUrl(): {
   peticion: Peticion;
   globales: FiltrosGlobales;
 } | null {
+  if (esRecarga()) {
+    // Sin estado inicial, el tablero abre en su vista de partida y `sincronizarUrl` deja
+    // la dirección limpia en cuanto monta.
+    return null;
+  }
   const parametros = new URLSearchParams(window.location.search);
   const componente = parametros.get("componente");
   if (!esComponente(componente)) {
@@ -171,7 +189,9 @@ function Tablero() {
   const [globales, setGlobales] = useState<FiltrosGlobales>(
     inicial.current?.globales ?? FILTROS_INICIALES,
   );
-  const [peticion, setPeticion] = useState<Peticion>(inicial.current?.peticion ?? PETICION_INICIAL);
+  const [peticion, setPeticion] = useState<Peticion>(
+    inicial.current?.peticion ?? peticionInicial(),
+  );
   const [vista, setVista] = useState<EstadoVista>({ fase: "inactivo" });
   const [seleccion, setSeleccion] = useState<Seleccion | null>(null);
   /** Justificación del agente para la vista activa; se vacía al cambiarla a mano. */
@@ -399,6 +419,27 @@ function Tablero() {
     }));
   }, []);
 
+  /**
+   * Vuelta al punto de partida sin recargar. Recargar también sirve —y lo hace—, pero en
+   * mitad de una demostración cuesta un parpadeo del proyector y una reconexión; esto deja
+   * el tablero como recién abierto en el acto: el mapa de arranque, la evidencia esperando
+   * y el hilo del agente vacío.
+   */
+  const reiniciar = useCallback(() => {
+    control.current?.abort();
+    setSeleccion(null);
+    setMotivo(null);
+    setRetorno(null);
+    setHistorial([]);
+    setIdActivo(null);
+    setPantallaCompleta(false);
+    setPresentando(false);
+    setEvidenciaVisible(true);
+    setVistaDePartida(true);
+    setGlobales(FILTROS_INICIALES);
+    setPeticion(peticionInicial());
+  }, []);
+
   const cambiarComponente = useCallback((componente: NombreComponente) => {
     setSeleccion(null);
     setMotivo(null);
@@ -440,7 +481,7 @@ function Tablero() {
     // en vez de empujar la página hacia abajo. Por debajo de `lg` vuelve al flujo normal,
     // donde el panel de evidencia se apila detrás del componente.
     <div className="flex min-h-dvh flex-col bg-fondo lg:h-dvh lg:overflow-hidden">
-      <BarraSuperior />
+      <BarraSuperior onReiniciar={reiniciar} />
 
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">

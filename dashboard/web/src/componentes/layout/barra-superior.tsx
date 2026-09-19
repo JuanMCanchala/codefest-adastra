@@ -1,4 +1,4 @@
-import { ArrowUpRight, Check, Link2, Moon, Sun } from "lucide-react";
+import { ArrowUpRight, Check, Link2, Moon, RotateCcw, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { obtenerSalud } from "@/api/cliente";
@@ -12,7 +12,7 @@ import { useRecurso } from "@/lib/usar-recurso";
  * anuncio del corpus: mientras la API responde, el dato ya está en la vista. El estado
  * solo aparece cuando falla, que es cuando dice algo.
  */
-export function BarraSuperior() {
+export function BarraSuperior({ onReiniciar }: { onReiniciar: () => void }) {
   const salud = useRecurso("salud", (senal) => obtenerSalud(senal));
   const modo = useModoTema();
   const [copiado, setCopiado] = useState(false);
@@ -56,6 +56,19 @@ export function BarraSuperior() {
             Corpus no disponible
           </p>
         ) : null}
+
+        {/* El rótulo se esconde en pantalla estrecha, así que el nombre va también en
+            `aria-label`: sin él el botón se queda sin nombre justo donde solo se ve el icono. */}
+        <button
+          type="button"
+          onClick={onReiniciar}
+          aria-label="Reiniciar"
+          title="Volver al punto de partida: sin consulta, sin evidencia y sin hilo"
+          className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-sm text-apagado transition-colors hover:bg-elevado hover:text-texto"
+        >
+          <RotateCcw aria-hidden="true" className="size-4" />
+          <span className="hidden sm:inline">Reiniciar</span>
+        </button>
 
         <button
           type="button"

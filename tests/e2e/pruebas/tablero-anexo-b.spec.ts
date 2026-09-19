@@ -380,6 +380,45 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     await expect(lienzo(page)).not.toContainText("Vista inicial");
   });
 
+  test("recargar devuelve el tablero a la vista de partida aunque la URL lleve una consulta", async ({
+    page,
+  }) => {
+    // La dirección se reescribe con cada vista, así que al recargar seguía ahí la última
+    // consulta y el tablero abría con ella. Abrir un enlace es elegir una vista; recargarlo
+    // es empezar de cero, que es lo que espera quien recarga en mitad de una demostración.
+    await abrirEn(page, { componente: "linea_tiempo", fenomeno: 1 });
+    await expect(lienzo(page)).not.toContainText("Vista inicial");
+    await page.reload();
+    await cerrarAgente(page);
+    await expect(lienzo(page)).toContainText("Vista inicial");
+    await expect(panel(page)).toContainText("Elija una región del mapa para ver sus fuentes");
+    await expect
+      .poll(() => new URL(page.url()).searchParams.get("componente"))
+      .toBe("mapa_colombia");
+  });
+
+  test("«Reiniciar» devuelve al punto de partida sin recargar y vacía el hilo", async ({
+    page,
+    guardia,
+  }) => {
+    // Recargar también sirve, pero en mitad de una demostración cuesta un parpadeo: el
+    // botón tiene que dejar el tablero igual de limpio y además borrar lo preguntado.
+    await abrirEn(page, { componente: "mapa_colombia", nivel: "municipio" });
+    await guardia.simular(page, "**/api/visualizar", { json: V });
+    await campoInstruccion(page).fill(INSTRUCCION);
+    await botonVisualizar(page).click();
+    await expect(page.getByRole("heading", { level: 2, name: V.resultado.titulo })).toBeVisible();
+
+    await page.getByRole("button", { name: "Reiniciar" }).click();
+    await cerrarAgente(page);
+    await expect(lienzo(page)).toContainText("Vista inicial");
+    await expect(panel(page)).toContainText("Elija una región del mapa para ver sus fuentes");
+    // La dirección también vuelve: el nivel municipal con el que se abrió deja de estar.
+    await expect.poll(() => new URL(page.url()).searchParams.get("nivel")).toBe("departamento");
+    await abrirAgente(page);
+    await expect(agente(page)).not.toContainText(INSTRUCCION);
+  });
+
   test("las referencias [n] de la respuesta abren su fragmento, también en la presentación", async ({
     page,
     guardia,
