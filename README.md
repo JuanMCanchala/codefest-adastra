@@ -15,6 +15,16 @@ La plataforma tiene dos superficies:
 Todo se construye sobre la base de conocimiento vectorial de la Etapa 1
 ([codefest-adastra-2026](https://github.com/JuanMCanchala/codefest-adastra-2026)).
 
+## 🛰️ Tablero en vivo
+
+**<https://dashboard.aerocode.codefest2026.augusta.avaldigitallabs.com>**
+
+Es la entrega del Reto 2: se abre directamente en el navegador, sin pasos de
+configuración. Escriba una instrucción en lenguaje natural —«¿dónde hay minería
+ilegal?», «muéstrame la evidencia satelital»— y el agente decide qué componente
+activar y con qué filtros poblarlo. Cada cifra se puede rastrear hasta su `doc_id`
+y `chunk_id` de origen.
+
 | Componente         | Enunciado                                                                                                                                                                                 | Entrega                                                                |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | [`reto1/`](reto1/) | Asistente conversacional (con GUI) compuesto por **mínimo tres agentes en total (orquestador, agente de corpus y agente de visualización)** que responda preguntas de los tres fenómenos. | Sábado 19 de septiembre, 08:00 (ventana de evaluación hasta las 12:30) |
@@ -29,6 +39,7 @@ Todo se construye sobre la base de conocimiento vectorial de la Etapa 1
 
 ## Contenido
 
+- [Tablero en vivo](#-tablero-en-vivo)
 - [Qué es](#qué-es)
 - [Arquitectura en breve](#arquitectura-en-breve)
 - [Estructura del repositorio](#estructura-del-repositorio)
