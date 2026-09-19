@@ -424,8 +424,8 @@ function Tablero() {
   /**
    * Vuelta al punto de partida sin recargar. Recargar también sirve —y lo hace—, pero en
    * mitad de una demostración cuesta un parpadeo del proyector y una reconexión; esto deja
-   * el tablero como recién abierto en el acto: el mapa de arranque, la evidencia esperando
-   * y el hilo del agente vacío.
+   * el tablero como recién abierto en el acto: el lienzo vacío invitando a preguntar, la
+   * evidencia esperando y el hilo del agente vacío.
    */
   const reiniciar = useCallback(() => {
     control.current?.abort();
