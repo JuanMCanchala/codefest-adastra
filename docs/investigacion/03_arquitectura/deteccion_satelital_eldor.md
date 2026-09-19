@@ -1,8 +1,23 @@
-# Detección de minería ilegal y cobertura boscosa sobre imágenes (ELDOR)
+# Detección de minería ilegal y cobertura boscosa sobre imágenes
 
 Evaluación de viabilidad y registro de la implementación en la rama
 `mineria-forestacion-demo`. Todo número de esta página se midió en este repositorio; los
 que vienen del paper o de la ficha del modelo se marcan como tales.
+
+**Resumen para quien tenga prisa.** El agente satelital usa **dos** fuentes porque ningún
+modelo cubre las dos cosas:
+
+| | Colombia | Perú |
+| --- | --- | --- |
+| Fuente | Amazon Mining Watch (§10) | ELDOR (§1-§5) |
+| Sensor | Sentinel-2, 10 m/px | Dron, 5 cm/px |
+| Qué aporta | 664 ha acumuladas, serie 2018-2026, por departamento, resguardo y municipio | La única medición validada contra máscaras anotadas |
+| Validación | La del proyecto de origen | mIoU 0,267 medido aquí |
+
+ELDOR **no puede** medir Colombia: se derrumba por debajo de 0,30 m/px y no existe imagen
+colombiana a esa resolución. La medición que lo demuestra está en §9. Por eso Colombia se
+responde con un modelo hecho para la resolución que sí hay, y ELDOR se conserva como la
+parte del sistema donde la calidad es verificable.
 
 ---
 
@@ -63,8 +78,15 @@ Recorte de 2.048×2.048 px del sitio Anel, contra su máscara anotada:
 | **mIoU (clases presentes)** | **0,255** |
 | **Exactitud por píxel**     | **0,664** |
 
-Coherente con el 0,34-0,40 del paper: esto es un recorte, no el test completo, y el mIoU
-castiga las clases raras que casi no aparecen en él.
+Y el **sitio completo** (18.274×18.420 px, 1.296 tiles), ya con el precálculo corrido:
+
+| Sitio | Área segmentada | mIoU (presentes) | Exactitud por píxel |
+| --- | ---: | ---: | ---: |
+| Anel | 107,9 ha | 0,267 | 0,545 |
+| ElEngano | 102,3 ha | 0,271 | 0,793 |
+
+Coherente con el 0,34-0,40 del paper: el mIoU castiga las clases raras, que en estos
+sitios ocupan menos del 0,01 % del área.
 
 **Cómo leer esto.** Dos de cada tres píxeles quedan bien clasificados, y las clases de
 área grande —suelo desnudo, agua, cascajo— superan 0,6 de IoU. Alcanza para medir
@@ -97,14 +119,17 @@ absurda con el modelo «cargado correctamente».
 ## 5. Cómo quedó integrado
 
 ```
-scripts/eldor_precalcular.py     fuera de línea: segmenta y escribe la evidencia
-  └── agent/datos/eldor/*.json   áreas por clase + procedencia + validación
+scripts/eldor_precalcular.py      Perú: segmenta los ortomosaicos y escribe la evidencia
+  └── agent/datos/eldor/*.json    áreas por clase + procedencia + validación
+scripts/amw_colombia.py           Colombia: descarga, cruza con DIVIPOLA y reorganiza
+  └── agent/datos/amw/colombia.json  serie temporal + desglose + municipios
 agent/app/eldor/
-  ├── sitios.py                  metadatos espaciales y mapa de clases
-  ├── modelo.py                  carga del checkpoint, remapeo y barrido por tiles
-  └── evidencia.py               lectura de los JSON y agregaciones
-agent/app/agents.py              AgenteSatelital (cuarto agente)
-agent/app/graph.py               ruta `satelital` en el orquestador
+  ├── sitios.py                   metadatos espaciales y mapa de clases
+  ├── modelo.py                   carga del checkpoint, remapeo y barrido por tiles
+  └── evidencia.py                lectura de los JSON y agregaciones
+agent/app/amw/colombia.py         evidencia colombiana y su procedencia
+agent/app/agents.py               AgenteSatelital (cuarto agente, las dos fuentes)
+agent/app/graph.py                ruta `satelital` en el orquestador
 ```
 
 **El agente no ejecuta el modelo.** La segmentación es fuera de línea; en tiempo de
@@ -112,8 +137,8 @@ respuesta solo se leen los JSON. Tres consecuencias: la latencia del chat no cam
 imagen del agente no carga `torch` ni `Pillow`, y las cifras son reproducibles corriendo
 otra vez el script sobre el mismo ortomosaico.
 
-**Degradación.** Si no hay JSON en `agent/datos/eldor/`, el agente no se registra en el
-grafo y la ruta `satelital` cae al agente de corpus, que sí tiene evidencia textual sobre
+**Degradación.** Si no hay JSON en `agent/datos/eldor/` ni en `agent/datos/amw/`, el
+agente no se registra en el grafo y la ruta `satelital` cae al agente de corpus, que sí tiene evidencia textual sobre
 monitoreo satelital (`F3-CEOBS-008`, `F2-INPE-055`). El sistema se comporta igual que
 antes de esta rama. Hay una prueba que lo fija.
 
@@ -137,8 +162,8 @@ No son detalles: cambian lo que se puede afirmar frente al jurado.
 
 - **Los sitios son peruanos, no colombianos.** Los 12 ortomosaicos están en Madre de Dios
   (Perú), entre −69,6° y −70,7° de longitud. Son evidencia de minería aluvial amazónica,
-  no del territorio colombiano. El prompt del agente lo obliga a aclararlo cuando la
-  pregunta menciona Colombia.
+  no del territorio colombiano, y no se pueden transferir: ver §9. Colombia se responde
+  con la fuente de §10, y el agente no mezcla las dos.
 - **Son imágenes de dron, no satelitales.** La resolución va de 3 a 7,5 cm/píxel. El
   modelo no sirve para Sentinel-2 (10 m/píxel): son tres órdenes de magnitud de
   diferencia. Aplicarlo a imagen satelital exige reentrenar, y ahí es donde entrarían
@@ -147,7 +172,8 @@ No son detalles: cambian lo que se puede afirmar frente al jurado.
   decir cuánta superficie no es bosque primario hoy; no cuánta se perdió, porque no hay
   dos fechas del mismo sitio. `area_intervenida_ha` es una resta entre áreas medidas, no
   un índice ponderado: encaja con la prohibición de puntajes inventados del Anexo B.2.5.
-- **Una foto de un día.** Las capturas son de 2022. No son monitoreo vivo.
+- **Una foto de un día.** Las capturas son de 2022. No son monitoreo vivo. La serie
+  temporal la aporta la fuente colombiana de §10, no esta.
 - **El dato no cruza con el corpus.** No hay forma de unir un polígono peruano con las
   fichas de alertas del corpus, que son municipios colombianos con DIVIPOLA. Son dos
   cuerpos de evidencia que se presentan juntos, no una fusión.
@@ -164,6 +190,7 @@ Las dos vías responden cosas distintas y conviene no confundirlas:
 | Pregunta                                        | Vía                                       |
 | ----------------------------------------------- | ------------------------------------------ |
 | ¿Dónde se reporta minería ilegal en Colombia?   | Corpus: `mapa_colombia`, filtro `economia` |
+| ¿Cuánta minería se detecta en Colombia y cómo creció? | Amazon Mining Watch: agente satelital |
 | ¿Cuánta superficie ocupa una mina de oro amazónica? | ELDOR: agente satelital                |
 | ¿Cómo se detecta minería ilegal desde el espacio? | Corpus: `F3-CEOBS-008`, `F2-INPE-055`    |
 
@@ -175,11 +202,124 @@ estas detecciones usan otro esquema de procedencia; meterlas sin diseñar antes 
 contrato rompería la regla dura del Anexo B.1.3. Los JSON ya tienen la forma necesaria
 para alimentarlo cuando el contrato exista.
 
-## 9. Reproducir
+## 9. Por qué ELDOR no puede medir Colombia
+
+Se intentó transferirlo y no funciona. Queda escrito con las mediciones porque es la clase
+de límite que, si no se documenta, alguien vuelve a intentar.
+
+### 9.1 El precipicio de resolución
+
+Se degradó un recorte de 3.072 px del sitio Anel a distintos GSD (tamaño de píxel sobre el
+terreno) y se volvió a medir contra su máscara. Dos estrategias: **A**, correr sobre la
+imagen degradada tal cual; **B**, reamplificarla al GSD de entrenamiento para que los
+objetos recuperen su tamaño aparente.
+
+| GSD (m/px) | Factor | A · mIoU | A · exactitud | B · mIoU | B · exactitud |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0,057 (nativo) | 1,0 | 0,280 | 0,567 | — | — |
+| 0,15 | 2,6 | 0,252 | 0,433 | **0,270** | **0,566** |
+| 0,30 | 5,3 | 0,223 | 0,429 | **0,240** | **0,540** |
+| 0,60 | 10,6 | 0,160 | 0,405 | 0,029 | 0,222 |
+| 1,20 | 21,2 | 0,163 | 0,520 | 0,024 | 0,214 |
+| 10,0 (Sentinel-2) | 176,6 | 0,029 | 0,204 | 0,024 | 0,214 |
+
+B conserva el 86 % del mIoU nativo hasta 0,30 m/px y después se derrumba a una predicción
+prácticamente constante. **El umbral utilizable es 0,30 m/px.**
+
+### 9.2 No hay imagen colombiana a esa resolución
+
+Se probó la disponibilidad real de Esri World Imagery en ocho zonas mineras: Caucasia,
+Nechí, Zaragoza y El Bagre (Antioquia), Solano (Caquetá), Taraira (Vaupés), Barbacoas
+(Nariño) e Istmina (Chocó).
+
+- **z=19 (0,296 m/px): no existe en ninguna.** Todas devuelven el mosaico gris de «sin
+  datos».
+- **z=18 (0,592 m/px): disponible**, pero cae justo del lado malo del precipicio.
+- **IGAC** publica una sola ortofoto (`orto18756solano`, Solano, Caquetá, vuelo
+  2022-10-27). Solo el **1 %** de su extensión declarada tiene datos y la exportación no
+  respondió en 180 s.
+
+### 9.3 La prueba en terreno lo confirma
+
+Se armó un mosaico de 908 m de lado sobre Nechí (Bajo Cauca, oro aluvial, el paisaje
+colombiano más parecido a Madre de Dios) con Esri z=18 y se corrió el modelo:
+
+| Estrategia | Resultado |
+| --- | --- |
+| A · directa a 0,59 m/px | **97,4 % clasificado como «cuerpos de agua»** |
+| B · reamplificada a 0,057 m/px | **100 % «cuerpos de agua»** |
+
+Colapso total. A esto se suma que Colombia no tiene máscaras anotadas, así que aunque se
+forzara una cifra no habría forma de validarla.
+
+## 10. Colombia: Amazon Mining Watch
+
+La salida no fue forzar ELDOR sino usar un modelo hecho para la resolución que sí existe.
+
+**Fuente.** [`earthrise-media/mining-detector`](https://github.com/earthrise-media/mining-detector),
+licencia **MIT**, commit fijado `eb89719a`. Es el motor de
+[amazonminingwatch.org](https://amazonminingwatch.org), una alianza del Pulitzer Center,
+Amazon Conservation y Earth Genome. Detecta minería aurífera artesanal con un ensamble de
+redes convolucionales sobre parches de **Sentinel-2 (10 m/px)**, con datos recalculados en
+agosto de 2026 de forma anual desde 2018 y trimestral desde 2025.
+
+**Qué se integró.** No se corre el modelo: se leen sus detecciones publicadas y se
+reorganizan con `scripts/amw_colombia.py` en `agent/datos/amw/colombia.json`.
+
+Colombia, acumulado a 2026T2: **664 ha**.
+
+| Corte | Nuevo | Acumulado |
+| --- | ---: | ---: |
+| 2018 | 39 ha | 39 ha |
+| 2022 | 103 ha | 151 ha |
+| 2023 | 126 ha | 277 ha |
+| 2025 (4 trimestres) | 226 ha | 530 ha |
+| 2026T2 | 106 ha | 664 ha |
+
+| Desglose | Valores |
+| --- | --- |
+| Departamentos | Putumayo 228 ha · Amazonas 190 ha · Meta 137 ha · Guainía 108 ha |
+| Resguardos indígenas | Río Cuiari e Isana 54 ha · Cuenca Media y Alta del Inírida 44 ha · Curripaco de Tonina 10 ha |
+| Áreas protegidas | PNN Río Puré 190 ha · Puinawai 66 ha |
+| Municipios (DIVIPOLA) | La Montañita 284 ha · Puerto Colombia 205 ha · Pana Pana 162 ha · Cacahual 103 ha · Inírida 98 ha |
+
+Minería dentro de un parque nacional y de resguardos indígenas conecta directo con el
+Fenómeno 3, y la serie temporal permite hablar de **expansión**, no solo de extensión: es
+justo lo que ELDOR no podía dar, porque cada sitio suyo tiene un único vuelo.
+
+De los 7.318 polígonos de la cuenca amazónica, **16 caen en Colombia** (907 ha en 7
+municipios). Se les asigna DIVIPOLA cruzando su centroide contra
+`dashboard/datos/geo/municipios.geojson`, que es lo que permite unirlos a las alertas del
+corpus.
+
+### Límites de esta fuente
+
+- **Cobertura: cuenca amazónica.** Deja fuera el **Bajo Cauca antioqueño** (Caucasia,
+  Nechí, El Bagre), que es el mayor foco de oro ilegal del país. El prompt del agente lo
+  obliga a aclararlo si preguntan por esa zona.
+- **Son detecciones ajenas.** La validación es la del proyecto de origen, no una medición
+  propia. Por eso ELDOR se conserva: es la parte donde sí hay verdad de terreno.
+- **Cubrir todo Colombia exigiría correr su modelo** sobre Sentinel-2, lo que añade
+  TensorFlow y una tubería de imágenes. Los pesos (Keras, 1,4 MB) y el código están en el
+  mismo repositorio MIT.
+
+### Separación estricta entre fuentes
+
+El agente nunca mezcla las dos. Una pregunta con señales colombianas descarta los sitios
+peruanos, y el prompt prohíbe presentar una cifra de un país como del otro. Hay pruebas
+que fijan las dos direcciones.
+
+## 11. Reproducir
 
 ```bash
+# Colombia (rapido: solo descarga y cruza datos publicados)
+pip install -r scripts/requirements-amw.txt
+python scripts/amw_colombia.py
+
+# Peru (pesado: descarga el checkpoint y segmenta los ortomosaicos)
 pip install -r scripts/requirements-eldor.txt
 python scripts/eldor_precalcular.py --todos-test --hilos 8
+
 cd agent && python -m pytest tests/test_eldor.py -q
 ```
 

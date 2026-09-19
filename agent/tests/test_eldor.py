@@ -183,27 +183,35 @@ class RecuperadorFalso:
 
 
 def test_agente_sin_detecciones_no_esta_disponible():
-    assert AgenteSatelital(LLMFalso({}), CFG, detecciones={}).disponible is False
+    ag = AgenteSatelital(LLMFalso({}), CFG, detecciones={}, colombia=Colombia())
+    assert ag.disponible is False
 
 
 def test_agente_filtra_por_el_sitio_nombrado_en_la_pregunta():
     det = {"Anel": _deteccion("Anel"), "Linda": _deteccion("Linda")}
-    ag = AgenteSatelital(LLMFalso({"agente_satelital": "ok"}), CFG, detecciones=det)
+    ag = AgenteSatelital(
+        LLMFalso({"agente_satelital": "ok"}), CFG, detecciones=det, colombia=Colombia()
+    )
     ag.responder("¿Cuánta minería hay en Anel?", (t := Tracker()))
-    assert t.tools[0].input_parameters["sitios"] == ["Anel"]
+    assert t.tools[0].input_parameters["sitios_peru"] == ["Anel"]
 
 
 def test_agente_sin_sitio_nombrado_usa_todos():
     det = {"Anel": _deteccion("Anel"), "Linda": _deteccion("Linda")}
-    ag = AgenteSatelital(LLMFalso({"agente_satelital": "ok"}), CFG, detecciones=det)
+    ag = AgenteSatelital(
+        LLMFalso({"agente_satelital": "ok"}), CFG, detecciones=det, colombia=Colombia()
+    )
     ag.responder("¿Cuánta minería ilegal se detecta?", (t := Tracker()))
-    assert t.tools[0].input_parameters["sitios"] == ["Anel", "Linda"]
+    assert t.tools[0].input_parameters["sitios_peru"] == ["Anel", "Linda"]
 
 
 def test_agente_pone_las_mediciones_en_el_contexto_recuperado():
     """`retrieval_context` no puede ir vacío: contra él se mide la fidelidad (§2.5 A)."""
     ag = AgenteSatelital(
-        LLMFalso({"agente_satelital": "ok"}), CFG, detecciones={"Anel": _deteccion()}
+        LLMFalso({"agente_satelital": "ok"}),
+        CFG,
+        detecciones={"Anel": _deteccion()},
+        colombia=Colombia(),
     )
     ag.responder("¿Cuánta minería hay?", (t := Tracker()))
     assert len(t.contexto) == 1
@@ -218,13 +226,15 @@ def test_la_ruta_satelital_llega_al_cuarto_agente():
         }
     )
     sistema = Sistema(llm, RecuperadorFalso(), CFG)
-    sistema.satelital = AgenteSatelital(llm, CFG, detecciones={"Anel": _deteccion()})
+    sistema.satelital = AgenteSatelital(
+        llm, CFG, detecciones={"Anel": _deteccion()}, colombia=Colombia()
+    )
     sistema._grafo = sistema._construir()
 
     r = sistema.responder("¿Cuántas hectáreas de minería ilegal hay en Anel?")
     assert "agente_satelital" in r.metadata.agentes_invocados
     assert r.evaluacion.retrieval_context, "la respuesta debe apoyarse en mediciones citables"
-    assert any(t.name == "medir_cobertura_eldor" for t in r.evaluacion.tools_called)
+    assert any(t.name == "medir_cobertura_satelital" for t in r.evaluacion.tools_called)
 
 
 def test_sin_detecciones_la_ruta_satelital_cae_al_corpus():
@@ -236,9 +246,160 @@ def test_sin_detecciones_la_ruta_satelital_cae_al_corpus():
         }
     )
     sistema = Sistema(llm, RecuperadorFalso(), CFG)
-    sistema.satelital = AgenteSatelital(llm, CFG, detecciones={})
+    sistema.satelital = AgenteSatelital(llm, CFG, detecciones={}, colombia=Colombia())
     sistema._grafo = sistema._construir()
 
     r = sistema.responder("¿Cuántas hectáreas de minería ilegal hay?")
     assert "agente_corpus" in r.metadata.agentes_invocados
     assert "agente_satelital" not in r.metadata.agentes_invocados
+
+
+# --------------------------------------------------- Colombia (Amazon Mining Watch)
+
+from app.amw.colombia import Colombia  # noqa: E402
+from app.amw.colombia import cargar as cargar_colombia  # noqa: E402
+
+COL_JSON = {
+    "procedencia": {
+        "fuente": "Amazon Mining Watch — earthrise-media/mining-detector",
+        "commit": "eb89719a4eb5566f1c7f7d5e57bf8380edc675e6",
+        "modelo": "48px_v3.7a-i_ensemble",
+        "sensor": "Sentinel-2 (10 m/px)",
+        "licencia": "MIT",
+        "fecha_publicacion": "2026-09-07",
+    },
+    "nacional": [
+        {
+            "anio": 2018,
+            "trimestre": None,
+            "etiqueta": "2018",
+            "nuevo_ha": 39.0,
+            "acumulado_ha": 39.0,
+        },
+        {
+            "anio": 2026,
+            "trimestre": 2,
+            "etiqueta": "2026T2",
+            "nuevo_ha": 105.6,
+            "acumulado_ha": 663.8,
+        },
+    ],
+    "departamentos": {
+        "Putumayo": [{"etiqueta": "2026T2", "acumulado_ha": 228.0}],
+        "Guainía": [{"etiqueta": "2026T2", "acumulado_ha": 108.0}],
+    },
+    "resguardos_indigenas": {
+        "Resguardo Rio Cuiari": [{"etiqueta": "2026T2", "acumulado_ha": 54.0}]
+    },
+    "areas_protegidas": {"Río Puré": [{"etiqueta": "2026T2", "acumulado_ha": 190.0}]},
+    "municipios": [
+        {
+            "divipola_mpio": "94001",
+            "municipio": "Inírida",
+            "departamento": "Guainía",
+            "area_ha": 98.0,
+            "poligonos": 3,
+        }
+    ],
+}
+
+
+def _colombia() -> Colombia:
+    return Colombia(
+        procedencia=COL_JSON["procedencia"],
+        nacional=COL_JSON["nacional"],
+        departamentos=COL_JSON["departamentos"],
+        resguardos_indigenas=COL_JSON["resguardos_indigenas"],
+        areas_protegidas=COL_JSON["areas_protegidas"],
+        municipios=COL_JSON["municipios"],
+    )
+
+
+def test_colombia_vacia_no_esta_disponible():
+    assert Colombia().disponible is False
+
+
+def test_colombia_toma_el_acumulado_del_ultimo_periodo():
+    c = _colombia()
+    assert c.acumulado_ha == 663.8
+    assert c.periodo_final == "2026T2"
+
+
+def test_crecimiento_va_del_primer_al_ultimo_periodo():
+    assert _colombia().crecimiento() == (39.0, 663.8)
+
+
+def test_resumen_nombra_resguardos_y_areas_protegidas():
+    """Minería dentro de resguardos y parques es el hallazgo con más peso para el F3."""
+    r = _colombia().resumen()
+    assert "Resguardo Rio Cuiari" in r and "Río Puré" in r
+
+
+def test_resumen_incluye_divipola_para_cruzar_con_el_corpus():
+    assert "94001" in _colombia().resumen()
+
+
+def test_resumen_declara_que_el_bajo_cauca_queda_fuera():
+    assert "Bajo Cauca" in _colombia().resumen()
+
+
+def test_referencia_trae_commit_modelo_y_licencia():
+    r = _colombia().referencia()
+    assert "eb89719a4eb5" in r and "48px_v3.7a-i" in r and "MIT" in r
+
+
+def test_sin_archivo_no_hay_datos_de_colombia(tmp_path):
+    assert cargar_colombia(tmp_path / "no-existe.json").disponible is False
+
+
+def test_json_corrupto_no_tumba_la_carga(tmp_path):
+    p = tmp_path / "colombia.json"
+    p.write_text("{roto", encoding="utf-8")
+    assert cargar_colombia(p).disponible is False
+
+
+# ---------------------------------------- separacion estricta entre Colombia y Peru
+
+
+def test_pregunta_por_colombia_no_arrastra_sitios_peruanos():
+    """Mezclarlos permitiria presentar hectareas de Madre de Dios como colombianas."""
+    ag = AgenteSatelital(
+        LLMFalso({"agente_satelital": "ok"}),
+        CFG,
+        detecciones={"Anel": _deteccion()},
+        colombia=_colombia(),
+    )
+    ag.responder("¿Cuánta minería ilegal hay en Colombia?", (t := Tracker()))
+    assert t.tools[0].input_parameters == {"colombia": True, "sitios_peru": []}
+    assert len(t.contexto) == 1 and t.contexto[0].startswith("[Colombia]")
+
+
+def test_pregunta_por_un_sitio_peruano_no_trae_colombia():
+    ag = AgenteSatelital(
+        LLMFalso({"agente_satelital": "ok"}),
+        CFG,
+        detecciones={"Anel": _deteccion()},
+        colombia=_colombia(),
+    )
+    ag.responder("¿Cuánta minería hay en Anel?", (t := Tracker()))
+    assert t.tools[0].input_parameters == {"colombia": False, "sitios_peru": ["Anel"]}
+
+
+def test_un_departamento_colombiano_tambien_activa_la_ruta_colombiana():
+    ag = AgenteSatelital(
+        LLMFalso({"agente_satelital": "ok"}),
+        CFG,
+        detecciones={"Anel": _deteccion()},
+        colombia=_colombia(),
+    )
+    ag.responder("¿Qué pasa en Putumayo?", (t := Tracker()))
+    assert t.tools[0].input_parameters["colombia"] is True
+
+
+def test_el_agente_sirve_solo_con_colombia_sin_datos_de_eldor():
+    ag = AgenteSatelital(
+        LLMFalso({"agente_satelital": "ok"}), CFG, detecciones={}, colombia=_colombia()
+    )
+    assert ag.disponible is True
+    ag.responder("¿Cuánta minería ilegal se detecta?", (t := Tracker()))
+    assert t.contexto and t.contexto[0].startswith("[Colombia]")

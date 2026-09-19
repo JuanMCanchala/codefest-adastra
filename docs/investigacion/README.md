@@ -50,6 +50,7 @@ Cada fenómeno sigue la misma estructura de archivos: `README`, `fuentes_corpus`
 - [`worldmonitor_datos_agentes.md`](03_arquitectura/worldmonitor_datos_agentes.md): worldmonitor como base, APIs probadas y diseño con LangGraph y CrewAI.
 - [`reincorporados_copyleft.md`](03_arquitectura/reincorporados_copyleft.md): proyectos AGPL o GPL reutilizables y lista de cumplimiento.
 - [`proyectos_referencia.md`](03_arquitectura/proyectos_referencia.md) y [`repos_utiles.md`](03_arquitectura/repos_utiles.md): proyectos y librerías evaluados.
+- [`deteccion_satelital_eldor.md`](03_arquitectura/deteccion_satelital_eldor.md): detección de minería ilegal sobre imágenes (rama `mineria-forestacion-demo`). Integra dos fuentes: Amazon Mining Watch para **Colombia** (Sentinel-2, 664 ha, serie 2018-2026, por departamento, resguardo y municipio) y ELDOR para **Perú** (dron, la única parte validada contra máscaras). Documenta por qué ELDOR no transfiere a Colombia, con el precipicio de resolución medido, y por qué se descartan TerraMind, Prithvi EO 2.0 y SatlasPretrain.
 - [`modelo_local.md`](03_arquitectura/modelo_local.md): modelo local. **Queda descartado para la entrega**, porque la especificación exige usar los modelos de Bedrock.
 
 ## Convenciones
