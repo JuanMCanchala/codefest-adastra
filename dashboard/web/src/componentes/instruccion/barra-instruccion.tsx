@@ -1,4 +1,4 @@
-import { CornerDownLeft, Loader2, Sparkles, Terminal } from "lucide-react";
+import { CornerDownLeft, Loader2, Terminal } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { Boton } from "@/componentes/ui/boton";
@@ -33,18 +33,18 @@ export function BarraInstruccion({ ocupado, onEnviar }: Props) {
 
   return (
     <section
-      className="cuadricula-fondo rounded-lg border border-borde bg-panel px-4 py-4"
+      className="rounded-md border border-borde bg-panel px-4 py-4"
       aria-labelledby="titulo-instruccion"
     >
       <h2
         id="titulo-instruccion"
-        className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-apagado"
+        className="inline-flex items-center gap-2 text-base font-semibold text-texto"
       >
-        <Terminal aria-hidden="true" className="size-3.5 text-acento" />
-        Instrucción de análisis
+        <Terminal aria-hidden="true" className="size-4 text-apagado" />
+        ¿Qué quiere ver?
       </h2>
-      <p className="mt-1 text-xs leading-relaxed text-apagado">
-        Escriba qué quiere ver. El agente de visualización elige un componente del catálogo,
+      <p className="mt-1 max-w-[80ch] text-sm leading-relaxed text-apagado">
+        Escríbalo en lenguaje natural. El agente de visualización elige un componente del catálogo,
         justifica la elección y el tablero lo renderiza con sus filtros.
       </p>
 
@@ -60,7 +60,7 @@ export function BarraInstruccion({ ocupado, onEnviar }: Props) {
           disabled={ocupado}
           autoComplete="off"
           placeholder="Ej.: alertas tempranas por municipio con minería ilegal entre 2020 y 2026"
-          className="h-11 min-w-0 flex-1 rounded-md border border-borde bg-fondo px-3 text-sm text-texto placeholder:text-apagado/70 disabled:opacity-60"
+          className="h-11 min-w-0 flex-1 rounded-md border border-control bg-fondo px-3 text-base text-texto disabled:opacity-60"
         />
         <Boton
           type="submit"
@@ -77,16 +77,18 @@ export function BarraInstruccion({ ocupado, onEnviar }: Props) {
         </Boton>
       </form>
 
-      <ul className="mt-3 flex flex-wrap gap-1.5">
+      <p className="mt-4 text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
+        Instrucciones de ejemplo
+      </p>
+      <ul className="mt-2 flex flex-wrap gap-2">
         {SUGERENCIAS.map((sugerencia) => (
           <li key={sugerencia}>
             <button
               type="button"
               disabled={ocupado}
               onClick={() => onEnviar(sugerencia)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-borde bg-elevado px-2.5 py-1 text-[11px] text-apagado transition-colors hover:border-acento/50 hover:text-texto disabled:opacity-50"
+              className="inline-flex min-h-8 items-center rounded-md border border-control/60 bg-elevado px-2.5 py-1 text-left text-[13px] text-texto transition-colors hover:border-acento/70 disabled:opacity-50"
             >
-              <Sparkles aria-hidden="true" className="size-3 text-acento" />
               {sugerencia}
             </button>
           </li>

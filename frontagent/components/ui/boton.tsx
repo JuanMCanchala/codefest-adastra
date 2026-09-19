@@ -8,14 +8,15 @@ const variantes = cva(
   {
     variants: {
       variante: {
-        primario: "bg-acento text-fondo hover:bg-acento/85",
-        contorno: "border border-borde bg-elevado text-texto hover:bg-borde/60",
+        primario: "bg-acento font-semibold text-fondo hover:bg-acento-claro",
+        contorno:
+          "border border-control bg-elevado text-texto hover:border-acento/70",
         fantasma: "text-apagado hover:bg-elevado hover:text-texto",
       },
       tamano: {
         sm: "h-8 px-3",
         md: "h-10 px-4",
-        icono: "size-9",
+        icono: "size-10",
       },
     },
     defaultVariants: {
@@ -26,11 +27,17 @@ const variantes = cva(
 );
 
 export interface PropsBoton
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof variantes> {
   children?: ReactNode;
 }
 
 export function Boton({ className, variante, tamano, ...props }: PropsBoton) {
-  return <button className={cn(variantes({ variante, tamano }), className)} {...props} />;
+  return (
+    <button
+      className={cn(variantes({ variante, tamano }), className)}
+      {...props}
+    />
+  );
 }

@@ -4,9 +4,10 @@ import { useMemo } from "react";
 import type { DatosMatrizCalor } from "@/api/tipos";
 import { Grafico, TEMA_EJE, TEMA_TOOLTIP, type ClicGrafico } from "@/componentes/graficos/grafico";
 import { Vacio } from "@/componentes/ui/estados";
-import { VIRIDIS } from "@/lib/paleta";
+import { VIRIDIS_VISIBLE } from "@/lib/paleta";
 import type { PropsVista } from "@/lib/seleccion";
 import { formatearEntero, maximoDe, recortar } from "@/lib/utils";
+import { TEMA, TEXTO_MINIMO } from "@/lib/tema";
 
 /** Matriz de calor: cruce de dos categóricas con el conteo de coincidencias. */
 export function VistaMatrizCalor({ datos, onSeleccionar }: PropsVista<DatosMatrizCalor>) {
@@ -39,7 +40,7 @@ export function VistaMatrizCalor({ datos, onSeleccionar }: PropsVista<DatosMatri
         type: "category",
         data: datos.columnas,
         ...TEMA_EJE,
-        splitArea: { show: true, areaStyle: { color: ["#0e131a", "#111823"] } },
+        splitArea: { show: true, areaStyle: { color: [TEMA.franjaA, TEMA.franjaB] } },
         axisLabel: {
           ...TEMA_EJE.axisLabel,
           rotate: 35,
@@ -50,7 +51,7 @@ export function VistaMatrizCalor({ datos, onSeleccionar }: PropsVista<DatosMatri
         type: "category",
         data: datos.filas,
         ...TEMA_EJE,
-        splitArea: { show: true, areaStyle: { color: ["#0e131a", "#111823"] } },
+        splitArea: { show: true, areaStyle: { color: [TEMA.franjaA, TEMA.franjaB] } },
         axisLabel: { ...TEMA_EJE.axisLabel, formatter: (valor: string) => recortar(valor, 24) },
       },
       visualMap: {
@@ -61,8 +62,8 @@ export function VistaMatrizCalor({ datos, onSeleccionar }: PropsVista<DatosMatri
         left: "center",
         bottom: 8,
         text: [`${formatearEntero(maximo)} coincidencias`, "0"],
-        textStyle: { color: "#9dacbd", fontSize: 11 },
-        inRange: { color: [...VIRIDIS] },
+        textStyle: { color: TEMA.apagado, fontSize: TEXTO_MINIMO },
+        inRange: { color: [...VIRIDIS_VISIBLE] },
       },
       series: [
         {
@@ -71,16 +72,19 @@ export function VistaMatrizCalor({ datos, onSeleccionar }: PropsVista<DatosMatri
           data: datosCeldas,
           label: {
             show: datos.celdas.length <= 180,
-            color: "#080b10",
-            fontSize: 10,
+            // Texto claro con contorno oscuro: legible sobre toda la rampa viridis.
+            color: TEMA.texto,
+            textBorderColor: TEMA.fondo,
+            textBorderWidth: 2,
+            fontSize: TEXTO_MINIMO,
             formatter: (params) => {
               const p = params as unknown as { value?: unknown };
               const valor = Array.isArray(p.value) ? Number(p.value[2]) : 0;
               return valor > 0 ? formatearEntero(valor) : "";
             },
           },
-          itemStyle: { borderColor: "#080b10", borderWidth: 1 },
-          emphasis: { itemStyle: { borderColor: "#e9eff7", borderWidth: 2 } },
+          itemStyle: { borderColor: TEMA.fondo, borderWidth: 1 },
+          emphasis: { itemStyle: { borderColor: TEMA.texto, borderWidth: 2 } },
         },
       ],
     };

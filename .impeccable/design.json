@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-18T22:40:00-05:00",
+  "title": "Design System: AeroCode",
+  "extensions": {
+    "colorMeta": {
+      "noche": { "role": "neutral", "displayName": "Azul noche", "canonical": "#070d19" },
+      "casco": { "role": "neutral", "displayName": "Casco", "canonical": "#0b1426" },
+      "cabina": { "role": "neutral", "displayName": "Cabina", "canonical": "#12203a" },
+      "oro": { "role": "primary", "displayName": "Oro de mando", "canonical": "#e8b64c" },
+      "senal": { "role": "secondary", "displayName": "Azul de señal", "canonical": "#8cb4ff" },
+      "f1": { "role": "tertiary", "displayName": "F1 · púrpura rojizo (Okabe–Ito)", "canonical": "#e08ec0" },
+      "f2": { "role": "tertiary", "displayName": "F2 · azul cielo (Okabe–Ito)", "canonical": "#56b4e9" },
+      "f3": { "role": "tertiary", "displayName": "F3 · verde azulado (Okabe–Ito)", "canonical": "#2fc39b" }
+    },
+    "shadows": [
+      { "name": "flotante", "value": "0 8px 24px rgb(0 0 0 / 0.45)", "purpose": "Tooltips, globos y leyenda sobre el mapa o los gráficos." }
+    ],
+    "motion": [
+      { "name": "estado", "value": "150ms ease-out (transition-colors)", "purpose": "Solo cambios de estado: hover, selección, foco." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "boton-primario",
+      "description": "Única acción principal por vista.",
+      "html": "<button class=\"ds-btn-primario\">Visualizar</button>",
+      "css": ".ds-btn-primario{background:#e8b64c;color:#070d19;font-weight:600;font-size:14px;height:40px;padding:0 16px;border:0;border-radius:6px;transition:background .15s}.ds-btn-primario:hover{background:#f2c96e}.ds-btn-primario:focus-visible{outline:2px solid #e8b64c;outline-offset:2px}"
+    },
+    {
+      "name": "Cita trazable",
+      "kind": "custom",
+      "refersTo": "cita",
+      "description": "Número de cita que abre el fragmento con doc_id y chunk_id.",
+      "html": "<button class=\"ds-cita\">1</button> <button class=\"ds-cita ds-cita-activa\">3</button>",
+      "css": ".ds-cita{font-family:'IBM Plex Mono',monospace;font-size:12px;min-width:22px;height:22px;border-radius:4px;border:1px solid rgb(140 180 255/.5);background:#12203a;color:#8cb4ff}.ds-cita:hover{background:rgb(140 180 255/.15)}.ds-cita-activa{background:#e8b64c;border-color:#e8b64c;color:#070d19}"
+    },
+    {
+      "name": "Insignia de dato",
+      "kind": "chip",
+      "refersTo": "insignia",
+      "description": "Metadatos no interactivos: doc_id, chunk_id, tokens, latencia.",
+      "html": "<span class=\"ds-insignia\"># chunk 54876</span>",
+      "css": ".ds-insignia{display:inline-flex;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:2px 8px;border-radius:4px;border:1px solid #1d2c47;background:#12203a;color:#a7b4ca}"
+    },
+    {
+      "name": "Campo de instrucción",
+      "kind": "input",
+      "refersTo": "campo",
+      "description": "Entrada en lenguaje natural.",
+      "html": "<input class=\"ds-campo\" placeholder=\"Pregunte sobre IA estratégica…\">",
+      "css": ".ds-campo{height:44px;padding:0 12px;border-radius:6px;border:1px solid #5f7499;background:#070d19;color:#e8edf5;font-size:16px}.ds-campo::placeholder{color:#8494ae}.ds-campo:focus-visible{outline:2px solid #e8b64c;outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "La sala de operaciones",
+    "keyCharacteristics": [
+      "Tres niveles de superficie azul (noche → casco → cabina) separados por hilos de 1px.",
+      "Dorado escaso: acción primaria, foco y selección.",
+      "IBM Plex Sans para interfaz; IBM Plex Mono solo para identificadores y cifras.",
+      "Piso de 12px en todo texto: todo se proyecta.",
+      "La misma barra de mando en ambas superficies."
+    ],
+    "rules": [
+      { "name": "The Gold Is Command Rule", "body": "El dorado solo marca lo que el usuario puede ordenar ahora o lo que tiene seleccionado.", "section": "colors" },
+      { "name": "The Signal Is Traceable Rule", "body": "El azul de señal significa «esto abre evidencia».", "section": "colors" },
+      { "name": "The Phenomenon Never Rides Alone Rule", "body": "El color de F1/F2/F3 va siempre con su rótulo o su forma.", "section": "colors" },
+      { "name": "The Projector Floor Rule", "body": "Ningún texto por debajo de 12px (0,75rem), tampoco en gráficos, leyendas o insignias.", "section": "typography" },
+      { "name": "The Flat-At-Rest Rule", "body": "Paneles y tarjetas sin sombra; si algo debe destacar, sube un nivel tonal.", "section": "elevation" }
+    ]
+  }
+}

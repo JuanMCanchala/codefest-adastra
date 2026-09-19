@@ -101,7 +101,7 @@ export function VistaMapaColombia({
   }
 
   return (
-    <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="relative h-[520px] border-b border-borde lg:border-b-0 lg:border-r">
         <MapaCoropleta
           geojson={geo.dato}
@@ -123,10 +123,10 @@ export function VistaMapaColombia({
             }
           }}
         />
-        <div className="pointer-events-none absolute bottom-3 left-3">
+        <div className="pointer-events-none absolute bottom-9 left-3">
           <LeyendaEscala maximo={maximo} unidad="alertas tempranas" />
         </div>
-        <p className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded border border-borde bg-panel/90 px-2 py-1 text-[10px] text-apagado backdrop-blur">
+        <p className="pointer-events-none absolute left-3 top-3 inline-flex max-w-[calc(100%-4.5rem)] items-center gap-1.5 rounded border border-borde bg-panel px-2 py-1 text-xs text-apagado">
           <Info aria-hidden="true" className="size-3" />
           {nivel === "municipio"
             ? "Detalle municipal · aleje el zoom para volver a departamentos"

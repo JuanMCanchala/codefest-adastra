@@ -7,6 +7,7 @@ import { Vacio } from "@/componentes/ui/estados";
 import { FENOMENOS, fenomenoPorId } from "@/lib/fenomenos";
 import type { PropsVista } from "@/lib/seleccion";
 import { formatearEntero } from "@/lib/utils";
+import { TEMA, TEXTO_MINIMO } from "@/lib/tema";
 
 /** Barras apiladas: documentos por categoría, apilados por fenómeno. */
 export function VistaComposicionCorpus({ datos, onSeleccionar }: PropsVista<FilaComposicion[]>) {
@@ -32,8 +33,8 @@ export function VistaComposicionCorpus({ datos, onSeleccionar }: PropsVista<Fila
       type: "bar" as const,
       stack: "documentos",
       barMaxWidth: 22,
-      itemStyle: { color: fenomeno.color, borderColor: "#080b10", borderWidth: 1 },
-      emphasis: { itemStyle: { borderColor: "#e9eff7", borderWidth: 1 } },
+      itemStyle: { color: fenomeno.color, borderColor: TEMA.fondo, borderWidth: 1 },
+      emphasis: { itemStyle: { borderColor: TEMA.texto, borderWidth: 1 } },
       data: categorias.map(
         (categoria) =>
           datos.find((f) => f.categoria === categoria && f.fenomeno === fenomeno.id)?.documentos ??
@@ -60,11 +61,11 @@ export function VistaComposicionCorpus({ datos, onSeleccionar }: PropsVista<Fila
       },
       legend: {
         bottom: 0,
-        textStyle: { color: "#9dacbd", fontSize: 11 },
+        textStyle: { color: TEMA.apagado, fontSize: TEXTO_MINIMO },
         itemWidth: 10,
         itemHeight: 10,
       },
-      xAxis: { type: "value", name: "documentos", nameTextStyle: { color: "#9dacbd" }, ...TEMA_EJE },
+      xAxis: { type: "value", name: "documentos", nameTextStyle: { color: TEMA.apagado }, ...TEMA_EJE },
       yAxis: {
         type: "category",
         data: categorias,

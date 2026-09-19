@@ -1,6 +1,7 @@
 /** Identidad visual de los tres fenómenos, igual que en el frontend de chat. */
 
 import type { IdFenomeno } from "@/api/tipos";
+import { TEMA } from "@/lib/tema";
 
 export interface Fenomeno {
   id: IdFenomeno;
@@ -24,7 +25,7 @@ export const FENOMENOS: readonly Fenomeno[] = [
     clave: "F1",
     nombre: "IA y capacidades estratégicas",
     descripcion: "Uso, desarrollo e impacto de la inteligencia artificial en la Defensa Nacional.",
-    color: "#f0b429",
+    color: "#e08ec0",
     texto: "text-f1",
     borde: "border-f1/40",
     fondo: "bg-f1/10",
@@ -37,7 +38,7 @@ export const FENOMENOS: readonly Fenomeno[] = [
     clave: "F2",
     nombre: "Seguridad del entorno espacial",
     descripcion: "Congestión orbital, basura espacial y riesgos en órbita baja terrestre (LEO).",
-    color: "#38bdf8",
+    color: "#56b4e9",
     texto: "text-f2",
     borde: "border-f2/40",
     fondo: "bg-f2/10",
@@ -51,7 +52,7 @@ export const FENOMENOS: readonly Fenomeno[] = [
     nombre: "Dinámicas territoriales",
     descripcion:
       "Conflicto, gobernanza, desigualdad, migración y violencia en América Latina y Colombia.",
-    color: "#34d399",
+    color: "#2fc39b",
     texto: "text-f3",
     borde: "border-f3/40",
     fondo: "bg-f3/10",
@@ -69,7 +70,7 @@ export function fenomenoPorId(id: number | null | undefined): Fenomeno | null {
 }
 
 export function colorFenomeno(id: number | null | undefined): string {
-  return fenomenoPorId(id)?.color ?? "#58a6ff";
+  return fenomenoPorId(id)?.color ?? TEMA.senal;
 }
 
 export function etiquetaFenomeno(id: number | null | undefined): string {
