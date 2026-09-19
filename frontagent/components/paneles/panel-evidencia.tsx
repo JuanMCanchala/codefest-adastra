@@ -1,15 +1,25 @@
 "use client";
 
-import { FileSearch, Hash, Quote } from "lucide-react";
+import { ArrowUpRight, FileSearch, Quote } from "lucide-react";
 
-import { Insignia } from "@/components/ui/insignia";
 import type { RespuestaAgente } from "@/lib/tipos";
 import { cn, etiquetaDocumento } from "@/lib/utils";
 
 interface Props {
   datos: RespuestaAgente | null;
   nActiva: number | null;
+  /** Tablero donde se abren todos los fragmentos del documento citado. */
+  urlTablero: string | null;
   onSeleccionar: (n: number) => void;
+}
+
+/** Enlace a la referencia: el panel de evidencia del tablero, filtrado por ese documento. */
+function enlaceDocumento(urlTablero: string, docId: string): string {
+  const parametros = new URLSearchParams({
+    componente: "panel_evidencia",
+    doc_id: docId,
+  });
+  return `${urlTablero}/?${parametros.toString()}`;
 }
 
 function Vacio({ mensaje }: { mensaje: string }) {
@@ -21,7 +31,7 @@ function Vacio({ mensaje }: { mensaje: string }) {
   );
 }
 
-export function PanelEvidencia({ datos, nActiva, onSeleccionar }: Props) {
+export function PanelEvidencia({ datos, nActiva, urlTablero, onSeleccionar }: Props) {
   if (!datos) {
     return (
       <Vacio mensaje="Envíe una consulta: aquí aparecerán los fragmentos del corpus que sustentan cada afirmación." />
@@ -78,16 +88,23 @@ export function PanelEvidencia({ datos, nActiva, onSeleccionar }: Props) {
                 </div>
               </button>
 
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                <Insignia>
-                  <Hash aria-hidden="true" className="size-3" />
-                  doc {cita.doc_id}
-                </Insignia>
-                <Insignia>
-                  <Hash aria-hidden="true" className="size-3" />
-                  chunk {cita.chunk_id}
-                </Insignia>
-              </div>
+              <p className="mt-1.5 text-xs text-apagado">
+                fragmento {cita.chunk_id} de {cita.doc_id}
+                {urlTablero ? (
+                  <>
+                    {" · "}
+                    <a
+                      href={enlaceDocumento(urlTablero, cita.doc_id)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-0.5 text-senal underline decoration-dotted underline-offset-4 hover:text-acento"
+                    >
+                      ver el documento
+                      <ArrowUpRight aria-hidden="true" className="size-3" />
+                    </a>
+                  </>
+                ) : null}
+              </p>
 
               {activa ? (
                 <blockquote className="mt-3 rounded border border-borde bg-fondo px-3 py-2.5 text-sm leading-relaxed text-texto">
