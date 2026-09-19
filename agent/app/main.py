@@ -31,12 +31,15 @@ CLAVES_PREGUNTA = ("pregunta", "question", "input", "query", "message", "mensaje
 
 
 def _crear_sistema() -> tuple[Sistema, object]:
+    from .cache import RecuperadorConCache
     from .clasificador import ClasificadorInyeccion
     from .llm import crear_llm
     from .retrieval import RecuperadorEtapa1
 
     cfg = get_settings()
-    recuperador = RecuperadorEtapa1(cfg.base_vectorial_dir, cfg.retrieval_config)
+    recuperador = RecuperadorConCache(
+        RecuperadorEtapa1(cfg.base_vectorial_dir, cfg.retrieval_config)
+    )
     clasificador = (
         ClasificadorInyeccion(cfg.umbral_inyeccion) if cfg.clasificador_inyeccion else None
     )
@@ -104,8 +107,24 @@ async def chat(request: Request) -> JSONResponse:
 
 
 @app.get("/health")
-def health(request: Request) -> dict:
-    return {"estado": "ok", "base_cargada": request.app.state.recuperador.listo}
+def health(request: Request) -> JSONResponse:
+    """503 mientras la base vectorial carga; 200 cuando el agente puede responder.
+
+    Mientras tanto ``POST /chat`` no falla: espera a que termine la carga (arranque en
+    frío de ~20 s), porque un 503 cuenta como respuesta fallida en la evaluación.
+    """
+    recuperador = request.app.state.recuperador
+    clasificador = request.app.state.sistema.clasificador
+    cuerpo = {
+        "estado": "ok" if recuperador.listo else "cargando",
+        "base_cargada": recuperador.listo,
+        "clasificador_inyeccion": clasificador.estado if clasificador else "desactivado",
+        "cache_recuperacion": {
+            "aciertos": getattr(recuperador, "aciertos", 0),
+            "fallos": getattr(recuperador, "fallos", 0),
+        },
+    }
+    return JSONResponse(cuerpo, status_code=200 if recuperador.listo else 503)
 
 
 @app.get("/agent-card")

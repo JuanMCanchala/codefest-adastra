@@ -20,7 +20,7 @@ RUN apt-get update \
 WORKDIR /app
 
 # torch de CPU primero: el contenedor no tiene GPU y la build CUDA pesa varios GB.
-RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cpu
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
@@ -48,9 +48,9 @@ COPY --chown=agente etapa1 ./etapa1
 COPY --chown=agente agent_card.json config.retrieval.yaml ./
 
 EXPOSE 8000
-# Solo se declara sano cuando la base vectorial y los modelos terminaron de cargar: así
+# /health responde 503 hasta que la base vectorial y los modelos terminan de cargar: así
 # Coolify no enruta tráfico a un contenedor que todavía no puede responder.
 HEALTHCHECK --interval=10s --timeout=5s --start-period=180s --retries=20 \
-    CMD curl -fsS http://127.0.0.1:8000/health | grep -q '"base_cargada":true' || exit 1
+    CMD curl -fsS http://127.0.0.1:8000/health || exit 1
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
