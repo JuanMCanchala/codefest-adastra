@@ -1,6 +1,7 @@
-import { FlaskConical, Layers3, SlidersHorizontal, TriangleAlert } from "lucide-react";
+import { Layers3, SlidersHorizontal, TriangleAlert } from "lucide-react";
 
 import type { ResultadoComponente } from "@/api/tipos";
+import { Ayuda } from "@/componentes/ui/ayuda";
 import { Insignia } from "@/componentes/ui/insignia";
 import { SimboloFenomeno } from "@/componentes/ui/simbolo-fenomeno";
 import { Tarjeta } from "@/componentes/ui/tarjeta";
@@ -12,9 +13,10 @@ import { VistaMapaMundo } from "@/componentes/vistas/mapa-mundo";
 import { VistaMatrizCalor } from "@/componentes/vistas/matriz-calor";
 import { VistaPanelEvidencia } from "@/componentes/vistas/panel-evidencia";
 import { VistaRedEntidades } from "@/componentes/vistas/red-entidades";
-import { definicionDe } from "@/lib/catalogo";
+import { definicionDe, etiquetaFiltro, valorFiltro } from "@/lib/catalogo";
 import { fenomenoPorId } from "@/lib/fenomenos";
 import type { Seleccion } from "@/lib/seleccion";
+import { useVistaTecnica } from "@/lib/vista-tecnica";
 import { cn, formatearEntero } from "@/lib/utils";
 
 interface Props {
@@ -33,6 +35,37 @@ function valorLegible(valor: unknown): string {
   return JSON.stringify(valor);
 }
 
+/**
+ * Filtros como los leería quien revisa el tablero: el rango de años se junta en una sola
+ * etiqueta y las claves internas se cambian por los nombres del catálogo.
+ */
+function filtrosLegibles(resultado: ResultadoComponente): { clave: string; texto: string }[] {
+  const entradas = Object.entries(resultado.filtros_aplicados);
+  const desde = entradas.find(([clave]) => clave === "desde")?.[1];
+  const hasta = entradas.find(([clave]) => clave === "hasta")?.[1];
+  const salida: { clave: string; texto: string }[] = [];
+  if (desde !== undefined || hasta !== undefined) {
+    salida.push({
+      clave: "anios",
+      texto: `${valorLegible(desde)}–${valorLegible(hasta)}`,
+    });
+  }
+  for (const [clave, valor] of entradas) {
+    if (clave === "desde" || clave === "hasta") {
+      continue;
+    }
+    salida.push({
+      clave,
+      texto: `${etiquetaFiltro(resultado.componente, clave)}: ${valorFiltro(
+        resultado.componente,
+        clave,
+        valor,
+      )}`,
+    });
+  }
+  return salida;
+}
+
 /** Renderiza el componente elegido con su encabezado, su nota de método y su evidencia. */
 export function LienzoComponente({
   resultado,
@@ -41,6 +74,7 @@ export function LienzoComponente({
   nivelColombia,
   onCambiarNivelColombia,
 }: Props) {
+  const tecnica = useVistaTecnica();
   const definicion = definicionDe(resultado.componente);
   const fenomeno = fenomenoPorId(resultado.fenomeno);
   const Icono = definicion.icono;
@@ -50,7 +84,8 @@ export function LienzoComponente({
     seleccion,
     onSeleccionar,
   };
-  const filtros = Object.entries(resultado.filtros_aplicados);
+  const filtros = filtrosLegibles(resultado);
+  const nota = resultado.nota_metodo || "La API no devolvió nota de método.";
 
   const cuerpo = () => {
     switch (resultado.componente) {
@@ -95,13 +130,21 @@ export function LienzoComponente({
           <h2 id="titulo-componente" className="text-base font-semibold">
             {resultado.titulo || definicion.etiqueta}
           </h2>
-          <p className="mt-0.5 text-sm text-apagado">{definicion.descripcion}</p>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          <Insignia>
-            <Layers3 aria-hidden="true" className="size-3" />
-            {resultado.componente}
-          </Insignia>
+          <Ayuda titulo={definicion.etiqueta}>
+            {definicion.descripcion}
+            <span className="mt-2 block border-t border-borde pt-2">
+              <span className="font-semibold text-texto">Cómo se calculó: </span>
+              {nota}
+            </span>
+          </Ayuda>
+          {tecnica ? (
+            <Insignia>
+              <Layers3 aria-hidden="true" className="size-3" />
+              {resultado.componente}
+            </Insignia>
+          ) : null}
           {fenomeno ? (
             <Insignia className="text-texto">
               <SimboloFenomeno fenomeno={fenomeno} />
@@ -119,31 +162,34 @@ export function LienzoComponente({
             <SlidersHorizontal aria-hidden="true" className="size-3" />
             Filtros aplicados
           </span>
-          {filtros.map(([clave, valor]) => (
-            <Insignia key={clave}>
-              {clave}: {valorLegible(valor)}
-            </Insignia>
+          {filtros.map((filtro) => (
+            <Insignia key={filtro.clave}>{filtro.texto}</Insignia>
           ))}
         </div>
       ) : null}
 
+      {/* Un filtro descartado cambia lo que el gráfico responde: se avisa siempre, porque
+          ver el conjunto completo creyendo que está filtrado es peor que no filtrar. */}
       {resultado.filtros_ignorados && resultado.filtros_ignorados.length > 0 ? (
-        <p className="flex items-center gap-1.5 border-b border-borde bg-alerta/10 px-4 py-2 text-xs text-alerta">
-          <TriangleAlert aria-hidden="true" className="size-3.5" />
-          Filtros ignorados por la API: {resultado.filtros_ignorados.join(", ")}
+        <p
+          role="status"
+          className="flex items-start gap-1.5 border-b border-borde bg-alerta/10 px-4 py-2 text-sm text-alerta"
+        >
+          <TriangleAlert aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+          <span>
+            Sin filtrar por{" "}
+            {resultado.filtros_ignorados
+              .map((clave) => etiquetaFiltro(resultado.componente, clave).toLowerCase())
+              .join(", ")}
+            : el valor pedido no existe en los datos, así que se muestra el conjunto completo.
+            {tecnica ? ` Claves descartadas: ${resultado.filtros_ignorados.join(", ")}.` : ""}
+          </span>
         </p>
       ) : null}
 
       <div>{cuerpo()}</div>
 
-      <footer className="flex flex-wrap items-start gap-3 border-t border-borde bg-elevado/40 px-4 py-2.5">
-        <p className="inline-flex min-w-0 flex-1 basis-64 items-start gap-2 text-sm leading-relaxed text-apagado">
-          <FlaskConical aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-senal" />
-          <span>
-            <span className="font-semibold text-texto">Método: </span>
-            {resultado.nota_metodo || "La API no devolvió nota de método."}
-          </span>
-        </p>
+      <footer className="flex flex-wrap items-center gap-2 border-t border-borde bg-elevado/40 px-4 py-2">
         <Insignia>
           {formatearEntero(resultado.total_evidencia)} fragmentos de evidencia
         </Insignia>

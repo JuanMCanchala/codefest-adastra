@@ -3,12 +3,14 @@ import { useMemo } from "react";
 
 import { obtenerEvidencia } from "@/api/cliente";
 import type { Ref } from "@/api/tipos";
+import { Ayuda } from "@/componentes/ui/ayuda";
 import { AvisoError, Cargando, Vacio } from "@/componentes/ui/estados";
 import { Boton } from "@/componentes/ui/boton";
 import { Insignia } from "@/componentes/ui/insignia";
 import { fenomenoPorId } from "@/lib/fenomenos";
 import type { Seleccion } from "@/lib/seleccion";
 import { useRecurso } from "@/lib/usar-recurso";
+import { useVistaTecnica } from "@/lib/vista-tecnica";
 import { chunkIdsDe, etiquetaDocumento, formatearEntero } from "@/lib/utils";
 
 /** Tope del lote de `/api/evidencia`: el panel pide y muestra como máximo estos fragmentos. */
@@ -34,6 +36,7 @@ export function PanelLateralEvidencia({
   totalEvidencia,
   onCerrar,
 }: Props) {
+  const tecnica = useVistaTecnica();
   const propias = seleccion?.refs ?? [];
   const usaGlobal = propias.length === 0;
   const refs = useMemo(
@@ -76,13 +79,18 @@ export function PanelLateralEvidencia({
         ) : null}
       </header>
 
-      <div className="border-b border-borde bg-elevado/40 px-4 py-2.5 text-sm leading-relaxed text-apagado">
-        <p>{notaMetodo || "La API no devolvió nota de método."}</p>
-        <p className="mt-1.5 flex flex-wrap gap-1.5">
-          <Insignia>{formatearEntero(totalEvidencia)} fragmentos en total</Insignia>
-          <Insignia>{formatearEntero(chunkIds.length)} en este panel</Insignia>
-          {usaGlobal ? <Insignia>evidencia del componente</Insignia> : null}
-        </p>
+      <div className="flex flex-wrap items-center gap-1.5 border-b border-borde bg-elevado/40 px-4 py-2">
+        <Insignia>
+          {formatearEntero(chunkIds.length)} de {formatearEntero(totalEvidencia)} fragmentos
+        </Insignia>
+        {tecnica ? (
+          <>
+            {usaGlobal ? <Insignia>evidencia del componente</Insignia> : null}
+            <Ayuda titulo="Cómo se calculó">
+              {notaMetodo || "La API no devolvió nota de método."}
+            </Ayuda>
+          </>
+        ) : null}
       </div>
 
       {/* La lista se desplaza y sus fragmentos no son enfocables: sin tabIndex no hay

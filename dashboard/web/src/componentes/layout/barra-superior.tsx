@@ -1,8 +1,9 @@
-import { Compass, Radar, Terminal } from "lucide-react";
+import { Compass, Radar, Terminal, Wrench } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { obtenerSalud } from "@/api/cliente";
 import { useRecurso } from "@/lib/usar-recurso";
+import { alternarVistaTecnica, useVistaTecnica } from "@/lib/vista-tecnica";
 import { cn, formatearEntero } from "@/lib/utils";
 
 export type Modo = "instruccion" | "manual";
@@ -16,6 +17,7 @@ interface Props {
 export function BarraSuperior({ modo, onCambiarModo }: Props) {
   const salud = useRecurso("salud", (senal) => obtenerSalud(senal));
   const fragmentos = salud.fase === "listo" ? (salud.dato.tablas["fragmentos"] ?? 0) : 0;
+  const tecnica = useVistaTecnica();
 
   return (
     <header className="franja-mando sticky top-0 z-20 border-b border-borde bg-panel">
@@ -56,6 +58,22 @@ export function BarraSuperior({ modo, onCambiarModo }: Props) {
           />
         </nav>
 
+        <button
+          type="button"
+          aria-pressed={tecnica}
+          onClick={alternarVistaTecnica}
+          title="Muestra los identificadores internos, el consumo de tokens y los parámetros de las herramientas"
+          className={cn(
+            "inline-flex h-9 items-center gap-1.5 rounded-md border px-3 text-sm transition-colors",
+            tecnica
+              ? "border-acento bg-acento/10 text-texto"
+              : "border-borde bg-fondo text-apagado hover:text-texto",
+          )}
+        >
+          <Wrench aria-hidden="true" className="size-3.5" />
+          Vista técnica
+        </button>
+
         <p
           className="inline-flex h-9 items-center gap-2 rounded-md border border-borde bg-fondo px-3 text-sm text-apagado"
           role="status"
@@ -72,10 +90,10 @@ export function BarraSuperior({ modo, onCambiarModo }: Props) {
             )}
           />
           {salud.fase === "listo"
-            ? `API en línea · ${formatearEntero(fragmentos)} fragmentos indexados`
+            ? `Corpus en línea · ${formatearEntero(fragmentos)} fragmentos`
             : salud.fase === "error"
-              ? "API no disponible"
-              : "Verificando la API…"}
+              ? "Corpus no disponible"
+              : "Verificando la conexión…"}
         </p>
       </div>
     </header>

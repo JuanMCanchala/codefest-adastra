@@ -1,6 +1,7 @@
 import { CornerDownLeft, Loader2, Terminal } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
+import { Ayuda } from "@/componentes/ui/ayuda";
 import { Boton } from "@/componentes/ui/boton";
 
 const SUGERENCIAS: readonly string[] = [
@@ -36,17 +37,19 @@ export function BarraInstruccion({ ocupado, onEnviar }: Props) {
       className="rounded-md border border-borde bg-panel px-4 py-4"
       aria-labelledby="titulo-instruccion"
     >
-      <h2
-        id="titulo-instruccion"
-        className="inline-flex items-center gap-2 text-base font-semibold text-texto"
-      >
-        <Terminal aria-hidden="true" className="size-4 text-apagado" />
-        ¿Qué quiere ver?
-      </h2>
-      <p className="mt-1 max-w-[80ch] text-sm leading-relaxed text-apagado">
-        Escríbalo en lenguaje natural. El agente de visualización elige un componente del catálogo,
-        justifica la elección y el tablero lo renderiza con sus filtros.
-      </p>
+      <div className="flex items-center gap-2">
+        <h2
+          id="titulo-instruccion"
+          className="inline-flex items-center gap-2 text-base font-semibold text-texto"
+        >
+          <Terminal aria-hidden="true" className="size-4 text-apagado" />
+          ¿Qué quiere ver?
+        </h2>
+        <Ayuda titulo="Cómo funciona">
+          Escríbalo en lenguaje natural. El agente de visualización elige un componente del
+          catálogo, justifica la elección y el tablero lo renderiza con sus filtros.
+        </Ayuda>
+      </div>
 
       <form className="mt-3 flex flex-col gap-2 sm:flex-row" onSubmit={enviar}>
         <label className="sr-only" htmlFor="campo-instruccion">
@@ -78,7 +81,7 @@ export function BarraInstruccion({ ocupado, onEnviar }: Props) {
       </form>
 
       <p className="mt-4 text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
-        Instrucciones de ejemplo
+        Ejemplos
       </p>
       <ul className="mt-2 flex flex-wrap gap-2">
         {SUGERENCIAS.map((sugerencia) => (

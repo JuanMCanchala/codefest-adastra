@@ -1,6 +1,7 @@
 import { History, TriangleAlert } from "lucide-react";
 
 import { Insignia } from "@/componentes/ui/insignia";
+import { definicionDe } from "@/lib/catalogo";
 import type { EntradaHistorial } from "@/lib/historial";
 import { cn, recortar } from "@/lib/utils";
 
@@ -55,7 +56,7 @@ export function HistorialInstrucciones({ entradas, idActivo, onSeleccionar }: Pr
                         error
                       </Insignia>
                     ) : componente ? (
-                      <Insignia>{componente}</Insignia>
+                      <Insignia>{definicionDe(componente).etiqueta}</Insignia>
                     ) : (
                       <Insignia>solo texto</Insignia>
                     )}

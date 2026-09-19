@@ -4,6 +4,7 @@ import type { RespuestaVisualizar } from "@/api/tipos";
 import { Insignia } from "@/componentes/ui/insignia";
 import { Tarjeta } from "@/componentes/ui/tarjeta";
 import { definicionDe } from "@/lib/catalogo";
+import { useVistaTecnica } from "@/lib/vista-tecnica";
 import { formatearEntero, formatearLatencia } from "@/lib/utils";
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 
 /** Respuesta textual del agente, el componente que eligió y su justificación. */
 export function RespuestaAgente({ respuesta }: Props) {
+  const tecnica = useVistaTecnica();
   const especificacion = respuesta.especificacion;
   const etiqueta = especificacion ? definicionDe(especificacion.componente).etiqueta : null;
   // La traza trae {input, output, total}: sumar todo contaría el total dos veces.
@@ -46,7 +48,7 @@ export function RespuestaAgente({ respuesta }: Props) {
               Componente elegido
             </span>
             <Insignia className="border-acento/60 text-texto">
-              {etiqueta} · {especificacion.componente}
+              {tecnica ? `${etiqueta ?? ""} · ${especificacion.componente}` : etiqueta}
             </Insignia>
           </p>
           {especificacion.justificacion ? (
@@ -71,12 +73,14 @@ export function RespuestaAgente({ respuesta }: Props) {
           {respuesta.traza.agentes_invocados.map((agente) => (
             <Insignia key={agente}>{agente}</Insignia>
           ))}
-          {totalTokens > 0 ? <Insignia>{formatearEntero(totalTokens)} tokens</Insignia> : null}
           <Insignia>
             <Timer aria-hidden="true" className="size-3" />
             {formatearLatencia(respuesta.traza.latencia_ms)}
           </Insignia>
-          {respuesta.citas.length > 0 ? (
+          {tecnica && totalTokens > 0 ? (
+            <Insignia>{formatearEntero(totalTokens)} tokens</Insignia>
+          ) : null}
+          {tecnica && respuesta.citas.length > 0 ? (
             <Insignia>{formatearEntero(respuesta.citas.length)} citas</Insignia>
           ) : null}
         </div>

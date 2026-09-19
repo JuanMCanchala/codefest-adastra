@@ -89,8 +89,8 @@ interface CuerpoComponente {
 
 const estadoApi = (page: Page) => page.getByRole("banner").getByRole("status");
 const modo = (page: Page) => page.getByRole("navigation", { name: "Modo de trabajo" });
-const lienzo = (page: Page) =>
-  page.getByRole("region").filter({ has: page.getByText("Método:") });
+/** Tarjeta del componente activo: `section` con el título de la API como nombre accesible. */
+const lienzo = (page: Page) => page.locator("section[aria-labelledby='titulo-componente']");
 const respuestaAgente = (page: Page) =>
   page.getByRole("region", { name: "Respuesta del agente" });
 const panel = (page: Page) => page.getByRole("complementary", { name: "Panel de evidencia" });
@@ -101,6 +101,14 @@ const campoInstruccion = (page: Page) =>
 const botonVisualizar = (page: Page) => page.getByRole("button", { name: /Visualizar|Analizando/ });
 const historial = (page: Page) =>
   page.getByRole("region", { name: "Historial de instrucciones" });
+const interruptorTecnico = (page: Page) =>
+  page.getByRole("button", { name: "Vista técnica" });
+
+/** Enciende la vista técnica, apagada por defecto. */
+async function activarVistaTecnica(page: Page): Promise<void> {
+  await interruptorTecnico(page).click();
+  await expect(interruptorTecnico(page)).toHaveAttribute("aria-pressed", "true");
+}
 
 function esMovil(testInfo: TestInfo): boolean {
   return testInfo.project.name === "movil";
@@ -178,7 +186,7 @@ test.describe("Tablero · carga inicial", () => {
     };
     expect(cuerpoSalud.estado).toBe("ok");
     await expect(estadoApi(page)).toHaveText(
-      `API en línea · ${entero(cuerpoSalud.tablas["fragmentos"] ?? 0)} fragmentos indexados`,
+      `Corpus en línea · ${entero(cuerpoSalud.tablas["fragmentos"] ?? 0)} fragmentos`,
     );
 
     // El modo de instrucción es el predeterminado.
@@ -224,17 +232,27 @@ test.describe("Tablero · carga inicial", () => {
 
     // Encabezado del lienzo: título de la API, nombre del componente y fenómenos.
     await expect(page.getByRole("heading", { level: 2, name: resultado.titulo })).toBeVisible();
-    await expect(lienzo(page)).toContainText("mapa_colombia");
     await expect(lienzo(page)).toContainText("Los tres fenómenos");
-    for (const [clave, valor] of Object.entries(resultado.filtros_aplicados)) {
-      await expect(lienzo(page)).toContainText(`${clave}: ${String(valor)}`);
-    }
-
-    // Pie: nota de método y total de evidencia, tal como los devolvió la API.
-    await expect(lienzo(page)).toContainText(resultado.nota_metodo);
+    // Los filtros se leen con los nombres del catálogo, no con las claves de la API.
+    await expect(lienzo(page)).toContainText("Nivel territorial: Departamento");
+    await expect(lienzo(page)).toContainText(`${String(ANIO_DESDE)}–${String(ANIO_HASTA)}`);
     await expect(lienzo(page)).toContainText(
       `${entero(resultado.total_evidencia)} fragmentos de evidencia`,
     );
+
+    // Nada de identificadores internos ni de nota de método en la vista principal.
+    await expect(interruptorTecnico(page)).toHaveAttribute("aria-pressed", "false");
+    await expect(lienzo(page)).not.toContainText("mapa_colombia");
+    await expect(lienzo(page)).not.toContainText("nivel:");
+    await expect(lienzo(page)).not.toContainText(resultado.nota_metodo);
+
+    // La nota de método sigue a un clic, en el recuadro de ayuda del componente.
+    await lienzo(page).getByRole("button", { name: /Mapa de Colombia/ }).click();
+    const ayuda = page.getByRole("note");
+    await expect(ayuda).toContainText(resultado.nota_metodo);
+    await expect(ayuda).toContainText("Alertas tempranas por territorio");
+    await page.keyboard.press("Escape");
+    await expect(ayuda).toHaveCount(0);
 
     // Tabla de ranking: una fila por territorio, con su cifra exacta.
     const cuerpoTabla = tablaRegiones(page).locator("tbody tr");
@@ -245,13 +263,10 @@ test.describe("Tablero · carga inicial", () => {
 
     // Panel lateral: evidencia del componente completo mientras no hay selección.
     await expect(panel(page)).toContainText("Componente completo");
-    await expect(panel(page)).toContainText(resultado.nota_metodo);
-    await expect(panel(page)).toContainText(
-      `${entero(resultado.total_evidencia)} fragmentos en total`,
-    );
     const enPanel = Math.min(resultado.evidencia.length, MAX_PANEL);
-    await expect(panel(page)).toContainText(`${entero(enPanel)} en este panel`);
-    await expect(panel(page)).toContainText("evidencia del componente");
+    await expect(panel(page)).toContainText(
+      `${entero(enPanel)} de ${entero(resultado.total_evidencia)} fragmentos`,
+    );
     await expect(panel(page).getByRole("listitem")).toHaveCount(enPanel);
 
     // El historial arranca vacío.
@@ -264,7 +279,7 @@ test.describe("Tablero · carga inicial", () => {
       ruta.fulfill({ status: 500, json: { detail: "base no disponible" } }),
     );
     await page.goto(TABLERO_URL);
-    await expect(estadoApi(page)).toHaveText("API no disponible");
+    await expect(estadoApi(page)).toHaveText("Corpus no disponible");
     // El componente se sigue pidiendo: la salud es informativa, no un portero.
     await expect(page.getByRole("heading", { level: 2, name: /Alertas tempranas/ })).toBeVisible();
   });
@@ -292,6 +307,44 @@ test.describe("Tablero · carga inicial", () => {
     await alerta.getByRole("button", { name: "Reintentar" }).click();
     await expect(page.getByRole("heading", { level: 2, name: /Alertas tempranas/ })).toBeVisible();
     expect(intentos).toBe(2);
+  });
+});
+
+test.describe("Tablero · vista técnica", () => {
+  test("revela los detalles internos, los recuerda y se puede volver a apagar", async ({
+    page,
+  }) => {
+    const resultado = await abrirTablero(page);
+    await activarVistaTecnica(page);
+
+    // Identificador interno del componente, que la vista del oficial no necesita.
+    await expect(lienzo(page)).toContainText(resultado.componente);
+
+    // La preferencia sobrevive a una recarga.
+    await page.reload();
+    await expect(interruptorTecnico(page)).toHaveAttribute("aria-pressed", "true");
+    await expect(lienzo(page)).toContainText(resultado.componente);
+
+    await interruptorTecnico(page).click();
+    await expect(interruptorTecnico(page)).toHaveAttribute("aria-pressed", "false");
+    await expect(lienzo(page)).not.toContainText(resultado.componente);
+  });
+
+  test("con la vista técnica encendida la respuesta del agente muestra tokens", async ({
+    page,
+    guardia,
+  }) => {
+    await guardia.simular(page, "**/api/visualizar", { json: V });
+    await abrirTablero(page);
+    await activarVistaTecnica(page);
+
+    await campoInstruccion(page).fill("Departamentos con más alertas por minería ilegal");
+    await campoInstruccion(page).press("Enter");
+
+    const respuesta = respuestaAgente(page);
+    await expect(respuesta).toContainText(V.especificacion.componente);
+    // La traza trae {input, output, total}: el total no se cuenta dos veces.
+    await expect(respuesta).toContainText(`${entero(V.traza.tokens["total"] ?? 0)} tokens`);
   });
 });
 
@@ -327,9 +380,8 @@ test.describe("Tablero · trazabilidad", () => {
     await expect(panel(page)).toContainText(fila.nombre);
     await expect(panel(page)).toContainText(`${entero(fila.alertas)} alertas`);
     await expect(panel(page)).toContainText(
-      `${entero(chunkIdsDe(fila.refs ?? []).length)} en este panel`,
+      `${entero(chunkIdsDe(fila.refs ?? []).length)} de`,
     );
-    await expect(panel(page)).not.toContainText("evidencia del componente");
 
     // Los fragmentos son los de la API, con su texto real.
     const fragmentos = (await respuesta.json()) as FilaEvidencia[] | { fragmentos: FilaEvidencia[] };
@@ -387,35 +439,23 @@ test.describe("Tablero · trazabilidad", () => {
     await expect(panel(page)).toContainText(/alertas|Sin alertas registradas/);
   });
 
-  test("abre con el fondo analítico, sin teselas remotas, y el HUD se enciende a petición", async ({
+  test("el mapa se dibuja sin pedir una sola tesela a un tercero", async ({
     page,
   }, testInfo) => {
     test.skip(esMovil(testInfo), "El mapa solo ocupa la mitad del lienzo en escritorio.");
 
-    // PRODUCT.md: al abrir, la SPA no debe pedir una sola tesela a un tercero.
-    let teselas = 0;
+    // PRODUCT.md: sin mapas base ni recursos remotos que dependan de tokens.
+    const remotas: string[] = [];
     page.on("request", (peticion) => {
-      if (/arcgisonline\.com|cartocdn\.com/.test(peticion.url())) {
-        teselas += 1;
+      const url = peticion.url();
+      if (!url.startsWith(TABLERO_URL) && !url.startsWith("data:")) {
+        remotas.push(url);
       }
     });
 
     await abrirTablero(page);
     await expect(page.locator("canvas.maplibregl-canvas")).toBeVisible();
-
-    const bases = page.getByRole("group", { name: "Mapa base" });
-    await expect(bases.getByRole("button", { name: "Analítico" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    expect(teselas).toBe(0);
-
-    const hud = page.getByRole("button", { name: "HUD" });
-    await expect(hud).toHaveAttribute("aria-pressed", "false");
-    await hud.click();
-    await expect(hud).toHaveAttribute("aria-pressed", "true");
-    // La lectura de coordenadas repite en cifras lo que el mapa dice con color.
-    await expect(page.getByText(/^Z \d+\.\d{2}$/)).toBeVisible();
+    expect(remotas, "la SPA no debe salir a la red fuera de su propio origen").toEqual([]);
   });
 });
 
@@ -463,8 +503,9 @@ test.describe("Tablero · filtros globales", () => {
     });
     expect(cuerpo.filtros).toMatchObject({ desde: 2020, hasta: ANIO_HASTA });
     expect(resultado.nota_metodo).toContain(`entre 2020 y ${String(ANIO_HASTA)}`);
-    await expect(lienzo(page)).toContainText(`desde: 2020`);
-    await expect(lienzo(page)).toContainText(resultado.nota_metodo);
+    await expect(lienzo(page)).toContainText(`2020–${String(ANIO_HASTA)}`);
+    await lienzo(page).getByRole("button", { name: /Mapa de Colombia/ }).click();
+    await expect(page.getByRole("note")).toContainText(resultado.nota_metodo);
   });
 });
 
@@ -488,7 +529,7 @@ test.describe("Tablero · exploración manual", () => {
     });
     expect(cambio.cuerpo.componente).toBe("panel_evidencia");
     expect(cambio.cuerpo.filtros).toEqual({ limite: 12 });
-    await expect(lienzo(page)).toContainText("panel_evidencia");
+    await expect(lienzo(page)).toContainText("Panel de evidencia");
 
     // Regresión: el grafo guarda «eln» y el jurado escribe «ELN».
     const filtrado = await conRecalculo(page, async () => {
@@ -504,7 +545,7 @@ test.describe("Tablero · exploración manual", () => {
     // Cada fragmento del componente abre su propia evidencia en el panel.
     await lienzo(page).getByRole("button").filter({ hasText: `doc ${filas[0]!.doc_id}` }).first().click();
     await expect(panel(page)).toContainText(`doc ${filas[0]!.doc_id}`);
-    await expect(panel(page)).toContainText("1 en este panel");
+    await expect(panel(page)).toContainText("1 de ");
 
     // Restablecer devuelve los filtros predeterminados del componente.
     const restablecido = await conRecalculo(page, async () => {
@@ -534,14 +575,44 @@ test.describe("Tablero · exploración manual", () => {
     await abrirTablero(page);
     await irAExploracion(page);
 
+    await conRecalculo(page, async () => {
+      await page.getByRole("button", { name: /Panel de evidencia/ }).first().click();
+    });
+    const { resultado } = await conRecalculo(page, async () => {
+      const documento = page
+        .getByRole("region", { name: "Exploración manual" })
+        .getByLabel("Documento", { exact: true });
+      await documento.fill("DOC-QUE-NO-EXISTE");
+      await documento.blur();
+    });
+    expect(resultado.datos).toEqual([]);
+    await expect(page.getByText("Ningún fragmento coincide")).toBeVisible();
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    await expect(panel(page)).toContainText("Sin fragmentos que mostrar");
+  });
+
+  test("un filtro que la API descarta se avisa sin encender la vista técnica", async ({
+    page,
+  }) => {
+    await abrirTablero(page);
+    await irAExploracion(page);
+
+    // El vocabulario de `economia` es cerrado: un valor inventado se descarta y el
+    // componente responde con el conjunto completo, que hay que declarar.
     const { resultado } = await conRecalculo(page, async () => {
       await page.getByLabel("Economía ilícita").fill("economía que no existe en el corpus");
       await page.getByLabel("Economía ilícita").blur();
     });
-    expect(resultado.datos).toEqual([]);
-    await expect(page.getByText("Sin alertas para estos filtros")).toBeVisible();
-    await expect(page.getByRole("alert")).toHaveCount(0);
-    await expect(panel(page)).toContainText("Sin fragmentos que mostrar");
+    expect(resultado.filtros_ignorados).toContain("economia");
+
+    const aviso = lienzo(page).getByRole("status");
+    await expect(aviso).toContainText("Sin filtrar por economía ilícita");
+    await expect(aviso).toContainText("se muestra el conjunto completo");
+    await expect(aviso).not.toContainText("Claves descartadas");
+    await expect(lienzo(page)).not.toContainText("Economía ilícita:");
+
+    await activarVistaTecnica(page);
+    await expect(aviso).toContainText("Claves descartadas: economia.");
   });
 });
 
@@ -591,25 +662,22 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     const respuesta = respuestaAgente(page);
     await expect(respuesta).toContainText(V.respuesta_agente);
     await expect(respuesta).toContainText("Componente elegido");
-    await expect(respuesta).toContainText(
-      `Mapa de Colombia · ${V.especificacion.componente}`,
-    );
+    await expect(respuesta).toContainText("Mapa de Colombia");
+    await expect(respuesta).not.toContainText(V.especificacion.componente);
     await expect(respuesta).toContainText(V.especificacion.justificacion);
     for (const agente of V.traza.agentes_invocados) {
       await expect(respuesta).toContainText(agente);
     }
-    // La traza trae {input, output, total}: el total no se cuenta dos veces.
-    await expect(respuesta).toContainText(`${entero(V.traza.tokens["total"] ?? 0)} tokens`);
     await expect(respuesta).toContainText(latencia(V.traza.latencia_ms));
+    await expect(respuesta).not.toContainText("tokens");
 
     // El resultado que ya calculó el agente se muestra sin repetir /api/componente.
     await expect(
       page.getByRole("heading", { level: 2, name: V.resultado.titulo }),
     ).toBeVisible();
-    for (const [clave, valor] of Object.entries(V.resultado.filtros_aplicados)) {
-      await expect(lienzo(page)).toContainText(`${clave}: ${String(valor)}`);
-    }
-    await expect(lienzo(page)).toContainText(V.resultado.nota_metodo);
+    await expect(lienzo(page)).toContainText(
+      `Economía ilícita: ${String(V.resultado.filtros_aplicados["economia"])}`,
+    );
     expect(recalculos, "la especificación ya traía su resultado calculado").toBe(0);
 
     // Los filtros globales quedan sincronizados con lo que decidió el agente.
@@ -624,7 +692,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     // Y la instrucción queda en el historial, marcada como activa.
     const entrada = historial(page).getByRole("listitem").first();
     await expect(entrada).toContainText(INSTRUCCION);
-    await expect(entrada).toContainText(V.especificacion.componente);
+    await expect(entrada).toContainText("Mapa de Colombia");
     await expect(entrada.getByRole("button")).toHaveAttribute("aria-current", "true");
     await expect(campoInstruccion(page)).toBeEnabled();
     await expect(campoInstruccion(page)).toHaveValue("");
@@ -647,7 +715,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
     await conRecalculo(page, async () => {
       await page.getByRole("button", { name: /Composición del corpus/ }).first().click();
     });
-    await expect(lienzo(page)).toContainText("composicion_corpus");
+    await expect(lienzo(page)).toContainText("Composición del corpus");
 
     // …y el historial lo devuelve tal como lo entregó el agente, sin volver a preguntar.
     await modo(page).getByRole("button", { name: "Instrucción" }).click();
