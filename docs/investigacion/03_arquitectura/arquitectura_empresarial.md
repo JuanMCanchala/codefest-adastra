@@ -5,8 +5,8 @@
 > **No se midieron** tiempos de construcción, latencias ni rendimiento: toda estimación de horas de
 > este documento es un juicio del equipo, no una medición, y va marcada como _estimación_.
 >
-> Complementa (no reemplaza) [`arquitectura_multiagente.md`](arquitectura_multiagente.md) y
-> [`analitica_visual_agente.md`](analitica_visual_agente.md).
+> Complementa (no reemplaza) [`arquitectura_multiagente.md`](../99_primera_pasada/arquitectura_multiagente.md) y
+> [`analitica_visual_agente.md`](../99_primera_pasada/analitica_visual_agente.md).
 
 **Resumen:** conviene construir una **consola de inteligencia** con Next.js, shadcn/ui y AI Elements
 que se conecte **directamente** a un backend **FastAPI** que ya contiene la base vectorial de la Etapa 1.

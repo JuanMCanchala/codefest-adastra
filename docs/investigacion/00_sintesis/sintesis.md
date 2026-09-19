@@ -30,9 +30,9 @@ datos de 2024 a 2026 que no están en el corpus. Lo que no se pudo confirmar apa
 
 | Fenómeno                                               | Tesis central                                                                                                                                                                                                | Dato ancla                                                                                                | Fuente                                                 |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| **F1 · IA y Capacidades Estratégicas**                 | La IA ya es presupuesto y doctrina en las potencias. Colombia tiene política de IA pero no una hoja de ruta de IA para defensa, mientras su amenaza principal, los drones de grupos armados, crece cada año. | Ataques con drones en Colombia: 119 (2024), 277 (2025), 292 (en lo corrido de 2026)                       | Web, [claude/f1](claude/f1_ia_capacidades_web.md)      |
+| **F1 · IA y Capacidades Estratégicas**                 | La IA ya es presupuesto y doctrina en las potencias. Colombia tiene política de IA pero no una hoja de ruta de IA para defensa, mientras su amenaza principal, los drones de grupos armados, crece cada año. | Ataques con drones en Colombia: 119 (2024), 277 (2025), 292 (en lo corrido de 2026)                       | Web, [claude/f1](../01_fenomenos/web_verificada/f1_ia_capacidades_web.md)      |
 | **F2 · Seguridad del Entorno Espacial**                | LEO ya es infraestructura crítica y a la vez un entorno finito y disputado. Las capacidades de contraespacio que se usan hoy son las no destructivas: interferencia, _spoofing_ y ciberataques.              | Más de 11.000 satélites activos y más de 1,2 millones de fragmentos mayores de 1 cm (ESA 2025)            | `F2-ESA-003`, `F2-ESA-028`                             |
-| **F3 · Dinámicas Territoriales y Amenazas Regionales** | El control territorial de los grupos armados se financia cada vez más con oro y economías ambientales, y la Amazonía se volvió un espacio criminal compartido por 6 países.                                  | Coca en Colombia: 261.000 ha en 2024, máximo histórico (SIMCI). Grupos armados: más de 27.000 integrantes | Web, [claude/f3](claude/f3_amenazas_regionales_web.md) |
+| **F3 · Dinámicas Territoriales y Amenazas Regionales** | El control territorial de los grupos armados se financia cada vez más con oro y economías ambientales, y la Amazonía se volvió un espacio criminal compartido por 6 países.                                  | Coca en Colombia: 261.000 ha en 2024, máximo histórico (SIMCI). Grupos armados: más de 27.000 integrantes | Web, [claude/f3](../01_fenomenos/web_verificada/f3_amenazas_regionales_web.md) |
 
 **Cruce más potente entre fenómenos.** Colombia enfrenta en su territorio una amenaza tecnológica
 que avanza rápido, los drones con IA de grupos armados (F1×F3). Para responderla depende de
@@ -59,8 +59,8 @@ Colombia usaron datos comerciales porque no tenían acceso a las herramientas de
 - **Colombia.** El CONPES 4144 de IA (COP 479.273 millones, 106 acciones hasta 2030) no tiene un
   eje de defensa. La paradoja: cerca del 3 % del PIB va a defensa y no hay IA de defensa
   documentada (`F1-DAIO-035`, `F1-ILIA-005`).
-- Detalle: [f1_ia_capacidades/](f1_ia_capacidades/README.md), incluido `riesgos.md`, y
-  [claude/f1_ia_capacidades_web.md](claude/f1_ia_capacidades_web.md).
+- Detalle: [f1_ia_capacidades/](../01_fenomenos/f1_ia_capacidades/README.md), incluido `riesgos.md`, y
+  [claude/f1_ia_capacidades_web.md](../01_fenomenos/web_verificada/f1_ia_capacidades_web.md).
 
 ### F2 · Seguridad del Entorno Espacial
 
@@ -79,8 +79,8 @@ Colombia usaron datos comerciales porque no tenían acceso a las herramientas de
   que reclamaba soberanía sobre la órbita geoestacionaria, aparece en el corpus (`F2-SWF-126`).
   **FACSAT y los documentos de la FAC no están en el corpus:** el asistente solo los puede citar si
   se agregan como fuente externa.
-- Detalle: [f2_seguridad_espacial/](f2_seguridad_espacial/README.md) y
-  [claude/f2_seguridad_espacial_web.md](claude/f2_seguridad_espacial_web.md).
+- Detalle: [f2_seguridad_espacial/](../01_fenomenos/f2_seguridad_espacial/README.md) y
+  [claude/f2_seguridad_espacial_web.md](../01_fenomenos/web_verificada/f2_seguridad_espacial_web.md).
 
 ### F3 · Dinámicas Territoriales y Amenazas Regionales
 
@@ -97,8 +97,8 @@ Colombia usaron datos comerciales porque no tenían acceso a las herramientas de
 - **Giro político de 2026.** El nuevo gobierno cerró las mesas de la Paz Total entre agosto y
   septiembre de 2026 (web). Es un dato muy reciente: hay que revisarlo en la fuente antes de citarlo.
 - **Corrección.** El CEEEP es del **Ejército del Perú**, no de Colombia.
-- Detalle: [f3_amenazas_regionales/](f3_amenazas_regionales/README.md) y
-  [claude/f3_amenazas_regionales_web.md](claude/f3_amenazas_regionales_web.md).
+- Detalle: [f3_amenazas_regionales/](../01_fenomenos/f3_amenazas_regionales/README.md) y
+  [claude/f3_amenazas_regionales_web.md](../01_fenomenos/web_verificada/f3_amenazas_regionales_web.md).
 
 ---
 
@@ -106,7 +106,7 @@ Colombia usaron datos comerciales porque no tenían acceso a las herramientas de
 
 - Las 50 preguntas de ejemplo se agrupan en bloques cerrados: F1 `q001–q016`, F2 `q017–q032` y
   F3 `q033–q050`. Todas están en español, pero la evidencia está mezclada en español e inglés
-  ([transversal/preguntas_jurado.md](transversal/preguntas_jurado.md)).
+  ([transversal/preguntas_jurado.md](../01_fenomenos/transversal/preguntas_jurado.md)).
 - **Vacíos del corpus frente a las preguntas:** rutas aéreas ilícitas (q047), minerales estratégicos
   distintos del oro (q046) y renta petrolera (q048). Estas se cubren con fuentes externas o se
   declaran como límite del sistema.
@@ -129,7 +129,7 @@ Colombia usaron datos comerciales porque no tenían acceso a las herramientas de
 
 ## 5. Subfenómenos diferenciales (top 10)
 
-Detalle y puntajes en [subfenomenos_wow.md](subfenomenos_wow.md).
+Detalle y puntajes en [subfenomenos_wow.md](../01_fenomenos/subfenomenos_wow.md).
 
 1. Drones armados de grupos ilegales frente al Escudo Antidrón con IA (F1×F3).
 2. La FAC depende de espacio ajeno: GPS, comunicaciones satelitales y Resolute Sentinel 24 (F1×F2).
@@ -152,18 +152,18 @@ controla" (F1×F2) y "La selva que nadie alerta" (F2×F3).
 
 | Decisión                                                                                                                                                                                                            | Respaldo                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Consola web de nivel empresarial: Next.js + shadcn/ui + AI Elements, con un único backend FastAPI que responde por SSE. **Se descarta Streamlit.**                                                                  | [arquitectura_empresarial.md](arquitectura_empresarial.md)                                                               |
-| Base visual: **fork de worldmonitor**. El repo se publica bajo AGPL-3.0 (decisión del equipo).                                                                                                                      | [worldmonitor_datos_agentes.md](worldmonitor_datos_agentes.md), [reincorporados_copyleft.md](reincorporados_copyleft.md) |
-| Orquestador con agentes especialistas (LangGraph) sobre **un solo LLM local**. CrewAI entra como nodo para tareas de informe por roles. Sin debate entre agentes: la evidencia no muestra que mejore.               | [papers_rag_multiagente.md](papers_rag_multiagente.md)                                                                   |
+| Consola web de nivel empresarial: Next.js + shadcn/ui + AI Elements, con un único backend FastAPI que responde por SSE. **Se descarta Streamlit.**                                                                  | [arquitectura_empresarial.md](../03_arquitectura/arquitectura_empresarial.md)                                                               |
+| Base visual: **fork de worldmonitor**. El repo se publica bajo AGPL-3.0 (decisión del equipo).                                                                                                                      | [worldmonitor_datos_agentes.md](../03_arquitectura/worldmonitor_datos_agentes.md), [reincorporados_copyleft.md](../03_arquitectura/reincorporados_copyleft.md) |
+| Orquestador con agentes especialistas (LangGraph) sobre **un solo LLM local**. CrewAI entra como nodo para tareas de informe por roles. Sin debate entre agentes: la evidencia no muestra que mejore.               | [papers_rag_multiagente.md](../02_estado_del_arte/papers_rag_multiagente.md)                                                                   |
 | Enrutador según la complejidad de la pregunta (Adaptive-RAG) y un evaluador correctivo (CRAG) que usa el puntaje del reranker. El sistema **se abstiene** cuando la evidencia no alcanza.                           | ídem                                                                                                                     |
 | Citas por oración, revisadas por un verificador pequeño aparte (MiniCheck o LettuceDetect). No basta pedirlo en el prompt: un modelo de 3,8B a 8B igual responde el 41,6 % de las preguntas con evidencia engañosa. | ídem                                                                                                                     |
 | El grafo GLiNER entra como señal complementaria, no como buscador principal. Construirlo sin LLM fue lo correcto: en 8 GB, los modelos de menos de unos 7B no logran construir un grafo al estilo GraphRAG.         | ídem                                                                                                                     |
-| Modelo local **Qwen3.5-9B** en Ollama; respaldos Qwen3.5-4B y phi4-mini. Bonsai 2 27B solo como modo opcional si pasa el benchmark.                                                                                 | [modelo_local.md](modelo_local.md)                                                                                       |
-| El agente de visualización produce especificaciones declarativas validadas por esquema (Vega-Lite/ECharts) desde un catálogo cerrado. No ejecuta código generado.                                                   | [papers_visual_dominio.md](papers_visual_dominio.md)                                                                     |
+| Modelo local **Qwen3.5-9B** en Ollama; respaldos Qwen3.5-4B y phi4-mini. Bonsai 2 27B solo como modo opcional si pasa el benchmark.                                                                                 | [modelo_local.md](../03_arquitectura/modelo_local.md)                                                                                       |
+| El agente de visualización produce especificaciones declarativas validadas por esquema (Vega-Lite/ECharts) desde un catálogo cerrado. No ejecuta código generado.                                                   | [papers_visual_dominio.md](../02_estado_del_arte/papers_visual_dominio.md)                                                                     |
 | Geocodificación: se detectan los topónimos con NER y el LLM solo elige entre los candidatos de DIVIPOLA.                                                                                                            | ídem                                                                                                                     |
 | El LLM **no pronostica** conflicto: se usa un índice municipal interpretable con intervalos de confianza. Tampoco se calculan probabilidades de colisión orbital propias.                                           | ídem                                                                                                                     |
 | Diseño contra el sesgo de automatización: evidencia visible, nivel de confianza y decisión humana. Es un argumento clave ante un jurado militar.                                                                    | ídem                                                                                                                     |
-| Demo sin red: datos de CelesTrak y de las APIs guardados en disco, modo de repetición, dos máquinas y video de respaldo.                                                                                            | [arquitectura_empresarial.md](arquitectura_empresarial.md)                                                               |
+| Demo sin red: datos de CelesTrak y de las APIs guardados en disco, modo de repetición, dos máquinas y video de respaldo.                                                                                            | [arquitectura_empresarial.md](../03_arquitectura/arquitectura_empresarial.md)                                                               |
 
 ---
 
@@ -171,7 +171,7 @@ controla" (F1×F2) y "La selva que nadie alerta" (F2×F3).
 
 1. Confirmar con los organizadores la fecha y hora reales de entrega. Las diapositivas dicen
    "sábado 18 de septiembre", pero el 18-sep-2026 es viernes.
-2. Correr el benchmark del modelo local (unos 10 minutos, [modelo_local.md](modelo_local.md) §5)
+2. Correr el benchmark del modelo local (unos 10 minutos, [modelo_local.md](../03_arquitectura/modelo_local.md) §5)
    con el sistema de recuperación cargado.
 3. Agregar como fuente externa los documentos de la FAC y de FACSAT, que no están en el corpus.
 4. Confirmar las cifras marcadas **por verificar**, en especial las de los hechos políticos de 2026.

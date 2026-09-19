@@ -22,46 +22,102 @@ CHROME = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 
 # (título de la parte, archivos en orden). Los archivos ausentes se omiten.
 PARTES = [
-    ("Síntesis", ["sintesis.md"]),
-    ("Contraste con la especificación oficial de la Etapa 2", [
-        "contraste_especificacion.md", "base_sql_adl.md",
-    ]),
-    ("Subfenómenos diferenciales (factor wow)", ["subfenomenos_wow.md"]),
-    ("Análisis transversal del corpus y del jurado", [
-        "transversal/README.md", "transversal/preguntas_jurado.md",
-        "transversal/inventario_corpus.md", "transversal/indice_datos.md",
-        "transversal/datos_graficables.md", "transversal/conexiones.md",
-    ]),
-    ("Fenómeno 1 · IA y Capacidades Estratégicas", [
-        "f1_ia_capacidades/README.md", "claude/f1_ia_capacidades_web.md",
-        "f1_ia_capacidades/cifras_clave.md", "f1_ia_capacidades/global.md",
-        "f1_ia_capacidades/regional.md", "f1_ia_capacidades/colombia.md",
-        "f1_ia_capacidades/riesgos.md",
-        "f1_ia_capacidades/fuentes_corpus.md", "f1_ia_capacidades/preguntas.md",
-    ]),
-    ("Fenómeno 2 · Seguridad del Entorno Espacial", [
-        "f2_seguridad_espacial/README.md", "claude/f2_seguridad_espacial_web.md",
-        "f2_seguridad_espacial/cifras_clave.md", "f2_seguridad_espacial/global.md",
-        "f2_seguridad_espacial/regional.md", "f2_seguridad_espacial/colombia.md",
-        "f2_seguridad_espacial/fuentes_corpus.md", "f2_seguridad_espacial/preguntas.md",
-    ]),
-    ("Fenómeno 3 · Dinámicas Territoriales y Amenazas Regionales", [
-        "f3_amenazas_regionales/README.md", "claude/f3_amenazas_regionales_web.md",
-        "f3_amenazas_regionales/cifras_clave.md", "f3_amenazas_regionales/global.md",
-        "f3_amenazas_regionales/regional.md", "f3_amenazas_regionales/colombia.md",
-        "f3_amenazas_regionales/fuentes_corpus.md", "f3_amenazas_regionales/preguntas.md",
-    ]),
-    ("Conversación en redes y soluciones en construcción", ["social_listening.md"]),
-    ("Estado del arte científico", [
-        "papers_rag_multiagente.md", "papers_visual_dominio.md",
-    ]),
-    ("Anexo · Arquitectura de la solución", [
-        "arquitectura_empresarial.md", "worldmonitor_datos_agentes.md",
-        "reincorporados_copyleft.md", "modelo_local.md",
-        "proyectos_referencia.md",
-        "repos_utiles.md",
-        "arquitectura_multiagente.md", "analitica_visual_agente.md",
-    ]),
+    (
+        "Síntesis",
+        [
+            "00_sintesis/sintesis.md",
+        ],
+    ),
+    (
+        "Contraste con la especificación oficial de la Etapa 2",
+        [
+            "00_sintesis/contraste_especificacion.md",
+            "00_sintesis/base_sql_adl.md",
+        ],
+    ),
+    (
+        "Subfenómenos diferenciales (factor wow)",
+        [
+            "01_fenomenos/subfenomenos_wow.md",
+        ],
+    ),
+    (
+        "Análisis transversal del corpus y del jurado",
+        [
+            "01_fenomenos/transversal/README.md",
+            "01_fenomenos/transversal/preguntas_jurado.md",
+            "01_fenomenos/transversal/inventario_corpus.md",
+            "01_fenomenos/transversal/indice_datos.md",
+            "01_fenomenos/transversal/datos_graficables.md",
+            "01_fenomenos/transversal/conexiones.md",
+        ],
+    ),
+    (
+        "Fenómeno 1 · IA y Capacidades Estratégicas",
+        [
+            "01_fenomenos/f1_ia_capacidades/README.md",
+            "01_fenomenos/web_verificada/f1_ia_capacidades_web.md",
+            "01_fenomenos/f1_ia_capacidades/cifras_clave.md",
+            "01_fenomenos/f1_ia_capacidades/global.md",
+            "01_fenomenos/f1_ia_capacidades/regional.md",
+            "01_fenomenos/f1_ia_capacidades/colombia.md",
+            "01_fenomenos/f1_ia_capacidades/riesgos.md",
+            "01_fenomenos/f1_ia_capacidades/fuentes_corpus.md",
+            "01_fenomenos/f1_ia_capacidades/preguntas.md",
+        ],
+    ),
+    (
+        "Fenómeno 2 · Seguridad del Entorno Espacial",
+        [
+            "01_fenomenos/f2_seguridad_espacial/README.md",
+            "01_fenomenos/web_verificada/f2_seguridad_espacial_web.md",
+            "01_fenomenos/f2_seguridad_espacial/cifras_clave.md",
+            "01_fenomenos/f2_seguridad_espacial/global.md",
+            "01_fenomenos/f2_seguridad_espacial/regional.md",
+            "01_fenomenos/f2_seguridad_espacial/colombia.md",
+            "01_fenomenos/f2_seguridad_espacial/riesgos.md",
+            "01_fenomenos/f2_seguridad_espacial/fuentes_corpus.md",
+            "01_fenomenos/f2_seguridad_espacial/preguntas.md",
+        ],
+    ),
+    (
+        "Fenómeno 3 · Dinámicas Territoriales y Amenazas Regionales",
+        [
+            "01_fenomenos/f3_amenazas_regionales/README.md",
+            "01_fenomenos/web_verificada/f3_amenazas_regionales_web.md",
+            "01_fenomenos/f3_amenazas_regionales/cifras_clave.md",
+            "01_fenomenos/f3_amenazas_regionales/global.md",
+            "01_fenomenos/f3_amenazas_regionales/regional.md",
+            "01_fenomenos/f3_amenazas_regionales/colombia.md",
+            "01_fenomenos/f3_amenazas_regionales/riesgos.md",
+            "01_fenomenos/f3_amenazas_regionales/fuentes_corpus.md",
+            "01_fenomenos/f3_amenazas_regionales/preguntas.md",
+        ],
+    ),
+    (
+        "Conversación en redes y soluciones en construcción",
+        [
+            "02_estado_del_arte/social_listening.md",
+        ],
+    ),
+    (
+        "Estado del arte científico",
+        [
+            "02_estado_del_arte/papers_rag_multiagente.md",
+            "02_estado_del_arte/papers_visual_dominio.md",
+        ],
+    ),
+    (
+        "Anexo · Arquitectura de la solución",
+        [
+            "03_arquitectura/arquitectura_empresarial.md",
+            "03_arquitectura/worldmonitor_datos_agentes.md",
+            "03_arquitectura/reincorporados_copyleft.md",
+            "03_arquitectura/proyectos_referencia.md",
+            "03_arquitectura/repos_utiles.md",
+            "03_arquitectura/modelo_local.md",
+        ],
+    ),
 ]
 
 CSS = """
@@ -103,7 +159,7 @@ def main() -> int:
     if not CHROME.exists():
         print(f"No se encontró Chrome en {CHROME}", file=sys.stderr)
         return 1
-    hoy = dt.date.today().isoformat()
+    hoy = dt.datetime.now().astimezone().date().isoformat()
     cuerpo, indice, faltantes = [], [], []
     for n, (titulo, archivos) in enumerate(PARTES, 1):
         presentes = [a for a in archivos if (INV / a).exists()]
@@ -115,8 +171,10 @@ def main() -> int:
         for i, a in enumerate(presentes):
             texto = (INV / a).read_text(encoding="utf-8")
             clase = "" if i == 0 else ' class="doc"'
-            cuerpo.append(f'<section{clase}><p class="origen">Archivo: docs/investigacion/{a}</p>'
-                          f"{md_a_html(texto)}</section>")
+            cuerpo.append(
+                f'<section{clase}><p class="origen">Archivo: docs/investigacion/{a}</p>'
+                f"{md_a_html(texto)}</section>"
+            )
     portada = (
         '<div class="portada"><h1>CODEFEST AD ASTRA 2026</h1>'
         '<div class="sub">Investigación de los fenómenos de interés · Final</div>'
@@ -125,16 +183,29 @@ def main() -> int:
         f"<p>Fuerza Aeroespacial Colombiana · Universidad de los Andes<br>Compilado el {hoy}</p>"
         '<h2>Contenido</h2><ol class="toc">' + "".join(indice) + "</ol></div>"
     )
-    doc = (f'<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Investigación '
-           f"CODEFEST AD ASTRA 2026</title><style>{CSS}</style></head><body>{portada}"
-           + "".join(cuerpo) + "</body></html>")
+    doc = (
+        f'<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Investigación '
+        f"CODEFEST AD ASTRA 2026</title><style>{CSS}</style></head><body>{portada}"
+        + "".join(cuerpo)
+        + "</body></html>"
+    )
     # Chrome no resuelve rutas relativas de los enlaces internos; no hacen falta en el PDF.
     doc = re.sub(r'href="(?!https?:|mailto:|#)[^"]*"', 'href="#"', doc)
     tmp = SALIDA.with_suffix(".html")
     tmp.write_text(doc, encoding="utf-8")
-    subprocess.run([str(CHROME), "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
-                    f"--print-to-pdf={SALIDA}", tmp.as_uri()], check=True,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(
+        [
+            str(CHROME),
+            "--headless=new",
+            "--disable-gpu",
+            "--no-pdf-header-footer",
+            f"--print-to-pdf={SALIDA}",
+            tmp.as_uri(),
+        ],
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
     tmp.unlink()
     if faltantes:
         print("Omitidos (no existen):", ", ".join(faltantes))
