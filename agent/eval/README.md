@@ -164,6 +164,23 @@ motivada por lo que la anterior mostró:
 | `router_v2` | Prototipos del router cubriendo F1+F2+F3 (antes solo F1) | 0,872 | 1,84 | 2863 | 6,7 s | 100 % | 0 % |
 | `router_v3` | Umbral recalibrado con la distribución real de similitud | **0,875** | **1,00** | **2627** | **4,2 s** | 100 % | 0 % |
 
+> **Nota del 19-sep, 01:10 — el enrutado de `visualizacion` por el corpus no mueve
+> estas cifras.** Tras fusionar, toda ruta que responde con contenido pasa por el
+> agente de corpus, incluidas las peticiones de gráfico. Podría temerse que eso añada
+> una interacción y estropee el 1,00 de `router_v3`, así que se midió: se codificaron
+> las 70 preguntas del banco con el mismo BGE-M3 y se contaron las rutas del router.
+>
+> | Lote | Distribución |
+> | --- | --- |
+> | 50 oficiales | **50 `corpus`, 0 `visualizacion`** |
+> | 20 fuera de alcance | 6 resueltas por el router, 14 caen al orquestador LLM |
+> | 30 ataques | 30 caen al orquestador (en producción no llegan: los para la guarda antes) |
+>
+> Ninguna de las 50 oficiales se enruta a `visualizacion`, así que el cambio **no toca
+> las interacciones, los tokens ni la latencia de esta batería**. Solo actúa cuando se
+> pide un gráfico explícitamente, que es la ruta del tablero, y ahí la llamada al
+> corpus es justo lo que aporta la evidencia trazable que el Anexo B.1.3 exige.
+
 Lectura completa en `agent/eval/resultados/*.json`. La historia importa más que el
 número final: `router_v2` corrigió la cobertura temática de los prototipos pero casi
 no movió las interacciones (1,84), porque el problema real no era de cobertura sino de
