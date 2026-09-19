@@ -75,6 +75,25 @@ Los dos componentes espaciales comparten `MapaCoropleta`. Sobre el lienzo hay do
 
 `mapa_mundo` se dibuja con la proyección de globo de MapLibre y su atmósfera.
 
+### Reproducción temporal
+
+El botón **Reproducir**, junto al rango de años, recorre el rango año por año sobre el
+componente activo: el rango global se estrecha a un solo año y avanza cada 1,1 s. No hay
+dato nuevo ni interpolado —es el mismo filtro de siempre—, así que cada fotograma sigue
+siendo un conteo real con su evidencia. Tres cuidados para que la animación no mienta ni
+parpadee:
+
+- La **escala de color se congela** en el máximo del rango completo. Con el máximo de cada
+  año, uno de cinco alertas se vería tan intenso como uno de doscientas.
+- La **cámara se queda quieta**: reencuadrar en cada año convertiría la lectura en un salto
+  por fotograma.
+- Un **año sin alertas no cambia la vista por el mensaje de vacío** y, entre año y año, se
+  mantiene en pantalla el último resultado atenuado. Si el lienzo se desmontara, el mapa se
+  reconstruiría en cada fotograma.
+
+Tocar los filtros a mano cancela la reproducción y, al pausar o terminar, se restaura el
+rango del usuario.
+
 La cámara la dirige la consulta: cada vez que cambia la pregunta —una instrucción al agente
 o un filtro— el mapa encuadra las regiones que tienen dato (`enfoque` en `MapaCoropleta`,
 calculado en `App.tsx` como la clave de ejecución sin el nivel). No se mueve mientras el

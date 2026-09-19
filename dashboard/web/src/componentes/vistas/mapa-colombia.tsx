@@ -1,5 +1,5 @@
 import { Info } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 import { obtenerGeoDepartamentos, obtenerGeoMunicipios } from "@/api/cliente";
 import type { FilaMapaColombia } from "@/api/tipos";
@@ -23,6 +23,8 @@ interface Props extends PropsVista<FilaMapaColombia[]> {
   onCambiarNivel: (nivel: NivelMapa) => void;
   /** Identidad de la consulta: al cambiar, la cámara reencuadra sobre los datos. */
   enfoque: string;
+  /** Con la reproducción en marcha la escala de color se congela (ver `maximoEscala`). */
+  reproduciendo: boolean;
 }
 
 /** Coropleta de Colombia: departamentos y, al acercar el zoom, municipios. */
@@ -33,6 +35,7 @@ export function VistaMapaColombia({
   onSeleccionar,
   onCambiarNivel,
   enfoque,
+  reproduciendo,
 }: Props) {
   const geo = useRecurso(`geo-${nivel}`, (senal) =>
     nivel === "municipio" ? obtenerGeoMunicipios(senal) : obtenerGeoDepartamentos(senal),
@@ -50,6 +53,17 @@ export function VistaMapaColombia({
   }, [datos]);
 
   const maximo = useMemo(() => maximoDe([...valores.values()]), [valores]);
+
+  /**
+   * Escala de color de la reproducción. Si cada año se pintara con su propio máximo, un año
+   * de cinco alertas se vería tan intenso como uno de doscientas: la animación mentiría. Se
+   * congela el máximo del rango completo, que es el que había justo antes de arrancar.
+   */
+  const maximoCongelado = useRef(maximo);
+  if (!reproduciendo) {
+    maximoCongelado.current = maximo;
+  }
+  const maximoEscala = reproduciendo ? Math.max(maximoCongelado.current, maximo) : maximo;
 
   const filasTabla = useMemo<FilaRanking[]>(
     () =>
@@ -94,7 +108,10 @@ export function VistaMapaColombia({
   if (geo.fase === "error") {
     return <AvisoError mensaje={geo.mensaje} onReintentar={geo.recargar} />;
   }
-  if (datos.length === 0) {
+  // Durante la reproducción un año sin alertas no cambia la vista por el vacío: eso
+  // desmontaría el mapa y el siguiente año volvería a montarlo, reencuadrando la cámara.
+  // El año en blanco se pinta como lo que es, un mapa sin registro.
+  if (datos.length === 0 && !reproduciendo) {
     return (
       <Vacio
         titulo="Sin alertas para estos filtros"
@@ -111,7 +128,7 @@ export function VistaMapaColombia({
           claveGeo={claveGeo}
           claveNombre={claveNombre}
           valores={valores}
-          maximo={maximo}
+          maximo={maximoEscala}
           unidad="alertas"
           centro={CENTRO}
           zoom={4.6}
@@ -130,7 +147,7 @@ export function VistaMapaColombia({
           }}
         />
         <div className="pointer-events-none absolute bottom-12 left-3">
-          <LeyendaEscala maximo={maximo} unidad="alertas tempranas" />
+          <LeyendaEscala maximo={maximoEscala} unidad="alertas tempranas" />
         </div>
         <p className="pointer-events-none absolute left-3 top-3 inline-flex max-w-[calc(100%-4.5rem)] items-center gap-1.5 rounded border border-borde bg-panel px-2 py-1 text-xs text-apagado">
           <Info aria-hidden="true" className="size-3" />

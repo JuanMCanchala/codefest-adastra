@@ -101,6 +101,17 @@ function filtrosEfectivos(
   return { ...especificacion.filtros, ...(resultado?.filtros_aplicados ?? {}) };
 }
 
+/** Pausa entre años de la reproducción temporal: legible sin volverse lenta. */
+const PASO_REPRODUCCION_MS = 1_100;
+
+/** Año a año del rango elegido, con el rango original guardado para restaurarlo al final. */
+interface Reproduccion {
+  rango: { desde: number; hasta: number };
+  anio: number;
+  /** Encuadre vigente al arrancar: la cámara no se mueve durante la reproducción. */
+  enfoque: string;
+}
+
 function anioValido(valor: unknown): number | null {
   const numero = typeof valor === "number" ? valor : Number.parseInt(String(valor), 10);
   return Number.isInteger(numero) && numero > 1800 && numero < 2100 ? numero : null;
@@ -115,7 +126,15 @@ export function App() {
   const [historial, setHistorial] = useState<EntradaHistorial[]>([]);
   const [idActivo, setIdActivo] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [reproduccion, setReproduccion] = useState<Reproduccion | null>(null);
 
+  /**
+   * Último componente calculado. Entre año y año de la reproducción la vista pasa por
+   * «cargando», y si se desmontara el lienzo el mapa se reconstruiría en cada fotograma:
+   * parpadeo, teselas pedidas otra vez y la cámara de vuelta al inicio. Mientras dura la
+   * reproducción se sigue mostrando el último resultado, atenuado.
+   */
+  const ultimoResultado = useRef<ResultadoComponente | null>(null);
   const claveEjecutada = useRef<string | null>(null);
   const control = useRef<AbortController | null>(null);
 
@@ -127,6 +146,7 @@ export function App() {
     calcularComponente(construirCuerpo(objetivo, filtrosGlobales), controlador.signal)
       .then((resultado) => {
         if (!controlador.signal.aborted) {
+          ultimoResultado.current = resultado;
           setVista({ fase: "listo", resultado });
         }
       })
@@ -145,6 +165,45 @@ export function App() {
     claveEjecutada.current = clave;
     ejecutar(peticion, globales);
   }, [ejecutar, globales, peticion]);
+
+  /**
+   * Reproducción temporal: el rango global se estrecha a un año y avanza solo. Es el mismo
+   * filtro de siempre —no hay dato nuevo ni interpolado—, así que cada fotograma sigue
+   * siendo un conteo real con su evidencia. Al terminar se restaura el rango del usuario.
+   */
+  useEffect(() => {
+    if (!reproduccion) {
+      return;
+    }
+    setGlobales((previos) =>
+      previos.desde === reproduccion.anio && previos.hasta === reproduccion.anio
+        ? previos
+        : { ...previos, desde: reproduccion.anio, hasta: reproduccion.anio },
+    );
+    const paso = window.setTimeout(() => {
+      const siguiente = reproduccion.anio + 1;
+      if (siguiente > reproduccion.rango.hasta) {
+        setGlobales((previos) => ({ ...previos, ...reproduccion.rango }));
+        setReproduccion(null);
+        return;
+      }
+      setReproduccion({ ...reproduccion, anio: siguiente });
+    }, PASO_REPRODUCCION_MS);
+    return () => window.clearTimeout(paso);
+  }, [reproduccion]);
+
+  const alternarReproduccion = useCallback(() => {
+    if (reproduccion) {
+      setGlobales((filtros) => ({ ...filtros, ...reproduccion.rango }));
+      setReproduccion(null);
+      return;
+    }
+    setReproduccion({
+      rango: { desde: globales.desde, hasta: globales.hasta },
+      anio: globales.desde,
+      enfoque: claveEnfoqueDe(peticion, globales),
+    });
+  }, [globales, peticion, reproduccion]);
 
   const entradaActiva = useMemo(
     () => historial.find((entrada) => entrada.id === idActivo) ?? null,
@@ -281,7 +340,15 @@ export function App() {
           <ControlesFiltrosGlobales
             filtros={globales}
             usaAnios={usaAnios}
-            onCambiar={setGlobales}
+            onCambiar={(nuevos) => {
+              // Tocar los filtros a mano cancela la reproducción: mandan las manos.
+              if (reproduccion) {
+                setReproduccion(null);
+              }
+              setGlobales(nuevos);
+            }}
+            anioReproducido={reproduccion?.anio ?? null}
+            onAlternarReproduccion={alternarReproduccion}
           />
 
           {modo === "instruccion" && enviando ? (
@@ -299,7 +366,7 @@ export function App() {
             <RespuestaAgente respuesta={entradaActiva.respuesta} />
           ) : null}
 
-          {vista.fase === "cargando" ? (
+          {vista.fase === "cargando" && !(reproduccion && ultimoResultado.current) ? (
             <Cargando />
           ) : vista.fase === "error" ? (
             <AvisoError
@@ -309,18 +376,28 @@ export function App() {
                 ejecutar(peticion, globales);
               }}
             />
-          ) : vista.fase === "listo" ? (
+          ) : vista.fase === "listo" || (reproduccion && ultimoResultado.current) ? (
             <div
-              className={cn("transition-opacity", enviando && "opacity-50")}
-              aria-busy={enviando}
+              className={cn(
+                "transition-opacity",
+                (enviando || vista.fase === "cargando") && "opacity-50",
+              )}
+              aria-busy={enviando || vista.fase === "cargando"}
             >
             <LienzoComponente
-              resultado={vista.resultado}
+              resultado={
+                vista.fase === "listo"
+                  ? vista.resultado
+                  : (ultimoResultado.current as ResultadoComponente)
+              }
               seleccion={seleccion}
               onSeleccionar={setSeleccion}
               nivelColombia={nivelColombia}
               onCambiarNivelColombia={cambiarNivelColombia}
-              claveEnfoque={claveEnfoqueDe(peticion, globales)}
+              // Durante la reproducción la cámara se queda quieta: reencuadrar en cada año
+              // convertiría la lectura en un salto por fotograma.
+              claveEnfoque={reproduccion?.enfoque ?? claveEnfoqueDe(peticion, globales)}
+              reproduciendo={reproduccion !== null}
             />
             </div>
           ) : (

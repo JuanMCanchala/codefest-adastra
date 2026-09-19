@@ -1,4 +1,4 @@
-import { CalendarRange, Layers } from "lucide-react";
+import { CalendarRange, Layers, Pause, Play } from "lucide-react";
 
 import { ANIO_MAXIMO, ANIO_MINIMO, type FiltrosGlobales } from "@/lib/filtros";
 import { SimboloFenomeno } from "@/componentes/ui/simbolo-fenomeno";
@@ -10,10 +10,20 @@ interface Props {
   /** Indica si el componente activo usa el rango de años. */
   usaAnios: boolean;
   onCambiar: (filtros: FiltrosGlobales) => void;
+  /** Año que se está reproduciendo, o `null` si la reproducción está detenida. */
+  anioReproducido: number | null;
+  onAlternarReproduccion: () => void;
 }
 
 /** Filtros globales que se propagan al componente activo. */
-export function ControlesFiltrosGlobales({ filtros, usaAnios, onCambiar }: Props) {
+export function ControlesFiltrosGlobales({
+  filtros,
+  usaAnios,
+  onCambiar,
+  anioReproducido,
+  onAlternarReproduccion,
+}: Props) {
+  const reproduciendo = anioReproducido !== null;
   return (
     <section
       className="flex flex-wrap items-end gap-x-8 gap-y-3 rounded-md border border-borde bg-panel px-4 py-3"
@@ -73,6 +83,25 @@ export function ControlesFiltrosGlobales({ filtros, usaAnios, onCambiar }: Props
             minimo={filtros.desde}
             onCambiar={(hasta) => onCambiar({ ...filtros, hasta })}
           />
+          <button
+            type="button"
+            aria-pressed={reproduciendo}
+            onClick={onAlternarReproduccion}
+            title="Recorre el rango año por año sobre el componente activo"
+            className={cn(
+              "inline-flex h-9 items-center gap-1.5 rounded-md border px-3 text-sm transition-colors",
+              reproduciendo
+                ? "border-acento bg-acento/10 text-texto"
+                : "border-control/60 bg-elevado text-apagado hover:text-texto",
+            )}
+          >
+            {reproduciendo ? (
+              <Pause aria-hidden="true" className="size-3.5" />
+            ) : (
+              <Play aria-hidden="true" className="size-3.5" />
+            )}
+            {reproduciendo ? <span className="font-mono">{anioReproducido}</span> : "Reproducir"}
+          </button>
         </div>
       </fieldset>
     </section>

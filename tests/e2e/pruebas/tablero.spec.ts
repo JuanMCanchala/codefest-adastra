@@ -479,6 +479,31 @@ test.describe("Tablero · trazabilidad", () => {
  * ------------------------------------------------------------------------------------- */
 
 test.describe("Tablero · filtros globales", () => {
+  test("la reproducción recorre los años y al pausar devuelve el rango del usuario", async ({
+    page,
+  }) => {
+    await abrirTablero(page);
+
+    await page.getByRole("button", { name: "Reproducir" }).click();
+    const enCurso = page.getByRole("button", { name: /^\d{4}$/ });
+    await expect(enCurso).toBeVisible();
+    const primerAnio = await enCurso.innerText();
+    expect(primerAnio).toBe(String(ANIO_DESDE));
+    // El año viaja a la API como rango de un solo año.
+    await expect(lienzo(page)).toContainText(`hasta: ${primerAnio}`);
+
+    await expect(async () => {
+      expect(await enCurso.innerText()).not.toBe(primerAnio);
+    }).toPass({ timeout: 15_000 });
+    // Un año sin alertas no debe tumbar el mapa: el lienzo sigue dibujado.
+    await expect(page.locator("canvas.maplibregl-canvas")).toBeVisible();
+
+    await enCurso.click();
+    await expect(page.getByLabel("Desde")).toHaveValue(String(ANIO_DESDE));
+    await expect(page.getByLabel("Hasta")).toHaveValue(String(ANIO_HASTA));
+    await expect(page.getByRole("button", { name: "Reproducir" })).toBeVisible();
+  });
+
   test("elegir un fenómeno vuelve a pedir el componente y el encabezado lo declara", async ({
     page,
   }) => {

@@ -25,6 +25,8 @@ interface Props {
   onCambiarNivelColombia: (nivel: NivelMapa) => void;
   /** Identidad de la consulta vigente; los mapas la usan para reencuadrar la cámara. */
   claveEnfoque: string;
+  /** La reproducción temporal está en marcha: la escala de color se congela. */
+  reproduciendo: boolean;
 }
 
 function valorLegible(valor: unknown): string {
@@ -43,6 +45,7 @@ export function LienzoComponente({
   nivelColombia,
   onCambiarNivelColombia,
   claveEnfoque,
+  reproduciendo,
 }: Props) {
   const definicion = definicionDe(resultado.componente);
   const fenomeno = fenomenoPorId(resultado.fenomeno);
@@ -65,6 +68,7 @@ export function LienzoComponente({
             nivel={nivelColombia}
             onCambiarNivel={onCambiarNivelColombia}
             enfoque={claveEnfoque}
+            reproduciendo={reproduciendo}
           />
         );
       case "mapa_mundo":
