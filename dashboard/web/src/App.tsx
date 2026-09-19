@@ -1,4 +1,4 @@
-import { PanelRightOpen } from "lucide-react";
+import { PanelLeftOpen } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { calcularComponente, obtenerSalud, visualizar } from "@/api/cliente";
@@ -11,11 +11,8 @@ import type {
   Ref,
   ResultadoComponente,
 } from "@/api/tipos";
-import { ExploracionManual } from "@/componentes/filtros/exploracion-manual";
-import { BarraInstruccion } from "@/componentes/instruccion/barra-instruccion";
-import { HistorialInstrucciones } from "@/componentes/instruccion/historial-instrucciones";
-import { RespuestaAgente } from "@/componentes/instruccion/respuesta-agente";
-import { BarraSuperior, type Modo } from "@/componentes/layout/barra-superior";
+import { BurbujaAgente } from "@/componentes/agente/burbuja-agente";
+import { BarraSuperior } from "@/componentes/layout/barra-superior";
 import { PanelLateralEvidencia } from "@/componentes/paneles/panel-lateral-evidencia";
 import { AvisoError, Cargando, Vacio } from "@/componentes/ui/estados";
 import { LienzoComponente } from "@/componentes/vistas/lienzo-componente";
@@ -132,7 +129,6 @@ function anioValido(valor: unknown): number | null {
 
 export function App() {
   const inicial = useRef(estadoDeLaUrl());
-  const [modo, setModo] = useState<Modo>("instruccion");
   const [globales, setGlobales] = useState<FiltrosGlobales>(
     inicial.current?.globales ?? FILTROS_INICIALES,
   );
@@ -285,11 +281,6 @@ export function App() {
     });
   }, []);
 
-  const cambiarComponente = useCallback((componente: NombreComponente) => {
-    setSeleccion(null);
-    setPeticion({ componente, filtros: filtrosPredeterminados(componente) });
-  }, []);
-
   const cambiarNivelColombia = useCallback((nivel: NivelMapa) => {
     setSeleccion(null);
     setPeticion((previa) =>
@@ -303,50 +294,16 @@ export function App() {
     peticion.filtros["nivel"] === "municipio" ? "municipio" : "departamento";
 
   const evidenciaGlobal: readonly Ref[] = vista.fase === "listo" ? vista.resultado.evidencia : [];
-  const usaAnios = definicionDe(peticion.componente).usaAnios;
 
   return (
-    <div className="min-h-dvh bg-fondo">
-      <BarraSuperior modo={modo} onCambiarModo={setModo} />
+    // El armazón ocupa la ventana: el lienzo llena lo que queda y hace su propio scroll,
+    // en vez de empujar la página hacia abajo. Por debajo de `lg` vuelve al flujo normal,
+    // donde el panel de evidencia se apila detrás del componente.
+    <div className="flex min-h-dvh flex-col bg-fondo lg:h-dvh lg:overflow-hidden">
+      <BarraSuperior />
 
-      <div
-        className={cn(
-          "mx-auto grid max-w-[1800px] grid-cols-[minmax(0,1fr)]",
-          evidenciaVisible && !pantallaCompleta && "lg:grid-cols-[minmax(0,1fr)_380px]",
-        )}
-      >
-        <main className="flex min-w-0 flex-col gap-4 px-4 py-4">
-          {/* En pantalla completa el componente es lo único que se ve. */}
-          {pantallaCompleta ? null : modo === "instruccion" ? (
-            <BarraInstruccion ocupado={enviando} onEnviar={enviarInstruccion} />
-          ) : (
-            <ExploracionManual
-              componente={peticion.componente}
-              filtros={peticion.filtros}
-              onCambiarComponente={cambiarComponente}
-              onCambiarFiltros={(filtros) => {
-                setSeleccion(null);
-                setPeticion((previa) => ({ ...previa, filtros }));
-              }}
-              onRestablecer={() => cambiarComponente(peticion.componente)}
-            />
-          )}
-
-          {!pantallaCompleta && modo === "instruccion" && enviando ? (
-            <Cargando
-              mensaje="El orquestador está consultando al agente de visualización…"
-              cronometro
-            />
-          ) : null}
-
-          {!pantallaCompleta && modo === "instruccion" && entradaActiva?.error ? (
-            <AvisoError mensaje={entradaActiva.error} />
-          ) : null}
-
-          {!pantallaCompleta && modo === "instruccion" && entradaActiva?.respuesta ? (
-            <RespuestaAgente respuesta={entradaActiva.respuesta} />
-          ) : null}
-
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           {vista.fase === "cargando" ? (
             <Cargando />
           ) : vista.fase === "error" ? (
@@ -359,7 +316,10 @@ export function App() {
             />
           ) : vista.fase === "listo" ? (
             <div
-              className={cn("transition-opacity", enviando && "opacity-50")}
+              className={cn(
+                "flex min-h-0 flex-1 flex-col transition-opacity",
+                enviando && "opacity-60",
+              )}
               aria-busy={enviando}
             >
               <LienzoComponente
@@ -368,9 +328,6 @@ export function App() {
                 onSeleccionar={setSeleccion}
                 nivelColombia={nivelColombia}
                 onCambiarNivelColombia={cambiarNivelColombia}
-                anios={globales}
-                usaAnios={usaAnios}
-                onCambiarAnios={setGlobales}
                 pantallaCompleta={pantallaCompleta}
                 onAlternarPantallaCompleta={() => setPantallaCompleta((previa) => !previa)}
               />
@@ -378,21 +335,15 @@ export function App() {
           ) : (
             <Vacio
               titulo="Sin componente activo"
-              detalle="Escriba una instrucción o elija un componente en el modo de exploración."
+              detalle="Pida lo que quiere ver al agente o elija un componente en «Ajustar»."
             />
           )}
-
-          {!pantallaCompleta && modo === "instruccion" ? (
-            <HistorialInstrucciones
-              entradas={historial}
-              idActivo={idActivo}
-              onSeleccionar={recuperarDelHistorial}
-            />
-          ) : null}
         </main>
 
         {evidenciaVisible && !pantallaCompleta ? (
-          <div className="h-[70dvh] border-borde lg:sticky lg:top-[52px] lg:h-[calc(100dvh-52px)] lg:border-l">
+          // En móvil la evidencia se apila detrás del componente con su propio alto y su
+          // propio scroll: sin tope, la página crecía hasta decenas de miles de píxeles.
+          <div className="h-[70dvh] min-h-0 overflow-hidden border-borde lg:h-auto lg:w-[380px] lg:shrink-0 lg:border-l">
             <PanelLateralEvidencia
               seleccion={seleccion}
               evidenciaGlobal={evidenciaGlobal}
@@ -402,17 +353,35 @@ export function App() {
             />
           </div>
         ) : !pantallaCompleta ? (
-          // Pestaña en el borde: lo único que queda cuando la evidencia está oculta.
+          // Pestaña en el borde: lo único que queda cuando la evidencia está oculta. Solo
+          // icono, porque el texto en vertical se leía peor que el propio símbolo; el
+          // nombre viaja en `aria-label` y en el título, que es lo que lee todo el mundo.
           <button
             type="button"
             onClick={() => setEvidenciaVisible(true)}
-            className="fixed right-0 top-1/2 z-30 inline-flex -translate-y-1/2 items-center gap-1.5 rounded-l-md border border-r-0 border-borde bg-panel px-2 py-3 text-xs text-apagado [writing-mode:vertical-rl] hover:text-texto"
+            aria-label="Evidencia"
+            title="Mostrar la evidencia"
+            className="fixed right-0 top-1/2 z-30 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-l-md border border-r-0 border-borde bg-panel text-apagado shadow-[0_8px_24px_rgb(0_0_0/0.45)] transition-colors hover:bg-elevado hover:text-texto"
           >
-            <PanelRightOpen aria-hidden="true" className="size-4 rotate-90" />
-            Evidencia
+            <PanelLeftOpen aria-hidden="true" className="size-4" />
           </button>
         ) : null}
       </div>
+
+      <BurbujaAgente
+        ocupado={enviando}
+        onEnviar={enviarInstruccion}
+        respuesta={entradaActiva?.respuesta ?? null}
+        error={entradaActiva?.error ?? null}
+        historial={historial}
+        idActivo={idActivo}
+        onRecuperar={recuperarDelHistorial}
+        resultado={vista.fase === "listo" ? vista.resultado : null}
+        seleccion={seleccion}
+        onSeleccionar={setSeleccion}
+        nivelColombia={nivelColombia}
+        onCambiarNivelColombia={cambiarNivelColombia}
+      />
     </div>
   );
 }

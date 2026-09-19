@@ -292,13 +292,16 @@ conocimiento propio.
 
 Abre `https://dashboard.aerocode.codefest2026.augusta.avaldigitallabs.com`.
 
-1. **Escribe una instrucción** en la barra superior. El agente elige el componente y los filtros,
-   y el tablero lo dibuja con datos reales, junto con la respuesta y la justificación del agente.
-2. **Ajusta los filtros globales** (fenómeno y rango de años). Se aplican al componente activo.
+1. **Pide lo que quieres ver** en la ventana del agente, abajo a la derecha. El agente elige el
+   componente y los filtros, y el tablero de detrás cambia con la respuesta, junto con la
+   justificación y las cifras del resultado.
+2. **Todo se pide hablando**: el componente, el filtro y el rango de años. No hay mandos
+   manuales que mantener sincronizados con lo que decidió el agente.
 3. **Haz clic en cualquier elemento** (región, celda, punto, nodo o arista). El panel lateral de
    evidencia muestra los fragmentos originales que sustentan el valor.
-4. Usa la **exploración manual** para recorrer el catálogo sin pasar por el agente, y el
-   **historial** para volver a instrucciones anteriores.
+4. La ventana del agente **se arrastra, se amplía y se cierra**. Ampliada enseña el gráfico y sus
+   cifras dentro de la conversación; cerrada queda como una burbuja en la esquina. El historial
+   de la sesión devuelve cualquier análisis anterior sin volver a preguntar.
 
 Instrucciones de ejemplo:
 

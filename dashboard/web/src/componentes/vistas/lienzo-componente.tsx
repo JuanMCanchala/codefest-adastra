@@ -2,21 +2,12 @@ import { Layers3, Maximize2, Minimize2, TriangleAlert } from "lucide-react";
 import { useEffect, type CSSProperties } from "react";
 
 import type { ResultadoComponente } from "@/api/tipos";
-import { ControlesFiltrosGlobales } from "@/componentes/filtros/filtros-globales";
 import { Ayuda } from "@/componentes/ui/ayuda";
 import { Boton } from "@/componentes/ui/boton";
 import { SimboloFenomeno } from "@/componentes/ui/simbolo-fenomeno";
-import { Tarjeta } from "@/componentes/ui/tarjeta";
-import { VistaComposicionCorpus } from "@/componentes/vistas/composicion-corpus";
-import { VistaCuadrantePriorizacion } from "@/componentes/vistas/cuadrante-priorizacion";
-import { VistaLineaTiempo } from "@/componentes/vistas/linea-tiempo";
-import { VistaMapaColombia, type NivelMapa } from "@/componentes/vistas/mapa-colombia";
-import { VistaMapaMundo } from "@/componentes/vistas/mapa-mundo";
-import { VistaMatrizCalor } from "@/componentes/vistas/matriz-calor";
-import { VistaPanelEvidencia } from "@/componentes/vistas/panel-evidencia";
-import { VistaRedEntidades } from "@/componentes/vistas/red-entidades";
+import { CuerpoComponente } from "@/componentes/vistas/cuerpo-componente";
+import type { NivelMapa } from "@/componentes/vistas/mapa-colombia";
 import { definicionDe, etiquetaFiltro, valorFiltro } from "@/lib/catalogo";
-import type { FiltrosGlobales } from "@/lib/filtros";
 import { fenomenoPorId } from "@/lib/fenomenos";
 import type { Seleccion } from "@/lib/seleccion";
 import { useVistaTecnica } from "@/lib/vista-tecnica";
@@ -28,9 +19,6 @@ interface Props {
   onSeleccionar: (seleccion: Seleccion) => void;
   nivelColombia: NivelMapa;
   onCambiarNivelColombia: (nivel: NivelMapa) => void;
-  anios: FiltrosGlobales;
-  usaAnios: boolean;
-  onCambiarAnios: (filtros: FiltrosGlobales) => void;
   pantallaCompleta: boolean;
   onAlternarPantallaCompleta: () => void;
 }
@@ -47,16 +35,12 @@ function valorLegible(valor: unknown): string {
  * Filtros como los leería quien revisa el tablero: el rango de años se junta en una sola
  * etiqueta y las claves internas se cambian por los nombres del catálogo.
  */
-function filtrosLegibles(
-  resultado: ResultadoComponente,
-  conCamposDeAnios: boolean,
-): { clave: string; texto: string }[] {
+function filtrosLegibles(resultado: ResultadoComponente): { clave: string; texto: string }[] {
   const entradas = Object.entries(resultado.filtros_aplicados);
   const desde = entradas.find(([clave]) => clave === "desde")?.[1];
   const hasta = entradas.find(([clave]) => clave === "hasta")?.[1];
   const salida: { clave: string; texto: string }[] = [];
-  // Solo se escribe el rango cuando el componente no trae sus campos de años al lado.
-  if (!conCamposDeAnios && (desde !== undefined || hasta !== undefined)) {
+  if (desde !== undefined || hasta !== undefined) {
     salida.push({
       clave: "anios",
       texto: `${valorLegible(desde)}–${valorLegible(hasta)}`,
@@ -78,16 +62,19 @@ function filtrosLegibles(
   return salida;
 }
 
-/** Renderiza el componente elegido con su encabezado, su nota de método y su evidencia. */
+/**
+ * El componente activo ocupando la superficie de trabajo.
+ *
+ * No lleva marco propio: el área de trabajo ya es su contenedor, así que una tarjeta
+ * redondeada dentro de la página solo añadía una caja más. Los mandos de datos viven en la
+ * ventana del agente; aquí queda lo que describe lo que se está viendo.
+ */
 export function LienzoComponente({
   resultado,
   seleccion,
   onSeleccionar,
   nivelColombia,
   onCambiarNivelColombia,
-  anios,
-  usaAnios,
-  onCambiarAnios,
   pantallaCompleta,
   onAlternarPantallaCompleta,
 }: Props) {
@@ -106,63 +93,31 @@ export function LienzoComponente({
     document.addEventListener("keydown", alTeclear);
     return () => document.removeEventListener("keydown", alTeclear);
   }, [onAlternarPantallaCompleta, pantallaCompleta]);
+
   const definicion = definicionDe(resultado.componente);
   const fenomeno = fenomenoPorId(resultado.fenomeno);
   const Icono = definicion.icono;
-  const comunes = {
-    titulo: resultado.titulo,
-    fenomeno: resultado.fenomeno,
-    seleccion,
-    onSeleccionar,
-  };
-  const filtros = filtrosLegibles(resultado, usaAnios);
+  const filtros = filtrosLegibles(resultado);
   const nota = resultado.nota_metodo || "La API no devolvió nota de método.";
 
-  const cuerpo = () => {
-    switch (resultado.componente) {
-      case "mapa_colombia":
-        return (
-          <VistaMapaColombia
-            {...comunes}
-            datos={resultado.datos}
-            nivel={nivelColombia}
-            onCambiarNivel={onCambiarNivelColombia}
-          />
-        );
-      case "mapa_mundo":
-        return <VistaMapaMundo {...comunes} datos={resultado.datos} />;
-      case "linea_tiempo":
-        return <VistaLineaTiempo {...comunes} datos={resultado.datos} />;
-      case "matriz_calor":
-        return <VistaMatrizCalor {...comunes} datos={resultado.datos} />;
-      case "red_entidades":
-        return <VistaRedEntidades {...comunes} datos={resultado.datos} />;
-      case "cuadrante_priorizacion":
-        return <VistaCuadrantePriorizacion {...comunes} datos={resultado.datos} />;
-      case "composicion_corpus":
-        return <VistaComposicionCorpus {...comunes} datos={resultado.datos} />;
-      case "panel_evidencia":
-        return <VistaPanelEvidencia {...comunes} datos={resultado.datos} />;
-    }
-  };
-
   return (
-    <Tarjeta
-      como="section"
+    <section
       aria-labelledby="titulo-componente"
       className={cn(
-        "overflow-hidden",
-        pantallaCompleta && "fixed inset-0 z-40 flex flex-col rounded-none border-0",
+        // `overflow-hidden` es lo que impide que una tabla ancha empuje la página a lo
+        // ancho en móvil: antes lo daba la tarjeta que envolvía el componente.
+        "flex min-h-0 flex-col overflow-hidden bg-panel",
+        pantallaCompleta && "fixed inset-0 z-40",
       )}
-      // Las vistas con alto propio (mapas y red) crecen hasta llenar la pantalla.
+      // Las vistas con alto propio (mapas y red) crecen hasta llenar el espacio disponible.
       style={
-        pantallaCompleta
-          ? ({ "--alto-vista": "calc(100dvh - 3.25rem)" } as CSSProperties)
-          : undefined
+        {
+          "--alto-vista": pantallaCompleta
+            ? "calc(100dvh - 3.25rem)"
+            : "max(320px, calc(100dvh - 9rem))",
+        } as CSSProperties
       }
     >
-      {/* El título manda en su propia línea; el contexto y los mandos, debajo. Una sola
-          cabecera: antes eran tres tiras apiladas con su propio borde. */}
       <header className="border-b border-borde px-4 py-2">
         <div className="flex items-center gap-2">
           <Icono aria-hidden="true" className="size-4 shrink-0 text-apagado" />
@@ -208,11 +163,6 @@ export function LienzoComponente({
               {filtro.texto}
             </span>
           ))}
-          <ControlesFiltrosGlobales
-            filtros={anios}
-            usaAnios={usaAnios}
-            onCambiar={onCambiarAnios}
-          />
           {tecnica ? (
             <span className="inline-flex items-center gap-1 font-mono">
               <Layers3 aria-hidden="true" className="size-3" />
@@ -241,7 +191,15 @@ export function LienzoComponente({
         </p>
       ) : null}
 
-      <div className={cn(pantallaCompleta && "min-h-0 flex-1 overflow-y-auto")}>{cuerpo()}</div>
-    </Tarjeta>
+      <div className="barra-fina min-h-0 flex-1 overflow-y-auto">
+        <CuerpoComponente
+          resultado={resultado}
+          seleccion={seleccion}
+          onSeleccionar={onSeleccionar}
+          nivelColombia={nivelColombia}
+          onCambiarNivelColombia={onCambiarNivelColombia}
+        />
+      </div>
+    </section>
   );
 }
