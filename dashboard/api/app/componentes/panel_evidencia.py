@@ -64,6 +64,39 @@ SELECT COUNT(*) FROM menciones m JOIN documentos d ON d.doc_id = m.doc_id
  WHERE m.entidad = :entidad AND (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
 """
 
+# La base curada de ADL solo guarda `chunk_id`, sin el nombre normalizado del grafo (`China`
+# frente a «china»): se restringe por pertenencia a `sql_entidades`, no por el nombre, para no
+# depender de que las dos grafías coincidan letra a letra.
+POR_ENTIDAD_CURADA = """
+SELECT m.doc_id AS doc_id, m.chunk_id AS chunk_id, d.titulo AS titulo,
+       d.organizacion AS organizacion
+  FROM menciones m JOIN documentos d ON d.doc_id = m.doc_id
+ WHERE m.entidad = :entidad AND (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
+   AND m.chunk_id IN (SELECT chunk_id FROM sql_entidades)
+ ORDER BY m.chunk_id LIMIT :limite
+"""
+TOTAL_ENTIDAD_CURADA = """
+SELECT COUNT(*) FROM menciones m JOIN documentos d ON d.doc_id = m.doc_id
+ WHERE m.entidad = :entidad AND (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
+   AND m.chunk_id IN (SELECT chunk_id FROM sql_entidades)
+"""
+
+# Sin entidad, «curado» solo pide la base validada por ADL: cualquier fragmento cuyo
+# `chunk_id` esté en `sql_entidades` sirve, en el mismo orden que ya usa el resto del panel.
+POR_CURADA = """
+SELECT DISTINCT f.doc_id AS doc_id, f.chunk_id AS chunk_id, d.titulo AS titulo,
+       d.organizacion AS organizacion
+  FROM fragmentos f JOIN documentos d ON d.doc_id = f.doc_id
+ WHERE f.chunk_id IN (SELECT chunk_id FROM sql_entidades)
+   AND (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
+ ORDER BY f.posicion LIMIT :limite
+"""
+TOTAL_CURADA = """
+SELECT COUNT(DISTINCT f.chunk_id) FROM fragmentos f JOIN documentos d ON d.doc_id = f.doc_id
+ WHERE f.chunk_id IN (SELECT chunk_id FROM sql_entidades)
+   AND (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
+"""
+
 POR_CONSULTA = """
 SELECT m.doc_id AS doc_id, m.chunk_id AS chunk_id, d.titulo AS titulo,
        d.organizacion AS organizacion
@@ -118,6 +151,7 @@ class Filtros(FiltrosBase):
     consulta: str | None = None
     fenomeno: int | None = Field(default=None, ge=1, le=3)
     limite: int = Field(default=10, ge=1, le=20)
+    curado: bool = False
 
 
 def _seleccionar(bd: BaseDatos, f: Filtros, params: dict) -> tuple[list, str, str, str | None]:
@@ -140,6 +174,17 @@ def _seleccionar(bd: BaseDatos, f: Filtros, params: dict) -> tuple[list, str, st
         if filas:
             return filas, TOTAL_DOC, f"el documento {f.doc_id}", None
         return bd.consultar(DEFECTO, params), TOTAL_DEFECTO, "el corpus completo", "doc_id"
+    if f.entidad and f.curado:
+        filas = bd.consultar(POR_ENTIDAD_CURADA, params)
+        if filas:
+            return filas, TOTAL_ENTIDAD_CURADA, f"la entidad «{f.entidad}» en la base curada", None
+        # El repliegue de este componente ya sabe descartar un filtro a la vez, así que se
+        # descarta primero «curado» y se deja que la propia entidad intente sin ese límite:
+        # es menos sorprendente que perder también la entidad que el usuario sí pidió.
+        filas = bd.consultar(POR_ENTIDAD, params)
+        if filas:
+            return filas, TOTAL_ENTIDAD, f"la entidad «{f.entidad}»", "curado"
+        return bd.consultar(DEFECTO, params), TOTAL_DEFECTO, "el corpus completo", "entidad"
     if f.entidad:
         filas = bd.consultar(POR_ENTIDAD, params)
         if filas:
@@ -153,6 +198,11 @@ def _seleccionar(bd: BaseDatos, f: Filtros, params: dict) -> tuple[list, str, st
         if filas:
             return filas, TOTAL_TITULO, f"la búsqueda «{f.consulta}»", None
         return bd.consultar(DEFECTO, params), TOTAL_DEFECTO, "el corpus completo", "consulta"
+    if f.curado:
+        filas = bd.consultar(POR_CURADA, params)
+        if filas:
+            return filas, TOTAL_CURADA, "la base curada de ADL", None
+        return bd.consultar(DEFECTO, params), TOTAL_DEFECTO, "el corpus completo", "curado"
     return bd.consultar(DEFECTO, params), TOTAL_DEFECTO, "el corpus completo", None
 
 
