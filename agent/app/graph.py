@@ -1,8 +1,13 @@
 """Orquestación multiagente con LangGraph.
 
-Flujo: guarda → orquestador → {agente_corpus | agente_visualizacion | ambos | fuera de
-alcance} → respuesta. La ruta más frecuente usa dos llamadas a modelos (orquestador +
-especialista); un intento de inyección se rechaza sin gastar ninguna.
+Flujo: guarda → orquestador → {agente_corpus | fuera de alcance} → respuesta, con el
+agente de visualización encadenado después del corpus cuando la solicitud pide un gráfico.
+La ruta más frecuente usa dos llamadas a modelos (orquestador + agente de corpus); un
+intento de inyección se rechaza sin gastar ninguna.
+
+Toda ruta que responda con contenido pasa por el corpus, de modo que
+``evaluacion.retrieval_context`` nunca va vacío y ``actual_output`` siempre se apoya en
+fragmentos citables.
 """
 
 from __future__ import annotations
@@ -13,7 +18,13 @@ from typing import Any, Protocol, TypedDict
 from langgraph.graph import END, StateGraph
 
 from . import prompts
-from .agents import AgenteCorpus, AgenteVisualizacion, Decision, Orquestador
+from .agents import (
+    AgenteCorpus,
+    AgenteSatelital,
+    AgenteVisualizacion,
+    Decision,
+    Orquestador,
+)
 from .contract import ChatResponse, Evaluacion
 from .guard import RECHAZO, detectar_inyeccion, sanear_salida
 from .llm import LLM, ErrorModelo, PresupuestoAgotado
@@ -49,7 +60,13 @@ class Sistema:
         self.orquestador = Orquestador(llm, cfg)
         self.corpus = AgenteCorpus(llm, recuperador, cfg)
         self.visual = AgenteVisualizacion(llm, cfg)
+        # Cuarto agente, opcional: solo existe si hay detecciones ELDOR precalculadas.
+        self.satelital = AgenteSatelital(llm, cfg) if cfg.agente_satelital else None
         self._grafo = self._construir()
+
+    @property
+    def _satelital_activo(self) -> bool:
+        return self.satelital is not None and self.satelital.disponible
 
     # ------------------------------------------------------------------ nodos
     def _n_guarda(self, s: Estado) -> Estado:
@@ -85,6 +102,10 @@ class Sistema:
             )
         return nuevo
 
+    def _n_satelital(self, s: Estado) -> Estado:
+        r = self.satelital.responder(s["pregunta"], s["tracker"])
+        return {"respuesta": r.texto}
+
     def _n_fuera(self, s: Estado) -> Estado:
         return {"respuesta": prompts.FUERA_DE_ALCANCE}
 
@@ -95,23 +116,36 @@ class Sistema:
         g.add_node("orquestador", self._n_orquestador)
         g.add_node("corpus", self._n_corpus)
         g.add_node("visualizacion", self._n_visual)
+        if self._satelital_activo:
+            g.add_node("satelital", self._n_satelital)
         g.add_node("fuera", self._n_fuera)
         g.set_entry_point("guarda")
         g.add_conditional_edges("guarda", lambda s: END if s.get("respuesta") else "orquestador")
+        # Una petición de visualización también pasa por el corpus. Sin eso,
+        # `evaluacion.retrieval_context` iba vacío y `actual_output` no se apoyaba en
+        # ninguna evidencia: la fidelidad (30 % del bloque de Calidad) no se puede medir
+        # contra un contexto vacío, y una pregunta de corpus mal enrutada se perdía
+        # entera. De paso, el tablero recibe la evidencia que sustenta el gráfico, que
+        # el Anexo B.1.3 exige trazable hasta doc_id y chunk_id.
         g.add_conditional_edges(
             "orquestador",
             lambda s: {
                 "corpus": "corpus",
                 "ambos": "corpus",
-                "visualizacion": "visualizacion",
+                "visualizacion": "corpus",
+                # Sin detecciones en disco la ruta satelital cae al corpus, que sí
+                # tiene evidencia textual sobre monitoreo de minería (F3-CEOBS-008).
+                "satelital": "satelital" if self._satelital_activo else "corpus",
                 "fuera_de_alcance": "fuera",
             }[s["decision"].ruta],
         )
         g.add_conditional_edges(
             "corpus",
-            lambda s: "visualizacion" if s["decision"].ruta == "ambos" else END,
+            lambda s: "visualizacion" if s["decision"].ruta in {"ambos", "visualizacion"} else END,
         )
         g.add_edge("visualizacion", END)
+        if self._satelital_activo:
+            g.add_edge("satelital", END)
         g.add_edge("fuera", END)
         return g.compile()
 
