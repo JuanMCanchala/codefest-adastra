@@ -175,9 +175,7 @@ def crear_indices(con: sqlite3.Connection) -> None:
     con.commit()
 
 
-def insertar(
-    con: sqlite3.Connection, tabla: str, columnas: Sequence[str], filas: Iterable[Sequence]
-) -> int:
+def insertar(con: sqlite3.Connection, tabla: str, columnas: Sequence[str], filas: Iterable[Sequence]) -> int:
     """Inserta filas ignorando duplicados de clave primaria y devuelve el total en la tabla."""
     marcas = ",".join("?" * len(columnas))
     sql = f"INSERT OR IGNORE INTO {tabla} ({','.join(columnas)}) VALUES ({marcas})"  # noqa: S608

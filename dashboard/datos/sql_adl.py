@@ -54,13 +54,9 @@ def filas_sql(ruta: Path, corpus) -> tuple[list[tuple], list[tuple], int]:
     """Devuelve (sql_documentos, sql_entidades, entidades sin chunk emparejado)."""
     con = sqlite3.connect(f"file:{ruta}?mode=ro", uri=True)
     try:
-        temas = dict(
-            con.execute("SELECT document_id, COUNT(*) FROM document_topic GROUP BY document_id")
-        )
+        temas = dict(con.execute("SELECT document_id, COUNT(*) FROM document_topic GROUP BY document_id"))
         docs = []
-        for fila in con.execute(
-            "SELECT id, source, title, published_at, origin, page_count FROM document"
-        ):
+        for fila in con.execute("SELECT id, source, title, published_at, origin, page_count FROM document"):
             doc_id = DOC_POR_ID.get(fila[0])
             if doc_id is None or doc_id not in corpus.documentos:
                 continue

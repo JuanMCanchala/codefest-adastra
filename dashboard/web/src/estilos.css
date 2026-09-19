@@ -113,8 +113,14 @@
   filter: invert(1) hue-rotate(180deg);
 }
 
+/* Los iconos de MapLibre vienen en negro: solo hay que invertirlos sobre fondo oscuro. */
+:root[data-tema="claro"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon,
+:root[data-tema="claro"] .maplibregl-ctrl-attrib-button {
+  filter: none;
+}
+
 .maplibregl-ctrl-attrib {
-  background: rgb(11 20 38 / 0.9) !important;
+  background: var(--color-panel) !important;
   color: var(--color-apagado);
   font-size: 12px;
 }
@@ -147,4 +153,33 @@
 .nodo-red:focus-visible circle {
   stroke: var(--color-acento);
   stroke-width: 3;
+}
+
+/*
+ * Modo claro. El oscuro sigue siendo el de partida (proyector y penumbra); el claro es para
+ * pantalla con luz y para imprimir. Mismos nombres de token: ningún componente sabe en qué
+ * modo está.
+ */
+:root[data-tema="claro"] {
+  color-scheme: light;
+  --color-fondo: #ffffff;
+  --color-panel: #fafafa;
+  --color-elevado: #f1f1f1;
+  --color-borde: #e4e4e4;
+  --color-control: #8f8f8f;
+  --color-texto: #171717;
+  --color-apagado: #525252;
+  --color-tenue: #6b6b6b;
+  --color-acento: #171717;
+  --color-acento-claro: #000000;
+  --color-senal: #0060d0;
+  --color-alerta: #c92a2a;
+  --color-ok: #10804a;
+  --color-f1: #7048c4;
+  --color-f2: #1f6fd0;
+  --color-f3: #17794a;
+}
+
+:root[data-tema="claro"] ::selection {
+  background-color: rgb(23 23 23 / 0.14);
 }

@@ -187,9 +187,7 @@ def cargar_corpus(
     return corpus
 
 
-def _completar_documento(
-    doc: dict, corpus_dir: Path, nombres: dict[str, str], muestra: str
-) -> None:
+def _completar_documento(doc: dict, corpus_dir: Path, nombres: dict[str, str], muestra: str) -> None:
     fecha = titulo = None
     if doc["formato"] == "json":
         fecha, titulo = _campos_json(corpus_dir / doc["fuente"])

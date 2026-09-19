@@ -1,5 +1,5 @@
 import { PanelLeftOpen } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { calcularComponente, obtenerSalud, visualizar } from "@/api/cliente";
 import type {
@@ -25,6 +25,7 @@ import {
   type EntradaHistorial,
 } from "@/lib/historial";
 import type { Seleccion } from "@/lib/seleccion";
+import { useModoTema } from "@/lib/tema";
 import { fijarVistaTecnica } from "@/lib/vista-tecnica";
 import { cn, esAbortada, mensajeDeExcepcion } from "@/lib/utils";
 
@@ -127,7 +128,13 @@ function anioValido(valor: unknown): number | null {
   return Number.isInteger(numero) && numero > 1800 && numero < 2100 ? numero : null;
 }
 
+/** Al cambiar de modo se remonta todo: ECharts y MapLibre pintan en lienzo y no releen CSS. */
 export function App() {
+  const modo = useModoTema();
+  return <Tablero key={modo} />;
+}
+
+function Tablero() {
   const inicial = useRef(estadoDeLaUrl());
   const [globales, setGlobales] = useState<FiltrosGlobales>(
     inicial.current?.globales ?? FILTROS_INICIALES,
@@ -182,11 +189,6 @@ export function App() {
     ejecutar(peticion, globales);
   }, [ejecutar, globales, peticion]);
 
-  const entradaActiva = useMemo(
-    () => historial.find((entrada) => entrada.id === idActivo) ?? null,
-    [historial, idActivo],
-  );
-
   const aplicarEspecificacion = useCallback(
     (
       componente: NombreComponente,
@@ -221,12 +223,16 @@ export function App() {
       const id = nuevoId();
       setEnviando(true);
       setIdActivo(id);
+      // El turno entra en el hilo al enviarlo: así se ve la pregunta mientras se espera.
+      setHistorial((previo) => [
+        { id, instruccion, hora: horaActual(), respuesta: null, error: null },
+        ...previo,
+      ]);
       visualizar(instruccion)
         .then((respuesta) => {
-          setHistorial((previo) => [
-            { id, instruccion, hora: horaActual(), respuesta, error: null },
-            ...previo,
-          ]);
+          setHistorial((previo) =>
+            previo.map((entrada) => (entrada.id === id ? { ...entrada, respuesta } : entrada)),
+          );
           const especificacion = respuesta.especificacion;
           if (especificacion) {
             aplicarEspecificacion(
@@ -238,16 +244,12 @@ export function App() {
           }
         })
         .catch((error: unknown) => {
-          setHistorial((previo) => [
-            {
-              id,
-              instruccion,
-              hora: horaActual(),
-              respuesta: null,
-              error: mensajeDeExcepcion(error),
-            },
-            ...previo,
-          ]);
+          const mensaje = mensajeDeExcepcion(error);
+          setHistorial((previo) =>
+            previo.map((entrada) =>
+              entrada.id === id ? { ...entrada, error: mensaje } : entrada,
+            ),
+          );
         })
         .finally(() => setEnviando(false));
     },
@@ -279,6 +281,11 @@ export function App() {
       componente: "panel_evidencia",
       filtros: { ...filtrosPredeterminados("panel_evidencia"), doc_id: docId },
     });
+  }, []);
+
+  const cambiarComponente = useCallback((componente: NombreComponente) => {
+    setSeleccion(null);
+    setPeticion({ componente, filtros: filtrosPredeterminados(componente) });
   }, []);
 
   const cambiarNivelColombia = useCallback((nivel: NivelMapa) => {
@@ -328,6 +335,7 @@ export function App() {
                 onSeleccionar={setSeleccion}
                 nivelColombia={nivelColombia}
                 onCambiarNivelColombia={cambiarNivelColombia}
+                onCambiarComponente={cambiarComponente}
                 pantallaCompleta={pantallaCompleta}
                 onAlternarPantallaCompleta={() => setPantallaCompleta((previa) => !previa)}
               />
@@ -371,11 +379,13 @@ export function App() {
       <BurbujaAgente
         ocupado={enviando}
         onEnviar={enviarInstruccion}
-        respuesta={entradaActiva?.respuesta ?? null}
-        error={entradaActiva?.error ?? null}
         historial={historial}
         idActivo={idActivo}
         onRecuperar={recuperarDelHistorial}
+        onLimpiar={() => {
+          setHistorial([]);
+          setIdActivo(null);
+        }}
         resultado={vista.fase === "listo" ? vista.resultado : null}
         seleccion={seleccion}
         onSeleccionar={setSeleccion}

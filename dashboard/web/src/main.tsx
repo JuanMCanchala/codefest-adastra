@@ -10,6 +10,10 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "@/estilos.css";
 
 import { App } from "@/App";
+import { aplicarTema, modoGuardado } from "@/lib/tema";
+
+// El modo se aplica antes del primer render: sin esto habría un destello del otro tema.
+aplicarTema(modoGuardado());
 
 const raiz = document.getElementById("raiz");
 if (!raiz) {

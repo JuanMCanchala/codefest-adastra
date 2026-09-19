@@ -10,7 +10,11 @@ import type { PropsVista } from "@/lib/seleccion";
 import { useRecurso } from "@/lib/usar-recurso";
 import { formatearEntero, maximoDe } from "@/lib/utils";
 
-const CENTRO: [number, number] = [0, 15];
+/**
+ * El globo arranca mirando a América: es un corpus sobre América Latina, y con el centro
+ * en el meridiano de Greenwich Colombia quedaba en el borde, deformada.
+ */
+const CENTRO: [number, number] = [-55, 10];
 
 /** Coropleta mundial de menciones de países en el corpus. */
 export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<FilaMapaMundo[]>) {
@@ -89,7 +93,8 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar }: PropsVista<F
           maximo={maximo}
           unidad="menciones"
           centro={CENTRO}
-          zoom={1.2}
+          esferico
+          zoom={1.6}
           zoomMinimo={0.8}
           zoomMaximo={6}
           seleccionada={seleccionada}

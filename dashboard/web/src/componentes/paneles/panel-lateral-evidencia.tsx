@@ -1,5 +1,5 @@
 import { PanelRightClose, X } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { obtenerEvidencia } from "@/api/cliente";
 import type { Ref } from "@/api/tipos";
@@ -9,7 +9,7 @@ import { fenomenoPorId } from "@/lib/fenomenos";
 import type { Seleccion } from "@/lib/seleccion";
 import { useRecurso } from "@/lib/usar-recurso";
 import { useVistaTecnica } from "@/lib/vista-tecnica";
-import { chunkIdsDe, etiquetaDocumento } from "@/lib/utils";
+import { chunkIdsDe, cn, etiquetaDocumento } from "@/lib/utils";
 
 /** Tope del lote de `/api/evidencia`: el panel pide y muestra como máximo estos fragmentos. */
 const MAX_PANEL = 50;
@@ -131,7 +131,7 @@ export function PanelLateralEvidencia({
                       {fragmento.fuente}
                     </p>
                   ) : null}
-                  <p className="mt-2 text-sm leading-relaxed text-apagado">{fragmento.texto}</p>
+                  <TextoFragmento texto={fragmento.texto} />
                 </li>
               );
             })}
@@ -139,5 +139,40 @@ export function PanelLateralEvidencia({
         )}
       </div>
     </aside>
+  );
+}
+
+/**
+ * El texto original del fragmento, recortado.
+ *
+ * Algunos fragmentos del corpus son volcados de tabla de cientos de campos separados por
+ * barras: uno solo llenaba el panel entero y tapaba los demás. Se recorta a unas líneas y
+ * se despliega a petición; el texto no se reescribe ni se resume, porque es la evidencia.
+ */
+function TextoFragmento({ texto }: { texto: string }) {
+  const [desplegado, setDesplegado] = useState(false);
+  // Solo merece el botón si de verdad hay texto de sobra.
+  const largo = texto.length > 320;
+
+  return (
+    <>
+      <p
+        className={cn(
+          "mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-apagado",
+          largo && !desplegado && "line-clamp-6",
+        )}
+      >
+        {texto}
+      </p>
+      {largo ? (
+        <button
+          type="button"
+          onClick={() => setDesplegado((previo) => !previo)}
+          className="mt-1 text-xs text-senal underline-offset-2 hover:underline"
+        >
+          {desplegado ? "Mostrar menos" : "Mostrar el fragmento completo"}
+        </button>
+      ) : null}
+    </>
   );
 }

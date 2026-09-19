@@ -85,14 +85,9 @@ def filas_entidades(grafo: Grafo, menciones_set: set[tuple[str, str, int]]) -> l
         docs[entidad].add(doc_id)
         frags[entidad] += 1
     return [
-        (entidad, grafo.tipos.get(entidad), len(docs[entidad]), frags[entidad])
-        for entidad in sorted(docs)
+        (entidad, grafo.tipos.get(entidad), len(docs[entidad]), frags[entidad]) for entidad in sorted(docs)
     ]
 
 
 def filas_relaciones(grafo: Grafo, doc_por_chunk: dict[int, str]) -> list[tuple]:
-    return [
-        arista
-        for arista in grafo.aristas
-        if doc_por_chunk.get(arista[5]) == arista[4]
-    ]
+    return [arista for arista in grafo.aristas if doc_por_chunk.get(arista[5]) == arista[4]]

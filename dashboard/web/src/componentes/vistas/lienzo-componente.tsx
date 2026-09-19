@@ -1,11 +1,12 @@
 import { Layers3, Maximize2, Minimize2, TriangleAlert } from "lucide-react";
 import { useEffect, type CSSProperties } from "react";
 
-import type { ResultadoComponente } from "@/api/tipos";
+import type { NombreComponente, ResultadoComponente } from "@/api/tipos";
 import { Ayuda } from "@/componentes/ui/ayuda";
 import { Boton } from "@/componentes/ui/boton";
 import { SimboloFenomeno } from "@/componentes/ui/simbolo-fenomeno";
 import { CuerpoComponente } from "@/componentes/vistas/cuerpo-componente";
+import { SelectorComponente } from "@/componentes/vistas/selector-componente";
 import type { NivelMapa } from "@/componentes/vistas/mapa-colombia";
 import { definicionDe, etiquetaFiltro, valorFiltro } from "@/lib/catalogo";
 import { fenomenoPorId } from "@/lib/fenomenos";
@@ -19,6 +20,7 @@ interface Props {
   onSeleccionar: (seleccion: Seleccion) => void;
   nivelColombia: NivelMapa;
   onCambiarNivelColombia: (nivel: NivelMapa) => void;
+  onCambiarComponente: (componente: NombreComponente) => void;
   pantallaCompleta: boolean;
   onAlternarPantallaCompleta: () => void;
 }
@@ -75,6 +77,7 @@ export function LienzoComponente({
   onSeleccionar,
   nivelColombia,
   onCambiarNivelColombia,
+  onCambiarComponente,
   pantallaCompleta,
   onAlternarPantallaCompleta,
 }: Props) {
@@ -96,7 +99,6 @@ export function LienzoComponente({
 
   const definicion = definicionDe(resultado.componente);
   const fenomeno = fenomenoPorId(resultado.fenomeno);
-  const Icono = definicion.icono;
   const filtros = filtrosLegibles(resultado);
   const nota = resultado.nota_metodo || "La API no devolvió nota de método.";
 
@@ -120,14 +122,14 @@ export function LienzoComponente({
     >
       <header className="border-b border-borde px-4 py-2">
         <div className="flex items-center gap-2">
-          <Icono aria-hidden="true" className="size-4 shrink-0 text-apagado" />
-          <h2
-            id="titulo-componente"
-            title={resultado.titulo || definicion.etiqueta}
-            className="min-w-0 flex-1 truncate text-base font-semibold"
-          >
+          <h2 id="titulo-componente" className="sr-only">
             {resultado.titulo || definicion.etiqueta}
           </h2>
+          <SelectorComponente
+            componente={resultado.componente}
+            titulo={resultado.titulo}
+            onCambiar={onCambiarComponente}
+          />
           <Ayuda titulo={definicion.etiqueta}>
             {definicion.descripcion}
             <span className="mt-1.5 block border-t border-borde pt-1.5">

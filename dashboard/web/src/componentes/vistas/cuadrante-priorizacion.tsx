@@ -48,6 +48,7 @@ export function VistaCuadrantePriorizacion({
           label: {
             show: true,
             position: cuadrante.posicion,
+            distance: 10,
             color: TEMA.tenue,
             fontSize: TEXTO_MINIMO,
             formatter: cuadrante.titulo,
@@ -58,7 +59,7 @@ export function VistaCuadrantePriorizacion({
     });
 
     return {
-      grid: { left: 8, right: 24, top: 16, bottom: 40, containLabel: true },
+      grid: { left: 8, right: 32, top: 28, bottom: 44, containLabel: true },
       tooltip: {
         ...TEMA_TOOLTIP,
         formatter: (params) => {
@@ -82,7 +83,10 @@ export function VistaCuadrantePriorizacion({
       },
       yAxis: {
         type: "value",
-        name: "cambio del conteo (después − antes del año de corte)",
+        // El nombre largo se comía la esquina superior: va arriba, en su propia línea.
+        name: "cambio del conteo",
+        nameLocation: "end",
+        nameGap: 14,
         nameTextStyle: { color: TEMA.apagado, align: "left" },
         ...TEMA_EJE,
       },
@@ -98,8 +102,9 @@ export function VistaCuadrantePriorizacion({
           itemStyle: { color, opacity: 0.85, borderColor: TEMA.fondo },
           emphasis: { itemStyle: { borderColor: TEMA.texto, borderWidth: 2 } },
           label: {
-            show: datos.length <= 28,
+            show: true,
             position: "right",
+            distance: 6,
             color: TEMA.apagado,
             fontSize: TEXTO_MINIMO,
             formatter: (params) => {
@@ -107,19 +112,30 @@ export function VistaCuadrantePriorizacion({
               return recortar(datos[p.dataIndex ?? -1]?.item ?? "", 18);
             },
           },
+          /*
+           * En el rincón de los conteos bajos se apelotonan casi todos los sujetos y las
+           * etiquetas se pisaban hasta ser ilegibles. ECharts esconde las que chocan y deja
+           * las de los puntos mayores, que son los que se priorizan; el resto sigue en el
+           * globo al pasar el ratón y en el panel de evidencia al pulsar.
+           */
+          labelLayout: { hideOverlap: true },
           data: datos.map((fila) => [fila.intensidad, fila.tendencia]),
           markLine: {
             silent: true,
             symbol: "none",
             label: {
-              color: TEMA.apagado,
+              color: TEMA.tenue,
               fontSize: TEXTO_MINIMO,
+              position: "insideEndTop",
+              // Sin esto ECharts gira el rótulo con la línea y la mediana vertical se lee
+              // de lado, encima de los puntos.
+              rotate: 0,
               formatter: (params: unknown) => {
                 const p = params as { name?: string };
                 return p.name ?? "";
               },
             },
-            lineStyle: { color: TEMA.control, type: "dashed" },
+            lineStyle: { color: TEMA.borde, type: "dashed" },
             data: [
               { name: "mediana", xAxis: medianas.intensidad },
               { name: "mediana", yAxis: medianas.tendencia },
@@ -158,7 +174,7 @@ export function VistaCuadrantePriorizacion({
   return (
     <Grafico
       opcion={opcion}
-      altura={420}
+      altura="vista"
       descripcion={`Dispersión de ${String(datos.length)} sujetos; medianas en ${formatearEntero(
         medianas.intensidad,
       )} de conteo total y ${formatearSigno(medianas.tendencia)} de cambio.`}

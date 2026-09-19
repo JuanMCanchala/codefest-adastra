@@ -13,6 +13,16 @@ Etapa 1.
   (Anexo B.2.5).
 - `nota_metodo` explica en una frase cómo se calculó el valor, por ejemplo: "número de alertas
   tempranas por municipio emitidas entre 2017 y 2026".
+- **Los filtros de texto se resuelven contra el vocabulario real de la base**, sin distinguir
+  mayúsculas ni tildes, y admiten coincidencia parcial. `entidad` y `tipo_entidad` se llevan al
+  nombre guardado en el grafo (`"FARC"` → `farc`, `"Chocó"` → `chocó`); `economia` y `tipo_alerta`
+  se llevan al que escribe la Defensoría (`"mineria"` → `Minería ilegal`, `"inminencia"` →
+  `Inminencia`, `"gota a gota"` → `Préstamos gota a gota`). El valor efectivo se devuelve en
+  `filtros_aplicados`.
+- **Un componente nunca se devuelve vacío por un filtro que no existe.** Si el valor pedido no se
+  parece a ninguno de la base (`economia: "pesca ilegal"`), el filtro se descarta, se informa en
+  `filtros_ignorados` y se responde con los datos sin ese filtro. Devolver un gráfico en blanco es
+  indistinguible de un fallo para quien lo mira.
 
 ## Endpoints
 

@@ -152,9 +152,7 @@ def _divipola(
     return (codigo, codigo[:2]) if codigo else (None, None)
 
 
-def _chunk_de_alerta(
-    textos: list[tuple[int, str]], municipios: list[str], por_defecto: int
-) -> int:
+def _chunk_de_alerta(textos: list[tuple[int, str]], municipios: list[str], por_defecto: int) -> int:
     claves = [normalizar(m) for m in municipios if m]
     for chunk_id, texto in textos:
         normalizado = normalizar(texto)
@@ -186,9 +184,7 @@ def filas_alertas(directorio: Path, corpus, por_par: dict, unicos: dict) -> tupl
             lambda mpio, dpto: _divipola(mpio, dpto, por_par, unicos),
         )
         textos = corpus.textos.get(doc_id, [])
-        chunk_id = _chunk_de_alerta(
-            textos, [m for m, _ in pares], corpus.primer_chunk.get(doc_id, -1)
-        )
+        chunk_id = _chunk_de_alerta(textos, [m for m, _ in pares], corpus.primer_chunk.get(doc_id, -1))
         if chunk_id < 0:
             continue
         for municipio, departamento in pares or [("", None)]:
@@ -250,9 +246,7 @@ def _completitud(fila: dict) -> int:
     return sum(1 for valor in fila.values() if (valor or "").strip())
 
 
-def filas_amazonia(
-    ruta_csv: Path, corpus, municipios: dict[str, dict]
-) -> tuple[list[tuple], int, int]:
+def filas_amazonia(ruta_csv: Path, corpus, municipios: dict[str, dict]) -> tuple[list[tuple], int, int]:
     """Deduplica el CSV por unidad territorial y ancla cada fila a un chunk_id."""
     doc_id = corpus.doc_por_fuente("AMAZONUW_amazonunderworld-data.csv")
     if doc_id is None:

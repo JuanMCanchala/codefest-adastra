@@ -1,17 +1,67 @@
 import type { FeatureCollection } from "geojson";
 import maplibregl, { type ExpressionSpecification, type StyleSpecification } from "maplibre-gl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { SIN_DATO, colorPorValor } from "@/lib/paleta";
-import { formatearEntero } from "@/lib/utils";
+import {
+  BASES,
+  BASES_REMOTAS,
+  baseDe,
+  colorBorde,
+  guardarBase,
+  idCapaBase,
+  idFuenteBase,
+  leerBaseGuardada,
+  type ClaveBase,
+} from "@/lib/mapa-base";
+import { colorPorValor, sinDato } from "@/lib/paleta";
+import { cn, formatearEntero } from "@/lib/utils";
 import { TEMA } from "@/lib/tema";
 
-/** Fondo sin mapa base remoto: la SPA no depende de tokens ni de teselas externas. */
-const ESTILO: StyleSpecification = {
-  version: 8,
-  sources: {},
-  layers: [{ id: "lienzo", type: "background", paint: { "background-color": TEMA.mapaFondo } }],
-};
+/**
+ * Fondo sin mapa base remoto: la SPA no depende de tokens ni de teselas externas.
+ *
+ * Es una función y no una constante porque el color depende del modo claro u oscuro, que
+ * se decide en tiempo de ejecución.
+ *
+ * Con `globo` la proyección pasa a esfera y se dibuja la atmósfera. Es solo geometría:
+ * no descarga nada, así que el mapa mundial se ve en 3D también sin conexión.
+ */
+function estiloBase(esferico: boolean): StyleSpecification {
+  const estilo: StyleSpecification = {
+    version: 8,
+    sources: {},
+    layers: [{ id: "lienzo", type: "background", paint: { "background-color": TEMA.mapaFondo } }],
+  };
+  // Las capas de imagen nacen ocultas: MapLibre no pide teselas de una fuente cuya única
+  // capa está en `visibility: none`, así que el tablero sigue arrancando sin red.
+  for (const base of BASES_REMOTAS) {
+    estilo.sources[idFuenteBase(base.clave)] = {
+      type: "raster",
+      tiles: [...(base.teselas ?? [])],
+      tileSize: 256,
+      maxzoom: base.zoomMaximoTeselas,
+      attribution: base.atribucion,
+    };
+    estilo.layers.push({
+      id: idCapaBase(base.clave),
+      type: "raster",
+      source: idFuenteBase(base.clave),
+      layout: { visibility: "none" },
+    });
+  }
+  if (esferico) {
+    estilo.projection = { type: "globe" };
+    estilo.sky = {
+      "sky-color": TEMA.mapaFondo,
+      "horizon-color": TEMA.control,
+      "fog-color": TEMA.fondo,
+      "sky-horizon-blend": 0.6,
+      "horizon-fog-blend": 0.5,
+      "atmosphere-blend": 0.75,
+    };
+  }
+  return estilo;
+}
 
 const FUENTE = "regiones";
 const CAPA_RELLENO = "regiones-relleno";
@@ -34,6 +84,8 @@ export interface Props {
   seleccionada: string | null;
   onClicRegion: (clave: string) => void;
   onZoom?: (zoom: number) => void;
+  /** Proyección esférica con atmósfera: solo tiene sentido en la vista mundial. */
+  esferico?: boolean;
 }
 
 function expresionColor(valores: ReadonlyMap<string, number>, maximo: number, claveGeo: string) {
@@ -44,9 +96,9 @@ function expresionColor(valores: ReadonlyMap<string, number>, maximo: number, cl
     }
   }
   if (pares.length === 0) {
-    return SIN_DATO;
+    return sinDato();
   }
-  return ["match", ["get", claveGeo], ...pares, SIN_DATO] as unknown as ExpressionSpecification;
+  return ["match", ["get", claveGeo], ...pares, sinDato()] as unknown as ExpressionSpecification;
 }
 
 function leerTexto(propiedades: unknown, clave: string): string {
@@ -72,6 +124,7 @@ export function MapaCoropleta({
   seleccionada,
   onClicRegion,
   onZoom,
+  esferico,
 }: Props) {
   const contenedor = useRef<HTMLDivElement | null>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
@@ -82,6 +135,8 @@ export function MapaCoropleta({
   // Los manejadores de MapLibre se registran una sola vez: leen los valores vigentes por ref.
   const valoresVigentes = useRef(valores);
   const maximoVigente = useRef(maximo);
+
+  const [base, setBase] = useState<ClaveBase>(() => leerBaseGuardada());
 
   alClic.current = onClicRegion;
   alZoom.current = onZoom;
@@ -95,16 +150,20 @@ export function MapaCoropleta({
     }
     const instancia = new maplibregl.Map({
       container: nodo,
-      style: ESTILO,
+      style: estiloBase(esferico === true),
       center: centro,
       zoom,
       minZoom: zoomMinimo,
       maxZoom: zoomMaximo,
       attributionControl: false,
-      dragRotate: false,
-      pitchWithRotate: false,
+      // Sobre la esfera, girar e inclinar es la forma natural de mirar; en el plano no.
+      dragRotate: esferico === true,
+      pitchWithRotate: esferico === true,
     });
-    instancia.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    instancia.addControl(
+      new maplibregl.NavigationControl({ showCompass: esferico === true, visualizePitch: esferico === true }),
+      "top-right",
+    );
     instancia.addControl(
       new maplibregl.AttributionControl({
         compact: true,
@@ -208,5 +267,71 @@ export function MapaCoropleta({
     instancia.setFilter(CAPA_FOCO, ["==", ["get", claveGeo], seleccionada ?? ""]);
   }, [claveGeo, seleccionada]);
 
-  return <div ref={contenedor} className="h-full w-full" />;
+  /*
+   * Fondo elegido. Encender una capa de imagen es lo único que dispara la descarga de
+   * teselas; además la coropleta se vuelve translúcida y el hilo entre regiones cambia
+   * de color, porque sobre una foto un borde oscuro desaparece.
+   */
+  useEffect(() => {
+    const instancia = mapa.current;
+    if (!instancia) {
+      return;
+    }
+    const aplicar = () => {
+      for (const remota of BASES_REMOTAS) {
+        const capa = idCapaBase(remota.clave);
+        if (instancia.getLayer(capa)) {
+          instancia.setLayoutProperty(
+            capa,
+            "visibility",
+            remota.clave === base ? "visible" : "none",
+          );
+        }
+      }
+      if (instancia.getLayer(CAPA_RELLENO)) {
+        instancia.setPaintProperty(CAPA_RELLENO, "fill-opacity", baseDe(base).opacidadRelleno);
+      }
+      if (instancia.getLayer(CAPA_BORDE)) {
+        instancia.setPaintProperty(CAPA_BORDE, "line-color", colorBorde(base));
+      }
+    };
+    if (instancia.isStyleLoaded()) {
+      aplicar();
+    } else {
+      void instancia.once("load", aplicar);
+    }
+  }, [base, geojson]);
+
+  return (
+    <div className="relative h-full w-full">
+      <div ref={contenedor} className="h-full w-full" />
+
+      <div
+        role="group"
+        aria-label="Fondo del mapa"
+        className="absolute left-3 top-3 flex overflow-hidden rounded-md border border-borde bg-panel/90 backdrop-blur-sm"
+      >
+        {BASES.map((opcion) => (
+          <button
+            key={opcion.clave}
+            type="button"
+            aria-pressed={opcion.clave === base}
+            title={opcion.descripcion}
+            onClick={() => {
+              setBase(opcion.clave);
+              guardarBase(opcion.clave);
+            }}
+            className={cn(
+              "px-2.5 py-1 text-xs transition-colors",
+              opcion.clave === base
+                ? "bg-elevado text-texto"
+                : "text-apagado hover:bg-elevado/60 hover:text-texto",
+            )}
+          >
+            {opcion.etiqueta}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }

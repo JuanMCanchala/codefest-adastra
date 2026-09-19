@@ -12,12 +12,10 @@ URL_PAISES = (
     "ne_50m_admin_0_countries.geojson"
 )
 URL_MUNICIPIOS = (
-    "https://raw.githubusercontent.com/caticoa3/colombia_mapa/master/"
-    "co_2018_MGN_MPIO_POLITICO.geojson"
+    "https://raw.githubusercontent.com/caticoa3/colombia_mapa/master/co_2018_MGN_MPIO_POLITICO.geojson"
 )
 URL_DEPARTAMENTOS = (
-    "https://raw.githubusercontent.com/caticoa3/colombia_mapa/master/"
-    "co_2018_MGN_DPTO_POLITICO.geojson"
+    "https://raw.githubusercontent.com/caticoa3/colombia_mapa/master/co_2018_MGN_DPTO_POLITICO.geojson"
 )
 
 CLAVES_NOMBRE_PAIS = (
@@ -277,7 +275,5 @@ def indice_municipios(municipios: dict[str, dict]) -> tuple[dict, dict]:
         for clave_mpio, codigo in por_dpto[next(iter(candidatos))]:
             por_par.setdefault((prefijo, clave_mpio), codigo)
 
-    unicos = {
-        nombre: next(iter(codigos)) for nombre, codigos in por_nombre.items() if len(codigos) == 1
-    }
+    unicos = {nombre: next(iter(codigos)) for nombre, codigos in por_nombre.items() if len(codigos) == 1}
     return por_par, unicos

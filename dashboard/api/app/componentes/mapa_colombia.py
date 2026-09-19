@@ -8,7 +8,14 @@ from pydantic import Field
 
 from ..db import BaseDatos
 from ..evidencia import IndiceTextos
-from .base import FiltrosBase, Salida, evidencia, refs, resolver_filtros
+from .base import (
+    FiltrosBase,
+    Salida,
+    evidencia,
+    normalizar_vocabulario,
+    refs,
+    resolver_filtros,
+)
 
 ALERTAS = """
 WITH base AS (
@@ -49,6 +56,7 @@ class Filtros(FiltrosBase):
 
 def calcular(bd: BaseDatos, filtros: dict, _textos: IndiceTextos) -> tuple[Salida, Filtros, list]:
     f, ignorados = resolver_filtros(Filtros, filtros)
+    f, ignorados = normalizar_vocabulario(bd, f, ("economia", "tipo_alerta"), ignorados)
     if f.desde > f.hasta:
         f = f.model_copy(update={"desde": f.hasta, "hasta": f.desde})
     params = f.model_dump()

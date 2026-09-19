@@ -1,6 +1,7 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Moon, Sun } from "lucide-react";
 
 import { obtenerSalud } from "@/api/cliente";
+import { alternarTema, useModoTema } from "@/lib/tema";
 import { useRecurso } from "@/lib/usar-recurso";
 
 /**
@@ -12,6 +13,7 @@ import { useRecurso } from "@/lib/usar-recurso";
  */
 export function BarraSuperior() {
   const salud = useRecurso("salud", (senal) => obtenerSalud(senal));
+  const modo = useModoTema();
   const urlConsola = salud.fase === "listo" ? (salud.dato.consola_url ?? null) : null;
 
   return (
@@ -31,6 +33,20 @@ export function BarraSuperior() {
             Corpus no disponible
           </p>
         ) : null}
+
+        <button
+          type="button"
+          onClick={alternarTema}
+          aria-label={modo === "oscuro" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+          title={modo === "oscuro" ? "Modo claro" : "Modo oscuro"}
+          className="inline-flex size-7 items-center justify-center rounded-md text-apagado transition-colors hover:bg-elevado hover:text-texto"
+        >
+          {modo === "oscuro" ? (
+            <Sun aria-hidden="true" className="size-4" />
+          ) : (
+            <Moon aria-hidden="true" className="size-4" />
+          )}
+        </button>
 
         {urlConsola ? (
           <a
