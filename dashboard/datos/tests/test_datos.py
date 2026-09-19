@@ -63,9 +63,13 @@ def test_doc_id_coincide_con_el_del_fragmento(con, tabla):
 
 
 def test_fragmentos_pertenecen_a_documentos(con):
-    assert _uno(
-        con, "SELECT COUNT(*) FROM fragmentos f LEFT JOIN documentos d USING (doc_id) WHERE d.doc_id IS NULL"
-    ) == 0
+    assert (
+        _uno(
+            con,
+            "SELECT COUNT(*) FROM fragmentos f LEFT JOIN documentos d USING (doc_id) WHERE d.doc_id IS NULL",
+        )
+        == 0
+    )
 
 
 def test_sin_fechas_futuras(con):
@@ -104,17 +108,24 @@ def test_divipola_de_alertas_existe_en_geojson_de_municipios():
 
 
 def test_entidades_y_menciones_consistentes(con):
-    assert _uno(
-        con, "SELECT COUNT(*) FROM menciones m LEFT JOIN entidades e USING (entidad) WHERE e.entidad IS NULL"
-    ) == 0
+    assert (
+        _uno(
+            con,
+            "SELECT COUNT(*) FROM menciones m LEFT JOIN entidades e USING (entidad) WHERE e.entidad IS NULL",
+        )
+        == 0
+    )
     assert _uno(con, "SELECT COUNT(*) FROM entidades WHERE n_fragmentos <= 0") == 0
 
 
 def test_paises_normalizados(con):
     assert _uno(con, "SELECT COUNT(*) FROM paises WHERE LENGTH(iso3) <> 3") == 0
-    assert _uno(
-        con, "SELECT COUNT(*) FROM menciones_pais mp LEFT JOIN paises p USING (iso3) WHERE p.iso3 IS NULL"
-    ) == 0
+    assert (
+        _uno(
+            con, "SELECT COUNT(*) FROM menciones_pais mp LEFT JOIN paises p USING (iso3) WHERE p.iso3 IS NULL"
+        )
+        == 0
+    )
 
 
 def test_tamano_de_la_base_bajo_control():

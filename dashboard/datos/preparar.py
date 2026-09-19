@@ -122,9 +122,7 @@ def construir(args: argparse.Namespace) -> dict[str, int]:
         ),
         mod_corpus.filas_documentos(datos),
     )
-    esquema.insertar(
-        con, "fragmentos", ("chunk_id", "doc_id", "posicion", "num_tokens"), datos.fragmentos
-    )
+    esquema.insertar(con, "fragmentos", ("chunk_id", "doc_id", "posicion", "num_tokens"), datos.fragmentos)
     esquema.insertar(
         con,
         "entidades",
@@ -154,8 +152,7 @@ def construir(args: argparse.Namespace) -> dict[str, int]:
     esquema.insertar(con, "alertas", territorio.COLUMNAS_ALERTAS, alertas)
 
     amazonia, amz_sin_chunk, amz_sin_divipola = territorio.filas_amazonia(
-        args.corpus
-        / "F3_Dinamicas_Territoriales/Amazon_Underworld/AMAZONUW_amazonunderworld-data.csv",
+        args.corpus / "F3_Dinamicas_Territoriales/Amazon_Underworld/AMAZONUW_amazonunderworld-data.csv",
         datos,
         municipios,
     )
