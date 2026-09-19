@@ -12,6 +12,7 @@ la Etapa 1 (`C:/Programacion/ANDES`, solo lectura).
 | [`fenomeno3_dinamicas_territoriales.md`](fenomeno3_dinamicas_territoriales.md) | Dinámicas territoriales en América Latina: conflicto, desigualdad, migración, Colombia |
 | [`arquitectura_multiagente.md`](arquitectura_multiagente.md) | Patrones y frameworks multiagente con RAG para el Reto 1, comparativa de GUIs, reutilización de la base vectorial |
 | [`analitica_visual_agente.md`](analitica_visual_agente.md) | Cómo un agente genera visualizaciones desde lenguaje natural (Reto 2) e integración con el Reto 1 |
+| [`nicolas/`](nicolas/README.md) | Investigación previa de Nicolás (arquitectura multiagente, catálogo de visualizaciones, notas de despliegue en Coolify) subida como respaldo e insumo adicional |
 
 ## Resumen ejecutivo
 
