@@ -24,25 +24,28 @@ RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+# El usuario sin privilegios se crea antes de descargar los modelos y la base: así los
+# archivos nacen con el dueño correcto y no hace falta un chown que duplique varios GB.
+RUN useradd --create-home --uid 10001 agente \
+    && mkdir -p /models /data \
+    && chown agente /models /data
+USER agente
+
 # Modelos de la recuperación, descargados en la construcción para que el arranque no
 # dependa de la red de Hugging Face durante la evaluación.
 RUN python -c "from huggingface_hub import snapshot_download as d; \
-d('BAAI/bge-m3'); d('BAAI/bge-reranker-v2-m3')"
+x = ['onnx/*', '*.onnx', '*.h5', '*.msgpack', 'imgs/*', '*.ot']; \
+d('BAAI/bge-m3', ignore_patterns=x); d('BAAI/bge-reranker-v2-m3', ignore_patterns=x)"
 
 # Base vectorial de la Etapa 1 (release público, 507 MB comprimidos).
 ARG BASE_VECTORIAL_URL=https://github.com/JuanMCanchala/ad-astra-retrieval/releases/download/base-vectorial-v1/base_vectorial.zip
-RUN mkdir -p /data \
-    && curl -fsSL "$BASE_VECTORIAL_URL" -o /tmp/base.zip \
+RUN curl -fsSL "$BASE_VECTORIAL_URL" -o /tmp/base.zip \
     && unzip -q /tmp/base.zip -d /data \
     && rm /tmp/base.zip
 
-COPY app ./app
-COPY etapa1 ./etapa1
-COPY agent_card.json config.retrieval.yaml ./
-
-RUN useradd --create-home --uid 10001 agente \
-    && chown -R agente /app /models /data
-USER agente
+COPY --chown=agente app ./app
+COPY --chown=agente etapa1 ./etapa1
+COPY --chown=agente agent_card.json config.retrieval.yaml ./
 
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
