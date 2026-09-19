@@ -16,6 +16,7 @@ from pydantic import ValidationError
 
 from . import prompts
 from .catalogo import SpecVisualizacion, describir_catalogo
+from .eldor.evidencia import Deteccion, agregado, cargar_detecciones
 from .guard import delimitar
 from .llm import LLM
 from .retrieval import Fragmento, Recuperador
@@ -24,7 +25,7 @@ from .tracker import Tracker
 
 log = logging.getLogger(__name__)
 
-RUTAS = {"corpus", "visualizacion", "ambos", "fuera_de_alcance"}
+RUTAS = {"corpus", "visualizacion", "satelital", "ambos", "fuera_de_alcance"}
 _JSON = re.compile(r"\{.*\}", re.DOTALL)
 
 
@@ -106,6 +107,71 @@ class AgenteCorpus:
             max_tokens=self._cfg.llm_max_tokens_respuesta,
         )
         return RespuestaCorpus(texto=texto, fragmentos=fragmentos)
+
+
+class AgenteSatelital:
+    """Cuarto agente: mide minería ilegal y cobertura boscosa sobre imágenes de dron.
+
+    A diferencia del agente de corpus, su evidencia no son fragmentos de texto sino
+    áreas segmentadas con el modelo ELDOR (ver `app/eldor/`). La procedencia cumple el
+    mismo papel que `doc_id`/`chunk_id`: sitio, CRS, bbox geográfico, fecha de vuelo y
+    checkpoint. Las cifras se calculan fuera de línea; aquí solo se leen y se redactan.
+
+    Si no hay detecciones en disco, `disponible` es False y el grafo no lo enruta.
+    """
+
+    nombre = "agente_satelital"
+
+    def __init__(self, llm: LLM, cfg: Settings, detecciones: dict[str, Deteccion] | None = None):
+        self._llm, self._cfg = llm, cfg
+        self._det = cargar_detecciones() if detecciones is None else detecciones
+
+    @property
+    def disponible(self) -> bool:
+        return bool(self._det)
+
+    def _seleccionar(self, pregunta: str) -> list[Deteccion]:
+        """Sitios nombrados en la pregunta; si no se nombra ninguno, todos."""
+        texto = pregunta.lower()
+        nombrados = [d for sid, d in self._det.items() if sid.lower() in texto]
+        return nombrados or list(self._det.values())
+
+    def responder(self, pregunta: str, tracker: Tracker) -> RespuestaCorpus:
+        tracker.agente(self.nombre)
+        elegidos = self._seleccionar(pregunta)
+        total = agregado({d.sitio: d for d in elegidos})
+        tracker.herramienta(
+            "medir_cobertura_eldor",
+            {"sitios": [d.sitio for d in elegidos]},
+            f"{total.get('sitios', 0)} sitios, "
+            f"{total.get('area_mineria_ha', 0)} ha de huella minera, "
+            f"{total.get('area_bosque_ha', 0)} ha de bosque primario",
+        )
+        if not elegidos:
+            return RespuestaCorpus(texto=prompts.SIN_EVIDENCIA)
+
+        # El resumen de cada sitio entra a `retrieval_context`: es la evidencia contra la
+        # que se mide la fidelidad de la respuesta (§2.5, bloque A).
+        mediciones = [f"[{d.sitio}] {d.resumen()} Procedencia: {d.referencia()}" for d in elegidos]
+        tracker.recuperado(mediciones)
+        contexto = "\n\n".join(mediciones)
+        if len(elegidos) > 1:
+            contexto += (
+                f"\n\nAGREGADO de los {total['sitios']} sitios: "
+                f"{total['area_total_ha']} ha segmentadas, "
+                f"{total['area_mineria_ha']} ha de huella minera, "
+                f"{total['area_bosque_ha']} ha de bosque primario, "
+                f"{total['area_intervenida_ha']} ha intervenidas."
+            )
+        texto = self._llm.completar(
+            tracker=tracker,
+            agente=self.nombre,
+            modelo=self._cfg.modelo_satelital,
+            sistema=prompts.AGENTE_SATELITAL,
+            mensaje=delimitar("MEDICIONES", contexto) + "\n\n" + delimitar("PREGUNTA", pregunta),
+            max_tokens=self._cfg.llm_max_tokens_respuesta,
+        )
+        return RespuestaCorpus(texto=texto)
 
 
 class AgenteVisualizacion:

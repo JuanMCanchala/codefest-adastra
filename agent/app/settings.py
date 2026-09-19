@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     modelo_orquestador: str = "qwen3-next-80b"
     modelo_corpus: str = "meta.llama3-3-70b-instruct"
     modelo_visualizacion: str = "qwen3-next-80b"
+    # Agente satelital: redacta sobre áreas ya medidas, no razona sobre texto largo.
+    modelo_satelital: str = "qwen3-next-80b"
     # Esfuerzo de razonamiento si se usa un modelo gpt-oss: "low" reduce tokens y latencia.
     razonamiento_gpt_oss: str = "low"
     llm_timeout_s: float = 60.0
@@ -49,6 +51,11 @@ class Settings(BaseSettings):
     # Solo se usa para descargar modelos de acceso restringido. Nunca va en la imagen ni
     # en el código: se declara en las variables de entorno de Coolify (Anexo A.6).
     hf_token: str = ""
+
+    # --- Detección de minería ilegal sobre imágenes (ELDOR) ---
+    # El agente satelital se activa solo si hay detecciones precalculadas en
+    # `agent/datos/eldor/`. Poner esto en False lo desactiva aunque las haya.
+    agente_satelital: bool = True
 
     # --- Servidor ---
     cors_origins: str = "*"
