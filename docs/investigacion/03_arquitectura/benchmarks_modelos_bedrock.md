@@ -164,6 +164,22 @@ Si además se llama al agente de visualización (supuesto: 1.500 tokens de entra
 
 ## 5. Recomendación
 
+> **Actualización del 19-sep, 00:10 — la medición en el gateway cambió dos de las tres
+> filas.** La tabla de abajo es la recomendación *previa a medir*, hecha solo con
+> benchmarks públicos; se conserva para que se vea el razonamiento. Lo que quedó fijado en
+> `agent/app/settings.py` y en `agent_card.json` es esto:
+>
+> | Agente | Recomendación previa | **Lo que se usa** | Qué cambió |
+> | --- | --- | --- | --- |
+> | Orquestador | gpt-oss-120b | **`qwen3-next-80b`** | Con una llamada por modelo en el gateway de ADL, Qwen3-Next clasificó bien el fenómeno en **1,1 s y sin tokens de razonamiento**; **gpt-oss-120b y Llama 4 Scout erraron el fenómeno** |
+> | Corpus (RAG) | Llama 3.3 70B | **`meta.llama3-3-70b-instruct`** | Sin cambios: es el único estable en las dos versiones de Vectara (4,0 % / 4,1 %) |
+> | Visualización | gpt-oss-120b | **`qwen3-next-80b`** | Mismo motivo que el orquestador, y usar un solo modelo para ambos simplifica prompts |
+>
+> **Peso de la evidencia:** la prueba del gateway fue de **una llamada por modelo**, no una
+> batería. Basta para descartar a quien erró el fenómeno, pero no para afirmar que
+> Qwen3-Next sea mejor en general. La comparación seria sigue siendo la del §6, que está
+> pendiente.
+
 | Agente                                                  | Principal                                                                                            | Alternativas                                                                                                                                           | Motivo                                                                                                                                                                                                           |
 | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Orquestador** (enruta y devuelve JSON)                | **gpt-oss-120b** con `reasoning_effort=low`, structured outputs con esquema JSON y `maxTokens` corto | 1) Qwen3-Next-80B-A3B Instruct con structured outputs (no razona). 2) Llama 4 Scout (el más rápido en Bedrock, pero hay que validar el JSON en código) | Es el único con datos de resistencia a prompt injection y el que mejor sigue instrucciones. La salida estructurada garantiza el JSON. En low, el coste en latencia debería ser acotado, **pero hay que medirlo** |

@@ -18,26 +18,40 @@ flowchart LR
     G -- inyección --> R[Rechazo cortés, 0 llamadas]
     G -- ok --> O[orquestador · Qwen3-Next-80B]
     O -- corpus --> C[agente_corpus · Llama 3.3 70B]
-    O -- visualización --> V[agente_visualizacion · Qwen3-Next-80B]
-    O -- ambos --> C --> V
+    O -- visualización / ambos --> C
+    C -- si se pidió gráfico --> V[agente_visualizacion · Qwen3-Next-80B]
+    O -- satelital --> S[agente_satelital · Qwen3-Next-80B]
     O -- fuera de alcance --> F[Respuesta de alcance]
     C -. buscar_corpus .-> B[(Base vectorial Etapa 1<br/>BGE-M3 + FAISS + reranker)]
+    S -. medir_cobertura_eldor .-> E[(Detecciones ELDOR<br/>áreas segmentadas + procedencia)]
 ```
 
 - **Eficiencia (§2.5.2):** la ruta típica hace dos llamadas al modelo. El filtro de seguridad
   rechaza los intentos de inyección sin llamar a ningún modelo. El agente de corpus se abstiene sin
   llamar al redactor cuando no encuentra evidencia.
 - **Fidelidad (§2.5.1):** el redactor recibe solo 6 fragmentos numerados y debe citarlos. Esos
-  mismos fragmentos se devuelven en `evaluacion.retrieval_context`.
+  mismos fragmentos se devuelven en `evaluacion.retrieval_context`. **Toda ruta que responda con
+  contenido pasa por el corpus**, incluidas las peticiones de gráfico: así el contexto nunca va
+  vacío (la fidelidad no se puede medir contra un contexto vacío) y una pregunta de corpus mal
+  enrutada no se pierde. La especificación del gráfico viaja en `extras.visualizacion`, no dentro
+  de `respuesta`, para no meter en `actual_output` afirmaciones que el contexto no sustenta.
 - **Trazabilidad:** cada fragmento conserva su `doc_id` y `chunk_id`. El frontend propio los recibe
   en `extras.citas` enviando `"incluir_extras": true`. La evaluación automática no los pide y recibe
   el contrato exacto.
+
+- **Agente satelital (opcional).** Cuarto agente: responde con áreas medidas al segmentar
+  ortomosaicos de dron de minas de oro amazónicas con el modelo ELDOR. Las cifras se calculan
+  fuera de línea (`scripts/eldor_precalcular.py`) y aquí solo se leen, así que la latencia del
+  chat no cambia y la imagen no carga `torch`. Su trazabilidad no es `doc_id`/`chunk_id` sino
+  sitio + CRS + rectángulo geográfico + fecha de vuelo + checkpoint. Si no hay detecciones en
+  `datos/eldor/`, el agente no se registra y la ruta cae al corpus. Viabilidad, métricas medidas
+  y límites: [`docs/investigacion/03_arquitectura/deteccion_satelital_eldor.md`](../docs/investigacion/03_arquitectura/deteccion_satelital_eldor.md).
 
 | Módulo             | Responsabilidad                                               |
 | ------------------ | ------------------------------------------------------------- |
 | `app/contract.py`  | Contrato de respuesta de la §2.4                              |
 | `app/graph.py`     | Grafo LangGraph y armado de la respuesta                      |
-| `app/agents.py`    | Orquestador, agente de corpus y agente de visualización       |
+| `app/agents.py`    | Orquestador, agente de corpus, agente satelital y de visualización |
 | `app/prompts.py`   | Prompts de sistema                                            |
 | `app/catalogo.py`  | Catálogo cerrado de componentes visuales del Reto 2           |
 | `app/guard.py`     | Defensas contra _prompt injection_                            |
@@ -45,6 +59,7 @@ flowchart LR
 | `app/tracker.py`   | Contabilidad de llamadas, tokens, herramientas y latencia     |
 | `app/retrieval.py` | Adaptador de la base vectorial de la Etapa 1                  |
 | `etapa1/`          | Código de recuperación traído de la Etapa 1 (ver su README)   |
+| `app/eldor/`       | Detección de minería ilegal sobre imágenes de dron (ELDOR)    |
 
 ## Variables de entorno
 
@@ -60,6 +75,7 @@ imagen.
 | `MODELO_ORQUESTADOR`       | `qwen3-next-80b`                                                                         | ID de modelo del orquestador                                                                                |
 | `MODELO_CORPUS`            | `meta.llama3-3-70b-instruct`                                                             | ID de modelo del agente de corpus                                                                           |
 | `MODELO_VISUALIZACION`     | `qwen3-next-80b`                                                                         | ID de modelo del agente de visualización                                                                    |
+| `MODELO_SATELITAL`         | `qwen3-next-80b`                                                                         | ID de modelo del agente satelital                                                                           |
 | `RAZONAMIENTO_GPT_OSS`     | `low`                                                                                    | Esfuerzo de razonamiento de gpt-oss (`low`, `medium`, `high`)                                               |
 | `PRESUPUESTO_TOKENS`       | `40000000`                                                                               | Tope de tokens del proceso, para proteger la bolsa de USD 100                                               |
 | `BASE_VECTORIAL_DIR`       | `/data/base_vectorial`                                                                   | Ruta de la base vectorial                                                                                   |
@@ -68,6 +84,7 @@ imagen.
 | `MODELO_INYECCION`         | `proventra/mdeberta-v3-base-prompt-injection`                                            | Clasificador de la segunda capa de seguridad. Alternativa medida: `meta-llama/Llama-Prompt-Guard-2-86M`     |
 | `UMBRAL_INYECCION`         | `0.5`                                                                                    | Probabilidad mínima para tratar la pregunta como ataque                                                     |
 | `HF_TOKEN`                 | —                                                                                        | Solo para modelos de acceso restringido (Prompt Guard 2). Va en Coolify, nunca en la imagen ni en el código |
+| `AGENTE_SATELITAL`         | `true`                                                                                   | Activa el cuarto agente. Requiere detecciones precalculadas en `datos/eldor/`                               |
 | `CORS_ORIGINS`             | `*`                                                                                      | Orígenes permitidos (frontagent y dashboard)                                                                |
 
 ### Cambiar el clasificador de inyección
