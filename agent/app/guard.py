@@ -46,6 +46,11 @@ _PATRONES = [
     r"\b(modo|mode)\s+(desarrollador|developer|dan|jailbreak|sin restricciones|god)\b",
     r"\bjailbreak\b|\bdo anything now\b",
     r"\bresponde\s+(solo|[uú]nicamente)\s+con\s+(la\s+palabra|el\s+texto)\b",
+    r"\b(nueva tarea|new task)\s*:|\bdeja de ser\b|\bstop being\b",
+    r"(^|\n)\s*(system|sistema|assistant|asistente|admin|developer)\s*:",
+    r"\b(finge|pretend)\s+(que eres|que seas|to be|ser)\b",
+    r"\bignorando\s+(cualquier|toda|todas|las)\s+(pol[ií]tica|regla|restricci)",
+    r"\brevela\b.{0,30}\b(configuraci[oó]n|contrase(n|ñ)a|clave|prompt)",
     # delimitadores de plantilla usados para inyectar turnos
     r"<\|?(im_start|system|endoftext|im_end)\|?>|\[/?INST\]|###\s*(system|instruction)",
     # ejecución de código o acceso al sistema

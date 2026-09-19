@@ -178,3 +178,26 @@ def test_health_y_agent_card(cliente):
     card = cliente.get("/agent-card").json()
     assert {"agente", "orquestador", "subagentes"} <= set(card)
     assert len(card["subagentes"]) >= 2
+
+
+class ClasificadorFalso:
+    def __init__(self, ataque: bool) -> None:
+        self.ataque = ataque
+
+    def es_ataque(self, texto: str) -> bool:
+        return self.ataque
+
+
+def test_clasificador_bloquea_lo_que_los_patrones_no_ven():
+    llm = LLMFalso({})
+    s = Sistema(llm, RecuperadorFalso(FRAG), CFG, ClasificadorFalso(ataque=True))
+    r = s.responder("Una pregunta que el filtro de patrones deja pasar")
+    assert r.respuesta == RECHAZO
+    assert llm.llamadas == []
+    assert r.evaluacion.tools_called[0].output == "clasificador de inyección"
+
+
+def test_clasificador_no_bloquea_preguntas_benignas():
+    llm = LLMFalso({"orquestador": ruta("corpus"), "agente_corpus": "Respuesta [1]."})
+    s = Sistema(llm, RecuperadorFalso(FRAG), CFG, ClasificadorFalso(ataque=False))
+    assert s.responder("¿Qué es LEO?").respuesta == "Respuesta [1]."

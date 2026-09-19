@@ -35,7 +35,7 @@ USER agente
 # dependa de la red de Hugging Face durante la evaluación.
 RUN python -c "from huggingface_hub import snapshot_download as d; \
 x = ['onnx/*', '*.onnx', '*.h5', '*.msgpack', 'imgs/*', '*.ot']; \
-d('BAAI/bge-m3', ignore_patterns=x); d('cross-encoder/mmarco-mMiniLMv2-L12-H384-v1', ignore_patterns=x + ['openvino/*'])"
+d('BAAI/bge-m3', ignore_patterns=x); d('cross-encoder/mmarco-mMiniLMv2-L12-H384-v1', ignore_patterns=x + ['openvino/*']); \nd('proventra/mdeberta-v3-base-prompt-injection', ignore_patterns=x)"
 
 # Base vectorial de la Etapa 1 (release público, 507 MB comprimidos).
 ARG BASE_VECTORIAL_URL=https://github.com/JuanMCanchala/ad-astra-retrieval/releases/download/base-vectorial-v1/base_vectorial.zip

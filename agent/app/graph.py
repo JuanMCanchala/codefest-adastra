@@ -8,7 +8,7 @@ especialista); un intento de inyección se rechaza sin gastar ninguna.
 from __future__ import annotations
 
 import logging
-from typing import Any, TypedDict
+from typing import Any, Protocol, TypedDict
 
 from langgraph.graph import END, StateGraph
 
@@ -24,6 +24,10 @@ from .tracker import Tracker
 log = logging.getLogger(__name__)
 
 
+class Clasificador(Protocol):
+    def es_ataque(self, texto: str) -> bool: ...
+
+
 class Estado(TypedDict, total=False):
     pregunta: str
     tracker: Tracker
@@ -34,7 +38,14 @@ class Estado(TypedDict, total=False):
 
 
 class Sistema:
-    def __init__(self, llm: LLM, recuperador: Recuperador, cfg: Settings) -> None:
+    def __init__(
+        self,
+        llm: LLM,
+        recuperador: Recuperador,
+        cfg: Settings,
+        clasificador: Clasificador | None = None,
+    ) -> None:
+        self.clasificador = clasificador
         self.orquestador = Orquestador(llm, cfg)
         self.corpus = AgenteCorpus(llm, recuperador, cfg)
         self.visual = AgenteVisualizacion(llm, cfg)
@@ -42,11 +53,16 @@ class Sistema:
 
     # ------------------------------------------------------------------ nodos
     def _n_guarda(self, s: Estado) -> Estado:
+        # Capa 1: patrones deterministas. Capa 2: clasificador multilingüe en CPU.
+        # Ninguna llama a un modelo generativo, así que un rechazo no gasta tokens.
+        capa = None
         if detectar_inyeccion(s["pregunta"]):
+            capa = "patrón de inyección"
+        elif self.clasificador is not None and self.clasificador.es_ataque(s["pregunta"]):
+            capa = "clasificador de inyección"
+        if capa:
             s["tracker"].agente(self.orquestador.nombre)
-            s["tracker"].herramienta(
-                "filtro_seguridad", {"accion": "rechazo"}, "patrón de inyección"
-            )
+            s["tracker"].herramienta("filtro_seguridad", {"accion": "rechazo"}, capa)
             return {"respuesta": RECHAZO}
         return {}
 

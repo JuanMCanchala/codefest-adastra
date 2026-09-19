@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     retrieval_config: Path = Path("/app/config.retrieval.yaml")
     fragmentos_contexto: int = 6
 
+    # --- Seguridad: clasificador de prompt injection (segunda capa, en CPU) ---
+    clasificador_inyeccion: bool = True
+    umbral_inyeccion: float = 0.5
+
     # --- Servidor ---
     cors_origins: str = "*"
 

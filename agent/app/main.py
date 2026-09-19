@@ -31,12 +31,16 @@ CLAVES_PREGUNTA = ("pregunta", "question", "input", "query", "message", "mensaje
 
 
 def _crear_sistema() -> tuple[Sistema, object]:
+    from .clasificador import ClasificadorInyeccion
     from .llm import crear_llm
     from .retrieval import RecuperadorEtapa1
 
     cfg = get_settings()
     recuperador = RecuperadorEtapa1(cfg.base_vectorial_dir, cfg.retrieval_config)
-    return Sistema(crear_llm(), recuperador, cfg), recuperador
+    clasificador = (
+        ClasificadorInyeccion(cfg.umbral_inyeccion) if cfg.clasificador_inyeccion else None
+    )
+    return Sistema(crear_llm(), recuperador, cfg, clasificador), recuperador
 
 
 @asynccontextmanager
@@ -47,6 +51,10 @@ async def lifespan(app: FastAPI):
     # La base vectorial y los modelos de embeddings tardan en cargar: se precargan en
     # segundo plano para que la primera pregunta de la evaluación no pague ese costo.
     threading.Thread(target=recuperador.cargar, daemon=True, name="precarga").start()
+    if sistema.clasificador is not None:
+        threading.Thread(
+            target=sistema.clasificador.cargar, daemon=True, name="precarga-guardia"
+        ).start()
     yield
 
 
