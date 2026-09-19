@@ -3,7 +3,7 @@
     "nombre": "Analista Estratégico AD ASTRA",
     "descripcion": "Sistema multiagente que responde preguntas sobre IA y capacidades estratégicas, seguridad del entorno espacial y dinámicas territoriales en América Latina, con respuestas citadas y trazables a doc_id y chunk_id del corpus, y que genera visualizaciones del tablero a partir de instrucciones en lenguaje natural.",
     "version": "1.0.0",
-    "endpoint": "https://agent.NOMBRE_EQUIPO.codefest2026.augusta.avaldigitallabs.com/chat",
+    "endpoint": "https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com/chat",
     "input_modes": [
       "text/plain",
       "application/json"
