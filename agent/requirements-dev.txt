@@ -3,3 +3,7 @@ pytest>=8
 httpx>=0.27
 ruff>=0.6
 bandit>=1.7
+# Solo para agent/eval/ (Parte 1, banco de evaluacion). El CI no las instala a
+# proposito: agent/eval/tests/ no esta en testpaths.
+deepeval>=4.2
+openai>=1.0
