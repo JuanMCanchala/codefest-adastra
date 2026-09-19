@@ -3,8 +3,7 @@
 # Parte de la configuracion medida en la Etapa 1 (config.adl.yaml), con dos cambios
 # por eficiencia: la latencia puntua en el Bloque B (seccion 2.5.2) y el contenedor de
 # Coolify corre en CPU.
-#   - rerank.top_k_candidates baja de 100 a 30: el cross-encoder en CPU es el paso
-#     mas lento y el agente solo usa 6 fragmentos, no 10 + 3 documentos.
+#   - reranker ligero y 40 candidatos: el cross-encoder en CPU era el paso mas lento.
 #   - graph.fuse_into_retrieval se activa por variable de entorno (GRAFO_EN_RECUPERACION)
 #     tras medir su costo en latencia y memoria (carga GLiNER).
 
@@ -31,8 +30,13 @@ retrieval:
 
 rerank:
   enabled: true
-  model_id: "BAAI/bge-reranker-v2-m3"
-  top_k_candidates: 30
+  # bge-reranker-v2-m3 (568M) tardaba 22-26 s por pregunta en el contenedor CPU; este
+  # cross-encoder multilingue (12 capas x 384) procesa 30 pares en 1,2 s y queda a 1-1,5
+  # puntos de nDCG en MKQA segun su model card (docs/investigacion/03_arquitectura/
+  # reranking_y_seguridad.md).
+  model_id: "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
+  max_length: 512
+  top_k_candidates: 40
 
 aggregation:
   method: "max_pool"

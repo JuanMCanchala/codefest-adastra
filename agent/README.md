@@ -102,5 +102,5 @@ docker run -p 8000:8000 -e AWS_BEARER_TOKEN_BEDROCK=... agente
 En Coolify se usa el build pack **Dockerfile**, con _Base Directory_ `/agent`, puerto `8000` y el
 dominio `agent.<equipo>.codefest2026.augusta.avaldigitallabs.com`.
 
-La imagen incluye los modelos BGE-M3 y bge-reranker-v2-m3 y la base vectorial, que se descarga del
+La imagen incluye BGE-M3, el reranker multilingüe ligero mmarco-mMiniLMv2-L12-H384 y la base vectorial, que se descarga del
 release público de la Etapa 1. El contenedor corre con un usuario sin privilegios.

@@ -22,13 +22,19 @@ from __future__ import annotations
 
 class CrossEncoderReranker:
     def __init__(
-        self, model_id: str = "BAAI/bge-reranker-v2-m3", device: str = "auto", use_fp16: bool = True
+        self,
+        model_id: str = "BAAI/bge-reranker-v2-m3",
+        device: str = "auto",
+        use_fp16: bool = True,
+        max_length: int | None = None,
     ):
         from sentence_transformers import CrossEncoder  # import diferido
 
         from ..encoding.encoders import resolve_device
 
-        self.model = CrossEncoder(model_id, device=resolve_device(device))
+        # max_length acota el relleno de los pares: sin él, bge-reranker-v2-m3 usa 8192.
+        kwargs = {"max_length": max_length} if max_length else {}
+        self.model = CrossEncoder(model_id, device=resolve_device(device), **kwargs)
 
     @staticmethod
     def _free_gpu() -> None:

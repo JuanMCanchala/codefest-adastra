@@ -84,7 +84,11 @@ class RecuperadorEtapa1:
         if cfg["rerank"]["enabled"]:
             from etapa1.retrieval.rerank import CrossEncoderReranker
 
-            reranker = CrossEncoderReranker(cfg["rerank"]["model_id"], device=device)
+            reranker = CrossEncoderReranker(
+                cfg["rerank"]["model_id"],
+                device=device,
+                max_length=cfg["rerank"].get("max_length"),
+            )
 
         grafo = None
         gcfg = cfg.get("graph", {})
