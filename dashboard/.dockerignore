@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+api/tests/
+web/node_modules/
+web/dist/
+datos/.cache/
+datos/tests/
+datos/preparar.py
+datos/requirements.txt
+.env
