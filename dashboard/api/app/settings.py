@@ -26,6 +26,11 @@ class Settings(BaseSettings):
 
     cors_origins: str = "*"
 
+    # Detalles internos (identificadores del catálogo, claves crudas de filtros, consumo de
+    # tokens) en la interfaz. Se decide en el despliegue, no en el navegador: el tablero que
+    # revisa el jurado va limpio y el del equipo se enciende con VISTA_TECNICA=1.
+    vista_tecnica: bool = False
+
 
 @lru_cache
 def get_settings() -> Settings:
