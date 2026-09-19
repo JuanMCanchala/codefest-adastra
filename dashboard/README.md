@@ -66,6 +66,12 @@ Los dos componentes espaciales comparten `MapaCoropleta`. Sobre el lienzo hay do
   el mapa vuelve al fondo analítico y lo avisa. La elección se recuerda en `localStorage`.
 - **HUD**: coordenadas del centro, retícula y encuadre de la región seleccionada con su
   conteo. Como el mapa se vuelve a montar al cambiar de modo, su estado también se recuerda.
+- **Volumen**: levanta cada región en una columna proporcional a su dato (misma compresión
+  por raíz cuadrada que el color) e inclina la cámara 52°, porque en planta una extrusión no
+  se distingue de un relleno. Con un mapa base de imagen añade además el relieve del terreno
+  (teselas terrarium de AWS, sin llave); sobre el fondo analítico no lo pide, para no
+  descargar elevación que no tendría dónde apoyarse. No se ofrece en el globo: MapLibre
+  parte la extrusión sobre la esfera.
 
 `mapa_mundo` se dibuja con la proyección de globo de MapLibre y su atmósfera.
 

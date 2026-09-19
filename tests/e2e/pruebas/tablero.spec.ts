@@ -418,6 +418,35 @@ test.describe("Tablero · trazabilidad", () => {
     await expect(page.getByText(/^Z \d+\.\d{2}$/)).toBeVisible();
   });
 
+  test("el volumen 3D se enciende sobre el mapa plano y sin relieve no descarga elevación", async ({
+    page,
+  }, testInfo) => {
+    test.skip(esMovil(testInfo), "El mapa solo ocupa la mitad del lienzo en escritorio.");
+
+    // El relieve acompaña a la imagen: sobre el fondo analítico no debe pedir el modelo
+    // de elevación, que es otro recurso remoto.
+    let elevacion = 0;
+    page.on("request", (peticion) => {
+      if (peticion.url().includes("elevation-tiles-prod")) {
+        elevacion += 1;
+      }
+    });
+
+    await abrirTablero(page);
+    const volumen = page.getByRole("button", { name: "Volumen" });
+    await expect(volumen).toHaveAttribute("aria-pressed", "false");
+    await volumen.click();
+    await expect(volumen).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("canvas.maplibregl-canvas")).toBeVisible();
+    expect(elevacion).toBe(0);
+
+    // En el globo la extrusión se parte, así que allí el interruptor no se ofrece.
+    await irAExploracion(page);
+    await page.getByRole("button", { name: "Mapa del mundo" }).click();
+    await expect(lienzo(page)).toContainText("mapa_mundo");
+    await expect(page.getByRole("button", { name: "Volumen" })).toHaveCount(0);
+  });
+
   test("una consulta nueva reencuadra la cámara sobre las regiones con dato", async ({
     page,
   }, testInfo) => {

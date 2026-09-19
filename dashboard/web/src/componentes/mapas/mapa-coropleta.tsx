@@ -7,13 +7,16 @@ import { HudMapa, type Recuadro } from "@/componentes/mapas/hud-mapa";
 import {
   BASES_REMOTAS,
   type ClaveBase,
+  RELIEVE,
   baseDe,
   guardarBase,
   guardarHud,
+  guardarVolumen,
   idCapaBase,
   idFuenteBase,
   leerBaseGuardada,
   leerHudGuardado,
+  leerVolumenGuardado,
 } from "@/lib/mapa-base";
 import { SIN_DATO, colorPorValor } from "@/lib/paleta";
 import { formatearEntero } from "@/lib/utils";
@@ -46,6 +49,14 @@ function construirEstilo(globo: boolean): StyleSpecification {
       paint: { "raster-opacity": 1 },
     });
   }
+  estilo.sources[RELIEVE.id] = {
+    type: "raster-dem",
+    tiles: [...RELIEVE.teselas],
+    tileSize: 256,
+    maxzoom: RELIEVE.zoomMaximo,
+    encoding: RELIEVE.codificacion,
+    attribution: RELIEVE.atribucion,
+  };
   if (globo) {
     estilo.projection = { type: "globe" };
     estilo.sky = {
@@ -64,6 +75,10 @@ const FUENTE = "regiones";
 const CAPA_RELLENO = "regiones-relleno";
 const CAPA_BORDE = "regiones-borde";
 const CAPA_FOCO = "regiones-foco";
+const CAPA_VOLUMEN = "regiones-volumen";
+
+/** Inclinación de la cámara con el volumen encendido: sin ella las columnas no se leen. */
+const PITCH_VOLUMEN = 52;
 
 export interface Props {
   geojson: FeatureCollection;
@@ -91,6 +106,8 @@ export interface Props {
   enfoque?: string;
   /** Tope de zoom del reencuadre: evita que la cámara cruce sola un umbral de la vista. */
   zoomMaximoEnfoque?: number;
+  /** Altura en metros de la columna del valor máximo con el volumen 3D encendido. */
+  escalaAltura?: number;
 }
 
 function expresionColor(valores: ReadonlyMap<string, number>, maximo: number, claveGeo: string) {
@@ -104,6 +121,29 @@ function expresionColor(valores: ReadonlyMap<string, number>, maximo: number, cl
     return SIN_DATO;
   }
   return ["match", ["get", claveGeo], ...pares, SIN_DATO] as unknown as ExpressionSpecification;
+}
+
+/**
+ * Altura de cada columna, proporcional al valor. La raíz cuadrada es la misma compresión
+ * que usa el color, para que volumen y matiz cuenten lo mismo y un máximo aislado no
+ * aplaste al resto.
+ */
+function expresionAltura(
+  valores: ReadonlyMap<string, number>,
+  maximo: number,
+  claveGeo: string,
+  escala: number,
+): ExpressionSpecification | number {
+  const pares: (string | number)[] = [];
+  for (const [clave, valor] of valores) {
+    if (valor > 0 && maximo > 0) {
+      pares.push(clave, Math.round(Math.sqrt(valor / maximo) * escala));
+    }
+  }
+  if (pares.length === 0) {
+    return 0;
+  }
+  return ["match", ["get", claveGeo], ...pares, 0] as unknown as ExpressionSpecification;
 }
 
 function leerTexto(propiedades: unknown, clave: string): string {
@@ -221,6 +261,7 @@ export function MapaCoropleta({
   globo = false,
   enfoque,
   zoomMaximoEnfoque,
+  escalaAltura = 150_000,
 }: Props) {
   const contenedor = useRef<HTMLDivElement | null>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
@@ -230,6 +271,10 @@ export function MapaCoropleta({
 
   const [base, setBase] = useState<ClaveBase>(() => leerBaseGuardada());
   const [hud, setHud] = useState(() => leerHudGuardado());
+  // La extrusión sobre la esfera de MapLibre se parte en fragmentos, así que el volumen
+  // solo existe en el mapa plano; la preferencia guardada se ignora en el globo.
+  const [volumen, setVolumen] = useState(() => leerVolumenGuardado());
+  const volumenActivo = volumen && !globo;
   const [avisoBase, setAvisoBase] = useState<string | null>(null);
   // La cámara y el destello necesitan las capas ya añadidas; el estilo carga después del
   // primer render y la vista se vuelve a montar al cambiar de modo, así que no basta un ref.
@@ -245,6 +290,7 @@ export function MapaCoropleta({
   const valoresVigentes = useRef(valores);
   const maximoVigente = useRef(maximo);
   const baseVigente = useRef(base);
+  const escalaVigente = useRef(escalaAltura);
   const alFalloBase = useRef<(clave: ClaveBase) => void>(() => {});
 
   alClic.current = onClicRegion;
@@ -252,6 +298,7 @@ export function MapaCoropleta({
   valoresVigentes.current = valores;
   maximoVigente.current = maximo;
   baseVigente.current = base;
+  escalaVigente.current = escalaAltura;
   alFalloBase.current = (clave) => {
     if (clave !== baseVigente.current) return;
     setBase("analitico");
@@ -259,6 +306,11 @@ export function MapaCoropleta({
     setAvisoBase(
       `No se pudo descargar «${baseDe(clave).etiqueta}»: se volvió al fondo analítico.`,
     );
+  };
+
+  const cambiarVolumen = (activo: boolean) => {
+    setVolumen(activo);
+    guardarVolumen(activo);
   };
 
   const cambiarHud = (activo: boolean) => {
@@ -356,6 +408,22 @@ export function MapaCoropleta({
           paint: { "line-color": TEMA.acento, "line-width": 2.5 },
           filter: ["==", ["get", claveGeo], ""],
         });
+        instancia.addLayer({
+          id: CAPA_VOLUMEN,
+          type: "fill-extrusion",
+          source: FUENTE,
+          layout: { visibility: "none" },
+          paint: {
+            "fill-extrusion-color": color,
+            "fill-extrusion-height": expresionAltura(
+              valoresVigentes.current,
+              maximoVigente.current,
+              claveGeo,
+              escalaVigente.current,
+            ),
+            "fill-extrusion-opacity": 0.9,
+          },
+        });
 
         instancia.on("click", CAPA_RELLENO, (evento) => {
           const rasgo = evento.features?.[0];
@@ -395,8 +463,17 @@ export function MapaCoropleta({
     if (!instancia?.getLayer(CAPA_RELLENO)) {
       return;
     }
-    instancia.setPaintProperty(CAPA_RELLENO, "fill-color", expresionColor(valores, maximo, claveGeo));
-  }, [claveGeo, maximo, valores]);
+    const color = expresionColor(valores, maximo, claveGeo);
+    instancia.setPaintProperty(CAPA_RELLENO, "fill-color", color);
+    if (instancia.getLayer(CAPA_VOLUMEN)) {
+      instancia.setPaintProperty(CAPA_VOLUMEN, "fill-extrusion-color", color);
+      instancia.setPaintProperty(
+        CAPA_VOLUMEN,
+        "fill-extrusion-height",
+        expresionAltura(valores, maximo, claveGeo, escalaAltura),
+      );
+    }
+  }, [claveGeo, escalaAltura, maximo, valores]);
 
   useEffect(() => {
     const instancia = mapa.current;
@@ -427,6 +504,40 @@ export function MapaCoropleta({
       ...(zoomMaximoEnfoque === undefined ? {} : { maxZoom: zoomMaximoEnfoque }),
     });
   }, [capasListas, claveGeo, enfoque, geojson, valores, zoomMaximoEnfoque]);
+
+  // Volumen 3D: la coropleta se levanta en columnas proporcionales al dato y la cámara se
+  // inclina, porque en planta una extrusión no se distingue de un relleno. El relieve del
+  // terreno solo acompaña a la imagen: sobre el fondo analítico sería ruido sin referencia.
+  useEffect(() => {
+    const instancia = mapa.current;
+    if (!instancia || !capasListas || !instancia.getLayer(CAPA_VOLUMEN)) {
+      return;
+    }
+    instancia.setLayoutProperty(CAPA_VOLUMEN, "visibility", volumenActivo ? "visible" : "none");
+    instancia.setLayoutProperty(CAPA_RELLENO, "visibility", volumenActivo ? "none" : "visible");
+
+    const conRelieve = volumenActivo && base !== "analitico";
+    instancia.setTerrain(
+      conRelieve ? { source: RELIEVE.id, exaggeration: RELIEVE.exageracion } : null,
+    );
+
+    if (volumenActivo) {
+      instancia.dragRotate.enable();
+      instancia.touchZoomRotate.enableRotation();
+    } else {
+      instancia.dragRotate.disable();
+      instancia.touchZoomRotate.disableRotation();
+    }
+    // Solo se toca la cámara si hay algo que cambiar: un easeTo en plano y sin inclinación
+    // no haría nada salvo interrumpir el reencuadre de la consulta, que corre a la vez.
+    if (volumenActivo || instancia.getPitch() !== 0) {
+      instancia.easeTo({
+        pitch: volumenActivo ? PITCH_VOLUMEN : 0,
+        bearing: volumenActivo ? instancia.getBearing() : 0,
+        duration: prefiereMenosMovimiento() ? 0 : 700,
+      });
+    }
+  }, [base, capasListas, volumenActivo]);
 
   // Encendido del mapa base: la coropleta se aclara para dejar ver la imagen de abajo.
   useEffect(() => {
@@ -517,7 +628,15 @@ export function MapaCoropleta({
           recuadro={telemetria.recuadro}
         />
       ) : null}
-      <ControlesMapa base={base} onCambiarBase={cambiarBase} hud={hud} onCambiarHud={cambiarHud} />
+      <ControlesMapa
+        base={base}
+        onCambiarBase={cambiarBase}
+        hud={hud}
+        onCambiarHud={cambiarHud}
+        volumen={volumenActivo}
+        onCambiarVolumen={cambiarVolumen}
+        mostrarVolumen={!globo}
+      />
       {avisoBase ? (
         <p
           role="status"

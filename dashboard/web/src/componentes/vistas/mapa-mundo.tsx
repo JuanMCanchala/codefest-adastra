@@ -104,6 +104,7 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar, enfoque }: Pro
           onClicRegion={seleccionarPais}
           enfoque={enfoque}
           zoomMaximoEnfoque={ZOOM_MAXIMO_ENFOQUE}
+          escalaAltura={800_000}
           globo
         />
         <div className="pointer-events-none absolute bottom-9 left-3">

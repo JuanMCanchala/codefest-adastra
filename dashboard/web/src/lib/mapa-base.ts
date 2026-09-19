@@ -63,6 +63,20 @@ export const BASES: readonly MapaBase[] = [
 
 export const BASE_POR_DEFECTO: ClaveBase = "analitico";
 
+/**
+ * Modelo de elevación para el relieve del volumen 3D: teselas terrarium del conjunto
+ * abierto de AWS (Registry of Open Data). Sin llave, y solo se descarga con el volumen
+ * encendido sobre un mapa base de imagen; sobre el fondo analítico el relieve sería ruido.
+ */
+export const RELIEVE = {
+  id: "relieve-dem",
+  teselas: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
+  codificacion: "terrarium",
+  zoomMaximo: 12,
+  atribucion: "Elevación: Mapzen / AWS Terrain Tiles",
+  exageracion: 1.3,
+} as const;
+
 export function baseDe(clave: ClaveBase): MapaBase {
   return BASES.find((b) => b.clave === clave) ?? BASES[0]!;
 }
@@ -80,6 +94,7 @@ export function idCapaBase(clave: ClaveBase): string {
 
 const LLAVE_MEMORIA = "aerocode:mapa-base";
 const LLAVE_HUD = "aerocode:mapa-hud";
+const LLAVE_VOLUMEN = "aerocode:mapa-volumen";
 
 /** La elección sobrevive al cambio de vista (Colombia ↔ mundo) dentro de la sesión. */
 export function leerBaseGuardada(): ClaveBase {
@@ -116,5 +131,21 @@ export function guardarHud(activo: boolean): void {
     window.localStorage.setItem(LLAVE_HUD, activo ? "1" : "0");
   } catch {
     // Sin persistencia: el HUD vale solo para esta vista.
+  }
+}
+
+export function leerVolumenGuardado(): boolean {
+  try {
+    return window.localStorage.getItem(LLAVE_VOLUMEN) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function guardarVolumen(activo: boolean): void {
+  try {
+    window.localStorage.setItem(LLAVE_VOLUMEN, activo ? "1" : "0");
+  } catch {
+    // Sin persistencia: el volumen vale solo para esta vista.
   }
 }
