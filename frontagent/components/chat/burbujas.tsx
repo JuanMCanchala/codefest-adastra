@@ -3,6 +3,8 @@
 import { Loader2, TriangleAlert, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { useVistaTecnica } from "@/lib/vista-tecnica";
+
 export function BurbujaUsuario({ texto }: { texto: string }) {
   return (
     <div className="flex justify-end">
@@ -51,6 +53,7 @@ export function BurbujaError({
 
 /** Espera honesta: muestra el tiempo real transcurrido, sin simular etapas. */
 export function EstadoPensando() {
+  const tecnica = useVistaTecnica();
   const [segundos, setSegundos] = useState(0);
 
   useEffect(() => {
@@ -78,9 +81,9 @@ export function EstadoPensando() {
           </span>
         </p>
         <p className="mt-1 text-sm leading-relaxed text-apagado">
-          El orquestador decide la ruta, el agente de corpus recupera evidencia
-          y, si aplica, el agente de visualización propone un componente. Suele
-          tardar entre 2 y 7 s; la traza real aparece con la respuesta.
+          {tecnica
+            ? "El orquestador decide la ruta, el agente de corpus recupera evidencia y, si aplica, el agente de visualización propone un componente. Suele tardar entre 2 y 7 s; la traza real aparece con la respuesta."
+            : "Suele tardar entre 2 y 7 s."}
         </p>
       </div>
     </div>

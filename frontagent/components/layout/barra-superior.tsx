@@ -1,11 +1,15 @@
 "use client";
 
-import { ArrowUpRight, Radar } from "lucide-react";
+import { ArrowUpRight, Radar, Wrench } from "lucide-react";
 
 import { IndicadorAgente } from "@/components/layout/indicador-agente";
+import { alternarVistaTecnica, useVistaTecnica } from "@/lib/vista-tecnica";
+import { cn } from "@/lib/utils";
 
 /** Barra de mando compartida con el tablero: marca, puesto y estado del sistema. */
 export function BarraSuperior({ urlTablero }: { urlTablero: string | null }) {
+  const tecnica = useVistaTecnica();
+
   return (
     <header className="franja-mando border-b border-borde bg-panel">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 pb-2.5 pt-3">
@@ -42,6 +46,21 @@ export function BarraSuperior({ urlTablero }: { urlTablero: string | null }) {
               />
             </a>
           ) : null}
+          <button
+            type="button"
+            aria-pressed={tecnica}
+            onClick={alternarVistaTecnica}
+            title="Muestra la ruta interna, el consumo de tokens, los modelos y los parámetros de las herramientas"
+            className={cn(
+              "inline-flex h-9 items-center gap-1.5 rounded-md border px-3 text-sm transition-colors",
+              tecnica
+                ? "border-acento bg-acento/10 text-texto"
+                : "border-control bg-elevado text-apagado hover:text-texto",
+            )}
+          >
+            <Wrench aria-hidden="true" className="size-3.5" />
+            Vista técnica
+          </button>
           <IndicadorAgente />
         </div>
       </div>

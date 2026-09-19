@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { BurbujaError, BurbujaUsuario, EstadoPensando } from "@/components/chat/burbujas";
+import {
+  BurbujaError,
+  BurbujaUsuario,
+  EstadoPensando,
+} from "@/components/chat/burbujas";
 import { PanelSugerencias } from "@/components/chat/panel-sugerencias";
 import { Redactor } from "@/components/chat/redactor";
 import { RespuestaAgente as VistaRespuesta } from "@/components/chat/respuesta-agente";
@@ -21,12 +25,16 @@ function nuevoId(prefijo: string): string {
   return `${prefijo}-${contador}`;
 }
 
-function mensajeAgentePorId(mensajes: Mensaje[], id: string | null): MensajeAgente | null {
+function mensajeAgentePorId(
+  mensajes: Mensaje[],
+  id: string | null,
+): MensajeAgente | null {
   if (id === null) {
     return null;
   }
   const encontrado = mensajes.find(
-    (mensaje): mensaje is MensajeAgente => mensaje.rol === "agente" && mensaje.id === id,
+    (mensaje): mensaje is MensajeAgente =>
+      mensaje.rol === "agente" && mensaje.id === id,
   );
   return encontrado ?? null;
 }
@@ -48,34 +56,39 @@ export function Consola({ urlTablero }: { urlTablero: string | null }) {
     finHilo.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [mensajes, cargando]);
 
-  const enviar = useCallback(
-    async (pregunta: string) => {
-      const idUsuario = nuevoId("usuario");
-      setMensajes((previos) => [...previos, { id: idUsuario, rol: "usuario", texto: pregunta }]);
-      setCargando(true);
+  const enviar = useCallback(async (pregunta: string) => {
+    const idUsuario = nuevoId("usuario");
+    setMensajes((previos) => [
+      ...previos,
+      { id: idUsuario, rol: "usuario", texto: pregunta },
+    ]);
+    setCargando(true);
 
-      const resultado = await consultarAgente(pregunta);
+    const resultado = await consultarAgente(pregunta);
 
-      if (resultado.ok) {
-        const id = nuevoId("agente");
-        setMensajes((previos) => [...previos, { id, rol: "agente", datos: resultado.datos }]);
-        setIdInspeccionado(id);
-        setSeleccion(null);
-      } else {
-        setMensajes((previos) => [
-          ...previos,
-          {
-            id: nuevoId("error"),
-            rol: "error",
-            texto: resultado.error,
-            ...(resultado.detalle === undefined ? {} : { detalle: resultado.detalle }),
-          },
-        ]);
-      }
-      setCargando(false);
-    },
-    [],
-  );
+    if (resultado.ok) {
+      const id = nuevoId("agente");
+      setMensajes((previos) => [
+        ...previos,
+        { id, rol: "agente", datos: resultado.datos },
+      ]);
+      setIdInspeccionado(id);
+      setSeleccion(null);
+    } else {
+      setMensajes((previos) => [
+        ...previos,
+        {
+          id: nuevoId("error"),
+          rol: "error",
+          texto: resultado.error,
+          ...(resultado.detalle === undefined
+            ? {}
+            : { detalle: resultado.detalle }),
+        },
+      ]);
+    }
+    setCargando(false);
+  }, []);
 
   const seleccionarCita = useCallback((idMensaje: string, n: number) => {
     setIdInspeccionado(idMensaje);
@@ -84,14 +97,17 @@ export function Consola({ urlTablero }: { urlTablero: string | null }) {
     setVistaMovil("inspeccion");
   }, []);
 
-  const previsualizarCita = useCallback((idMensaje: string, n: number | null) => {
-    if (n === null) {
-      return;
-    }
-    setIdInspeccionado(idMensaje);
-    setSeleccion({ idMensaje, n });
-    setPestana("evidencia");
-  }, []);
+  const previsualizarCita = useCallback(
+    (idMensaje: string, n: number | null) => {
+      if (n === null) {
+        return;
+      }
+      setIdInspeccionado(idMensaje);
+      setSeleccion({ idMensaje, n });
+      setPestana("evidencia");
+    },
+    [],
+  );
 
   const verTraza = useCallback((idMensaje: string) => {
     setIdInspeccionado(idMensaje);
@@ -101,7 +117,9 @@ export function Consola({ urlTablero }: { urlTablero: string | null }) {
 
   const inspeccionado = mensajeAgentePorId(mensajes, idInspeccionado);
   const nActivaDelPanel =
-    seleccion !== null && seleccion.idMensaje === idInspeccionado ? seleccion.n : null;
+    seleccion !== null && seleccion.idMensaje === idInspeccionado
+      ? seleccion.n
+      : null;
 
   return (
     <div className="flex h-dvh flex-col">
@@ -144,47 +162,56 @@ export function Consola({ urlTablero }: { urlTablero: string | null }) {
         >
           <div className="barra-fina min-h-0 flex-1 overflow-y-auto">
             <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-6">
-            {mensajes.length === 0 ? (
-              <PanelSugerencias
-                deshabilitado={cargando}
-                onElegir={(pregunta) => void enviar(pregunta)}
-              />
-            ) : null}
+              {mensajes.length === 0 ? (
+                <PanelSugerencias
+                  deshabilitado={cargando}
+                  onElegir={(pregunta) => void enviar(pregunta)}
+                />
+              ) : null}
 
-            {mensajes.map((mensaje) => {
-              if (mensaje.rol === "usuario") {
-                return <BurbujaUsuario key={mensaje.id} texto={mensaje.texto} />;
-              }
-              if (mensaje.rol === "error") {
+              {mensajes.map((mensaje) => {
+                if (mensaje.rol === "usuario") {
+                  return (
+                    <BurbujaUsuario key={mensaje.id} texto={mensaje.texto} />
+                  );
+                }
+                if (mensaje.rol === "error") {
+                  return (
+                    <BurbujaError
+                      key={mensaje.id}
+                      texto={mensaje.texto}
+                      {...(mensaje.detalle === undefined
+                        ? {}
+                        : { detalle: mensaje.detalle })}
+                    />
+                  );
+                }
                 return (
-                  <BurbujaError
+                  <VistaRespuesta
                     key={mensaje.id}
-                    texto={mensaje.texto}
-                    {...(mensaje.detalle === undefined ? {} : { detalle: mensaje.detalle })}
+                    mensaje={mensaje}
+                    urlTablero={urlTablero}
+                    nActiva={
+                      seleccion !== null && seleccion.idMensaje === mensaje.id
+                        ? seleccion.n
+                        : null
+                    }
+                    onPrevisualizar={previsualizarCita}
+                    onSeleccionar={seleccionarCita}
+                    onVerTraza={verTraza}
                   />
                 );
-              }
-              return (
-                <VistaRespuesta
-                  key={mensaje.id}
-                  mensaje={mensaje}
-                  urlTablero={urlTablero}
-                  nActiva={
-                    seleccion !== null && seleccion.idMensaje === mensaje.id ? seleccion.n : null
-                  }
-                  onPrevisualizar={previsualizarCita}
-                  onSeleccionar={seleccionarCita}
-                  onVerTraza={verTraza}
-                />
-              );
-            })}
+              })}
 
-            {cargando ? <EstadoPensando /> : null}
-            <div ref={finHilo} />
+              {cargando ? <EstadoPensando /> : null}
+              <div ref={finHilo} />
             </div>
           </div>
 
-          <Redactor deshabilitado={cargando} onEnviar={(pregunta) => void enviar(pregunta)} />
+          <Redactor
+            deshabilitado={cargando}
+            onEnviar={(pregunta) => void enviar(pregunta)}
+          />
         </main>
 
         <PanelLateral

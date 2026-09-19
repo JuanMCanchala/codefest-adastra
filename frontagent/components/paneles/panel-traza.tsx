@@ -4,6 +4,7 @@ import { Activity, CircleCheck, CircleX, Cpu, Wrench } from "lucide-react";
 
 import { Insignia } from "@/components/ui/insignia";
 import type { RespuestaAgente } from "@/lib/tipos";
+import { useVistaTecnica } from "@/lib/vista-tecnica";
 import { cn, formatearEntero, formatearLatencia } from "@/lib/utils";
 
 interface Props {
@@ -19,13 +20,15 @@ function Encabezado({ children }: { children: React.ReactNode }) {
 }
 
 export function PanelTraza({ datos }: Props) {
+  const tecnica = useVistaTecnica();
+
   if (!datos) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 px-6 py-10 text-center">
         <Activity aria-hidden="true" className="size-6 text-apagado" />
         <p className="max-w-xs text-sm leading-relaxed text-apagado">
-          Aquí se registran los agentes invocados, las herramientas llamadas, los tokens por agente,
-          la latencia y el estado de cada consulta.
+          Aquí se registran los agentes que atendieron la consulta, las
+          herramientas que usaron y el tiempo que tardaron.
         </p>
       </div>
     );
@@ -48,7 +51,9 @@ export function PanelTraza({ datos }: Props) {
             {metadata.estado}
           </Insignia>
           <Insignia>{formatearLatencia(metadata.latencia_ms)}</Insignia>
-          <Insignia>{metadata.num_interacciones} interacciones</Insignia>
+          {tecnica ? (
+            <Insignia>{metadata.num_interacciones} interacciones</Insignia>
+          ) : null}
         </div>
       </section>
 
@@ -59,7 +64,10 @@ export function PanelTraza({ datos }: Props) {
         ) : (
           <ol className="space-y-2">
             {metadata.agentes_invocados.map((agente, indice) => (
-              <li key={`${agente}-${indice}`} className="flex items-center gap-2">
+              <li
+                key={`${agente}-${indice}`}
+                className="flex items-center gap-2"
+              >
                 <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-control bg-elevado font-mono text-xs text-texto">
                   {indice + 1}
                 </span>
@@ -73,7 +81,9 @@ export function PanelTraza({ datos }: Props) {
       <section>
         <Encabezado>Herramientas llamadas</Encabezado>
         {evaluacion.tools_called.length === 0 ? (
-          <p className="text-xs text-apagado">No se llamó ninguna herramienta.</p>
+          <p className="text-xs text-apagado">
+            No se llamó ninguna herramienta.
+          </p>
         ) : (
           <ul className="space-y-2">
             {evaluacion.tools_called.map((herramienta, indice) => (
@@ -82,19 +92,31 @@ export function PanelTraza({ datos }: Props) {
                 className="rounded border border-borde bg-elevado p-2"
               >
                 <p className="flex items-center gap-1.5 font-mono text-xs text-texto">
-                  <Wrench aria-hidden="true" className="size-3.5 text-apagado" />
+                  <Wrench
+                    aria-hidden="true"
+                    className="size-3.5 text-apagado"
+                  />
                   {herramienta.name}
                 </p>
-                <dl className="mt-1.5 space-y-0.5">
-                  {Object.entries(herramienta.input_parameters).map(([clave, valor]) => (
-                    <div key={clave} className="flex gap-2 font-mono text-xs">
-                      <dt className="shrink-0 text-apagado">{clave}:</dt>
-                      <dd className="min-w-0 break-words text-texto">
-                        {typeof valor === "object" ? JSON.stringify(valor) : String(valor)}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
+                {tecnica ? (
+                  <dl className="mt-1.5 space-y-0.5">
+                    {Object.entries(herramienta.input_parameters).map(
+                      ([clave, valor]) => (
+                        <div
+                          key={clave}
+                          className="flex gap-2 font-mono text-xs"
+                        >
+                          <dt className="shrink-0 text-apagado">{clave}:</dt>
+                          <dd className="min-w-0 break-words text-texto">
+                            {typeof valor === "object"
+                              ? JSON.stringify(valor)
+                              : String(valor)}
+                          </dd>
+                        </div>
+                      ),
+                    )}
+                  </dl>
+                ) : null}
                 <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-apagado">
                   {herramienta.output}
                 </p>
@@ -104,55 +126,75 @@ export function PanelTraza({ datos }: Props) {
         )}
       </section>
 
-      <section>
-        <Encabezado>Consumo de tokens</Encabezado>
-        <table className="w-full border-collapse font-mono text-xs">
-          <thead>
-            <tr className="text-apagado">
-              <th className="border-b border-borde py-1 text-left font-normal">Agente</th>
-              <th className="border-b border-borde py-1 text-right font-normal">Entrada</th>
-              <th className="border-b border-borde py-1 text-right font-normal">Salida</th>
-              <th className="border-b border-borde py-1 text-right font-normal">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {metadata.tokens_por_agente.map((fila, indice) => (
-              <tr key={`${fila.agente}-${indice}`}>
-                <td className="border-b border-borde/60 py-1 pr-2">
-                  <span className="block truncate text-texto">{fila.agente}</span>
-                  <span className="block truncate text-xs text-apagado">{fila.modelo}</span>
+      {/* El consumo por agente y el modelo de cada uno son cuentas del equipo. */}
+      {tecnica ? (
+        <section>
+          <Encabezado>Consumo de tokens</Encabezado>
+          <table className="w-full border-collapse font-mono text-xs">
+            <thead>
+              <tr className="text-apagado">
+                <th className="border-b border-borde py-1 text-left font-normal">
+                  Agente
+                </th>
+                <th className="border-b border-borde py-1 text-right font-normal">
+                  Entrada
+                </th>
+                <th className="border-b border-borde py-1 text-right font-normal">
+                  Salida
+                </th>
+                <th className="border-b border-borde py-1 text-right font-normal">
+                  Total
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {metadata.tokens_por_agente.map((fila, indice) => (
+                <tr key={`${fila.agente}-${indice}`}>
+                  <td className="border-b border-borde/60 py-1 pr-2">
+                    <span className="block truncate text-texto">
+                      {fila.agente}
+                    </span>
+                    <span className="block truncate text-xs text-apagado">
+                      {fila.modelo}
+                    </span>
+                  </td>
+                  <td className="border-b border-borde/60 py-1 text-right text-apagado">
+                    {formatearEntero(fila.input)}
+                  </td>
+                  <td className="border-b border-borde/60 py-1 text-right text-apagado">
+                    {formatearEntero(fila.output)}
+                  </td>
+                  <td className="border-b border-borde/60 py-1 text-right text-texto">
+                    {formatearEntero(fila.total)}
+                  </td>
+                </tr>
+              ))}
+              <tr
+                className={cn(
+                  "font-semibold",
+                  metadata.tokens_por_agente.length > 0 && "pt-1",
+                )}
+              >
+                <td className="py-1.5 pr-2 text-texto">
+                  <span className="flex items-center gap-1.5">
+                    <Cpu aria-hidden="true" className="size-3.5 text-apagado" />
+                    Total
+                  </span>
                 </td>
-                <td className="border-b border-borde/60 py-1 text-right text-apagado">
-                  {formatearEntero(fila.input)}
+                <td className="py-1.5 text-right text-texto">
+                  {formatearEntero(metadata.tokens.input)}
                 </td>
-                <td className="border-b border-borde/60 py-1 text-right text-apagado">
-                  {formatearEntero(fila.output)}
+                <td className="py-1.5 text-right text-texto">
+                  {formatearEntero(metadata.tokens.output)}
                 </td>
-                <td className="border-b border-borde/60 py-1 text-right text-texto">
-                  {formatearEntero(fila.total)}
+                <td className="py-1.5 text-right text-texto">
+                  {formatearEntero(metadata.tokens.total)}
                 </td>
               </tr>
-            ))}
-            <tr className={cn("font-semibold", metadata.tokens_por_agente.length > 0 && "pt-1")}>
-              <td className="py-1.5 pr-2 text-texto">
-                <span className="flex items-center gap-1.5">
-                  <Cpu aria-hidden="true" className="size-3.5 text-apagado" />
-                  Total
-                </span>
-              </td>
-              <td className="py-1.5 text-right text-texto">
-                {formatearEntero(metadata.tokens.input)}
-              </td>
-              <td className="py-1.5 text-right text-texto">
-                {formatearEntero(metadata.tokens.output)}
-              </td>
-              <td className="py-1.5 text-right text-texto">
-                {formatearEntero(metadata.tokens.total)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+            </tbody>
+          </table>
+        </section>
+      ) : null}
     </div>
   );
 }

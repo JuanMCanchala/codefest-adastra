@@ -5,8 +5,10 @@ import { ArrowUpRight, ChartNoAxesColumn } from "lucide-react";
 import { Insignia } from "@/components/ui/insignia";
 import { SimboloFenomeno } from "@/components/ui/simbolo-fenomeno";
 import { Tarjeta, TarjetaCuerpo, TarjetaEncabezado, TarjetaTitulo } from "@/components/ui/tarjeta";
+import { etiquetaComponente } from "@/lib/componentes";
 import { fenomenoPorId } from "@/lib/fenomenos";
 import type { SpecVisualizacion } from "@/lib/tipos";
+import { useVistaTecnica } from "@/lib/vista-tecnica";
 
 interface Props {
   spec: SpecVisualizacion;
@@ -27,6 +29,7 @@ function enlaceTablero(urlTablero: string, spec: SpecVisualizacion): string {
 }
 
 export function TarjetaVisualizacion({ spec, urlTablero }: Props) {
+  const tecnica = useVistaTecnica();
   const fenomeno = fenomenoPorId(spec.fenomeno);
   const filtros = Object.entries(spec.filtros);
 
@@ -39,7 +42,9 @@ export function TarjetaVisualizacion({ spec, urlTablero }: Props) {
         <div className="min-w-0 flex-1">
           <TarjetaTitulo>{spec.titulo || "Visualización propuesta"}</TarjetaTitulo>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            <Insignia className="text-texto">{spec.componente}</Insignia>
+            <Insignia className="text-texto">
+              {tecnica ? spec.componente : etiquetaComponente(spec.componente)}
+            </Insignia>
             {fenomeno ? (
               <Insignia className="text-texto">
                 <SimboloFenomeno fenomeno={fenomeno} />
@@ -52,7 +57,7 @@ export function TarjetaVisualizacion({ spec, urlTablero }: Props) {
       <TarjetaCuerpo className="space-y-3">
         {spec.justificacion ? <p className="text-apagado">{spec.justificacion}</p> : null}
 
-        {filtros.length > 0 ? (
+        {tecnica && filtros.length > 0 ? (
           <dl className="grid grid-cols-[minmax(0,1fr)] gap-x-4 gap-y-1 font-mono text-xs sm:grid-cols-2">
             {filtros.map(([clave, valor]) => (
               <div key={clave} className="flex gap-2 truncate">

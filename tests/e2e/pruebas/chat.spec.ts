@@ -69,6 +69,14 @@ const panelEvidencia = (page: Page) =>
 const panelTraza = (page: Page) =>
   page.getByRole("tabpanel", { name: "Traza" });
 const alerta = (page: Page) => page.getByRole("main").getByRole("alert");
+const interruptorTecnico = (page: Page) =>
+  page.getByRole("button", { name: "Vista técnica" });
+
+/** Enciende la vista técnica, apagada por defecto. */
+async function activarVistaTecnica(page: Page): Promise<void> {
+  await interruptorTecnico(page).click();
+  await expect(interruptorTecnico(page)).toHaveAttribute("aria-pressed", "true");
+}
 const respuestas = (page: Page) =>
   page
     .getByRole("article")
@@ -138,8 +146,8 @@ test.describe("Chat · carga inicial", () => {
       });
       await expect(encabezado).toBeVisible();
       const grupo = page.getByRole("listitem").filter({ has: encabezado });
-      const botones = grupo.getByRole("button");
-      await expect(botones).toHaveCount(2);
+      const preguntas = grupo.getByRole("list").getByRole("button");
+      await expect(preguntas).toHaveCount(2);
       for (const pregunta of SUGERENCIAS[fenomeno.clave]) {
         await expect(
           grupo.getByRole("button", { name: pregunta }),
@@ -219,12 +227,13 @@ test.describe("Chat · consulta con respuesta citada", () => {
     await expect(respuesta).toContainText(R.respuesta.slice(0, 90));
     await expect(respuesta).toContainText(latencia(R.metadata.latencia_ms));
     await expect(respuesta).toContainText(
-      `${entero(R.metadata.tokens.total)} tokens`,
-    );
-    await expect(respuesta).toContainText(R.extras.ruta ?? "");
-    await expect(respuesta).toContainText(
       R.metadata.agentes_invocados.join(" → "),
     );
+    // Consumo de tokens y ruta interna: solo con la vista técnica encendida.
+    await expect(interruptorTecnico(page)).toHaveAttribute("aria-pressed", "false");
+    const cabecera = respuesta.locator("header");
+    await expect(cabecera).not.toContainText("tokens");
+    await expect(cabecera).not.toContainText(R.extras.ruta ?? "sin ruta");
     await expect(
       respuesta.getByRole("heading", {
         name: `Fuentes (${R.extras.citas.length})`,
@@ -294,9 +303,8 @@ test.describe("Chat · consulta con respuesta citada", () => {
     await expect(traza).toBeVisible();
     await expect(traza).toContainText(R.metadata.estado);
     await expect(traza).toContainText(latencia(R.metadata.latencia_ms));
-    await expect(traza).toContainText(
-      `${R.metadata.num_interacciones} interacciones`,
-    );
+    await expect(traza).not.toContainText("interacciones");
+    await expect(traza.getByRole("table")).toBeHidden();
     const agentes = traza.getByRole("list").first().getByRole("listitem");
     await expect(agentes).toHaveText(
       R.metadata.agentes_invocados.map(
@@ -305,6 +313,14 @@ test.describe("Chat · consulta con respuesta citada", () => {
     );
     for (const herramienta of R.evaluacion.tools_called) {
       await expect(traza).toContainText(herramienta.name);
+    }
+
+    // Vista técnica: aparecen los parámetros de cada herramienta y el consumo por agente.
+    await activarVistaTecnica(page);
+    await expect(traza).toContainText(
+      `${R.metadata.num_interacciones} interacciones`,
+    );
+    for (const herramienta of R.evaluacion.tools_called) {
       for (const [clave, valor] of Object.entries(
         herramienta.input_parameters,
       )) {
@@ -404,7 +420,7 @@ test.describe("Chat · rechazo y errores", () => {
     await expect(
       respuesta.getByRole("heading", { name: /Fuentes/ }),
     ).toHaveCount(0);
-    await expect(respuesta).toContainText(`${entero(0)} tokens`);
+    await expect(respuesta.locator("header")).not.toContainText("tokens");
     await expect(alerta(page)).toHaveCount(0);
 
     await verInspeccion(page, testInfo);
@@ -414,6 +430,11 @@ test.describe("Chat · rechazo y errores", () => {
     );
     await page.getByRole("tab", { name: "Traza" }).click();
     await expect(panelTraza(page)).toContainText("filtro_seguridad");
+    await expect(panelTraza(page)).toContainText("patrón de inyección");
+    // El parámetro con el que se rechazó es un detalle del sistema.
+    await expect(panelTraza(page)).not.toContainText("accion:");
+    await activarVistaTecnica(page);
+    await expect(panelTraza(page)).toContainText("accion:");
     await expect(panelTraza(page)).toContainText("rechazo");
   });
 

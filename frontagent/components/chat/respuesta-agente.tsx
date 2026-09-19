@@ -8,6 +8,7 @@ import { TarjetaVisualizacion } from "@/components/paneles/tarjeta-visualizacion
 import { Boton } from "@/components/ui/boton";
 import { Insignia } from "@/components/ui/insignia";
 import type { MensajeAgente } from "@/lib/tipos";
+import { useVistaTecnica } from "@/lib/vista-tecnica";
 import { formatearEntero, formatearLatencia } from "@/lib/utils";
 
 interface Props {
@@ -27,6 +28,7 @@ export function RespuestaAgente({
   onPrevisualizar,
   onVerTraza,
 }: Props) {
+  const tecnica = useVistaTecnica();
   const { datos } = mensaje;
   const citas = datos.extras?.citas ?? [];
   const visualizacion = datos.extras?.visualizacion ?? null;
@@ -41,7 +43,7 @@ export function RespuestaAgente({
         <h2 className="mr-auto text-xs font-semibold uppercase tracking-[0.06em] text-apagado">
           Respuesta del sistema
         </h2>
-        {ruta ? (
+        {tecnica && ruta ? (
           <Insignia>
             <Route aria-hidden="true" className="size-3" />
             {ruta}
@@ -51,10 +53,12 @@ export function RespuestaAgente({
           <Clock aria-hidden="true" className="size-3" />
           {formatearLatencia(datos.metadata.latencia_ms)}
         </Insignia>
-        <Insignia>
-          <Coins aria-hidden="true" className="size-3" />
-          {formatearEntero(datos.metadata.tokens.total)} tokens
-        </Insignia>
+        {tecnica ? (
+          <Insignia>
+            <Coins aria-hidden="true" className="size-3" />
+            {formatearEntero(datos.metadata.tokens.total)} tokens
+          </Insignia>
+        ) : null}
       </header>
 
       <TextoConCitas
