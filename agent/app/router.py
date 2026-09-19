@@ -88,13 +88,25 @@ def _coseno(a: list[float], b: list[float]) -> float:
 
 
 class RouterEmbeddings:
-    """Enrutamiento determinista por similitud, con caída al LLM si no hay confianza."""
+    """Enrutamiento determinista por similitud, con caída al LLM si no hay confianza.
+
+    Umbrales calibrados contra las 50 preguntas oficiales y las 20 fuera de alcance del
+    harness (script de calibración descartable, no versionado; cifras en el commit que
+    introduce estos valores). Hallazgo clave: la similitud coseno absoluta entre un
+    prototipo corto y una pregunta larga con BGE-M3 no discrimina bien por sí sola — las
+    50 oficiales caen entre 0,415 y 0,574, y una fuera de alcance mal etiquetada llega a
+    0,553, más alto que varias oficiales legítimas. El **margen** contra la segunda ruta
+    sí discrimina: las 50 oficiales tienen margen ≥0,060, mientras que las 3 fuera de
+    alcance que el router rankeaba mal (top-1 "ambos" en vez de "fuera_de_alcance")
+    tenían margen ≤0,028. Por eso el umbral de confianza baja a un piso nominal y el
+    margen es el filtro real.
+    """
 
     def __init__(
         self,
         codificador: Codificador,
-        umbral_confianza: float = 0.55,
-        margen_minimo: float = 0.03,
+        umbral_confianza: float = 0.40,
+        margen_minimo: float = 0.05,
     ) -> None:
         self._cod = codificador
         self.umbral = umbral_confianza
