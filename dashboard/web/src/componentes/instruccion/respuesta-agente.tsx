@@ -14,10 +14,10 @@ interface Props {
 export function RespuestaAgente({ respuesta }: Props) {
   const especificacion = respuesta.especificacion;
   const etiqueta = especificacion ? definicionDe(especificacion.componente).etiqueta : null;
-  const totalTokens = Object.values(respuesta.traza?.tokens ?? {}).reduce(
-    (suma, valor) => suma + valor,
-    0,
-  );
+  // La traza trae {input, output, total}: sumar todo contaría el total dos veces.
+  const tokens = respuesta.traza?.tokens ?? {};
+  const totalTokens =
+    tokens["total"] ?? (tokens["input"] ?? 0) + (tokens["output"] ?? 0);
 
   return (
     <Tarjeta className="overflow-hidden">
