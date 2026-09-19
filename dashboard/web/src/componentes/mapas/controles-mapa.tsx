@@ -1,4 +1,4 @@
-import { Box, Crosshair, Layers } from "lucide-react";
+import { Box, Crosshair, Layers, Scan } from "lucide-react";
 
 import { BASES, type ClaveBase } from "@/lib/mapa-base";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,8 @@ interface Props {
   onCambiarVolumen: (activo: boolean) => void;
   /** El globo no dibuja bien la extrusión: allí el interruptor no se ofrece. */
   mostrarVolumen: boolean;
+  /** Devuelve la cámara al encuadre de los datos tras navegar a mano. */
+  onEncuadrar: () => void;
 }
 
 const BOTON =
@@ -31,11 +33,12 @@ export function ControlesMapa({
   volumen,
   onCambiarVolumen,
   mostrarVolumen,
+  onEncuadrar,
 }: Props) {
-  // El grupo se sitúa debajo del control de zoom de MapLibre (10 px de margen y dos
-  // botones de 36 px), que si no intercepta los clics de estos botones.
+  // El grupo se sitúa debajo del control de MapLibre (10 px de margen y tres botones de
+  // 36 px: acercar, alejar y brújula), que si no intercepta los clics de estos botones.
   return (
-    <div className="pointer-events-auto absolute right-3 top-24 flex flex-col items-end gap-1.5">
+    <div className="pointer-events-auto absolute right-3 top-36 flex flex-col items-end gap-1.5">
       <div
         role="group"
         aria-label="Mapa base"
@@ -76,6 +79,15 @@ export function ControlesMapa({
             Volumen
           </button>
         ) : null}
+        <button
+          type="button"
+          title="Vuelve al encuadre de las regiones con dato"
+          onClick={onEncuadrar}
+          className={cn(INTERRUPTOR, APAGADO)}
+        >
+          <Scan aria-hidden="true" className="size-3.5" />
+          Encuadrar
+        </button>
         <button
           type="button"
           title="Superpone lectura de coordenadas, retícula y encuadre de la región seleccionada"

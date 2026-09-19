@@ -1,12 +1,13 @@
 import type { FeatureCollection, Geometry } from "geojson";
 import maplibregl, { type ExpressionSpecification, type StyleSpecification } from "maplibre-gl";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ControlesMapa } from "@/componentes/mapas/controles-mapa";
 import { HudMapa, type Recuadro } from "@/componentes/mapas/hud-mapa";
 import {
   BASES_REMOTAS,
   type ClaveBase,
+  type MapaBase,
   RELIEVE,
   baseDe,
   guardarBase,
@@ -145,6 +146,39 @@ function expresionAltura(
   }
   return ["match", ["get", claveGeo], ...pares, 0] as unknown as ExpressionSpecification;
 }
+
+/**
+ * Opacidad del relleno. Sobre imagen se desvanece al acercarse: a zoom de calle el color
+ * del dato taparía el terreno, que es justo lo que se fue a mirar. Sobre el fondo analítico
+ * se queda fija, porque debajo no hay nada que revelar.
+ */
+function expresionOpacidad(base: MapaBase): ExpressionSpecification | number {
+  if (base.teselas === null) {
+    return base.opacidadRelleno;
+  }
+  return [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    6,
+    base.opacidadRelleno,
+    10,
+    base.opacidadRelleno * 0.7,
+    13,
+    0.2,
+  ] as unknown as ExpressionSpecification;
+}
+
+/** El hilo entre regiones gana cuerpo al acercarse, cuando el relleno ya casi no se ve. */
+const ANCHO_BORDE = [
+  "interpolate",
+  ["linear"],
+  ["zoom"],
+  6,
+  0.7,
+  13,
+  1.6,
+] as unknown as ExpressionSpecification;
 
 function leerTexto(propiedades: unknown, clave: string): string {
   if (propiedades && typeof propiedades === "object") {
@@ -337,10 +371,15 @@ export function MapaCoropleta({
       minZoom: zoomMinimo,
       maxZoom: zoomMaximo,
       attributionControl: false,
-      dragRotate: false,
-      pitchWithRotate: false,
+      // Navegación libre, como en un visor geoespacial: arrastrar mueve, rueda acerca,
+      // botón derecho o Ctrl+arrastrar gira e inclina. La brújula devuelve el norte.
+      dragRotate: true,
+      pitchWithRotate: true,
     });
-    instancia.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    instancia.addControl(
+      new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }),
+      "top-right",
+    );
     instancia.addControl(
       new maplibregl.AttributionControl({
         compact: true,
@@ -393,13 +432,13 @@ export function MapaCoropleta({
           id: CAPA_RELLENO,
           type: "fill",
           source: FUENTE,
-          paint: { "fill-color": color, "fill-opacity": estiloBase.opacidadRelleno },
+          paint: { "fill-color": color, "fill-opacity": expresionOpacidad(estiloBase) },
         });
         instancia.addLayer({
           id: CAPA_BORDE,
           type: "line",
           source: FUENTE,
-          paint: { "line-color": estiloBase.colorBorde, "line-width": 0.7 },
+          paint: { "line-color": estiloBase.colorBorde, "line-width": ANCHO_BORDE },
         });
         instancia.addLayer({
           id: CAPA_FOCO,
@@ -487,23 +526,33 @@ export function MapaCoropleta({
   // tienen dato. Solo se mueve al cambiar la consulta, nunca mientras el usuario navega a
   // mano, y si la respuesta no trae datos se queda donde está.
   const enfoqueAplicado = useRef<string | null>(null);
-  useEffect(() => {
+
+  /** Lleva la cámara a la caja de las regiones con dato. `false` si no hay nada que encuadrar. */
+  const encuadrarDatos = useCallback((): boolean => {
     const instancia = mapa.current;
-    if (!instancia || !enfoque || !capasListas || enfoqueAplicado.current === enfoque) {
-      return;
+    if (!instancia) {
+      return false;
     }
     const caja = cajaDeValores(geojson, claveGeo, valores);
     if (!caja) {
-      return;
+      return false;
     }
-    enfoqueAplicado.current = enfoque;
-    const sinMovimiento = prefiereMenosMovimiento();
     instancia.fitBounds(caja, {
       padding: 48,
-      duration: sinMovimiento ? 0 : 1_400,
+      duration: prefiereMenosMovimiento() ? 0 : 1_400,
       ...(zoomMaximoEnfoque === undefined ? {} : { maxZoom: zoomMaximoEnfoque }),
     });
-  }, [capasListas, claveGeo, enfoque, geojson, valores, zoomMaximoEnfoque]);
+    return true;
+  }, [claveGeo, geojson, valores, zoomMaximoEnfoque]);
+
+  useEffect(() => {
+    if (!mapa.current || !enfoque || !capasListas || enfoqueAplicado.current === enfoque) {
+      return;
+    }
+    if (encuadrarDatos()) {
+      enfoqueAplicado.current = enfoque;
+    }
+  }, [capasListas, encuadrarDatos, enfoque]);
 
   // Volumen 3D: la coropleta se levanta en columnas proporcionales al dato y la cámara se
   // inclina, porque en planta una extrusión no se distingue de un relleno. El relieve del
@@ -521,13 +570,6 @@ export function MapaCoropleta({
       conRelieve ? { source: RELIEVE.id, exaggeration: RELIEVE.exageracion } : null,
     );
 
-    if (volumenActivo) {
-      instancia.dragRotate.enable();
-      instancia.touchZoomRotate.enableRotation();
-    } else {
-      instancia.dragRotate.disable();
-      instancia.touchZoomRotate.disableRotation();
-    }
     // Solo se toca la cámara si hay algo que cambiar: un easeTo en plano y sin inclinación
     // no haría nada salvo interrumpir el reencuadre de la consulta, que corre a la vez.
     if (volumenActivo || instancia.getPitch() !== 0) {
@@ -557,7 +599,7 @@ export function MapaCoropleta({
       }
       if (instancia.getLayer(CAPA_RELLENO)) {
         const estiloBase = baseDe(base);
-        instancia.setPaintProperty(CAPA_RELLENO, "fill-opacity", estiloBase.opacidadRelleno);
+        instancia.setPaintProperty(CAPA_RELLENO, "fill-opacity", expresionOpacidad(estiloBase));
         instancia.setPaintProperty(CAPA_BORDE, "line-color", estiloBase.colorBorde);
       }
     };
@@ -636,6 +678,9 @@ export function MapaCoropleta({
         volumen={volumenActivo}
         onCambiarVolumen={cambiarVolumen}
         mostrarVolumen={!globo}
+        onEncuadrar={() => {
+          encuadrarDatos();
+        }}
       />
       {avisoBase ? (
         <p

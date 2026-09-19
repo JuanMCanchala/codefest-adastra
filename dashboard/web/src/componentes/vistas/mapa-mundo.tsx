@@ -99,7 +99,7 @@ export function VistaMapaMundo({ datos, seleccion, onSeleccionar, enfoque }: Pro
           centro={CENTRO}
           zoom={1.2}
           zoomMinimo={0.8}
-          zoomMaximo={6}
+          zoomMaximo={12}
           seleccionada={seleccionada}
           onClicRegion={seleccionarPais}
           enfoque={enfoque}

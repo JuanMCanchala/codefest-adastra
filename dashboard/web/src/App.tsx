@@ -129,10 +129,10 @@ export function App() {
   const [reproduccion, setReproduccion] = useState<Reproduccion | null>(null);
 
   /**
-   * Último componente calculado. Entre año y año de la reproducción la vista pasa por
-   * «cargando», y si se desmontara el lienzo el mapa se reconstruiría en cada fotograma:
-   * parpadeo, teselas pedidas otra vez y la cámara de vuelta al inicio. Mientras dura la
-   * reproducción se sigue mostrando el último resultado, atenuado.
+   * Último componente calculado. Si al recalcular se cambiara el lienzo por el estado de
+   * carga, el mapa se destruiría y volvería a nacer en el encuadre inicial: acercarse a un
+   * municipio, reproducir un año o cambiar un filtro devolvían la cámara al principio. Se
+   * mantiene en pantalla el último resultado, atenuado, hasta que llega el nuevo.
    */
   const ultimoResultado = useRef<ResultadoComponente | null>(null);
   const claveEjecutada = useRef<string | null>(null);
@@ -366,7 +366,7 @@ export function App() {
             <RespuestaAgente respuesta={entradaActiva.respuesta} />
           ) : null}
 
-          {vista.fase === "cargando" && !(reproduccion && ultimoResultado.current) ? (
+          {vista.fase === "cargando" && !ultimoResultado.current ? (
             <Cargando />
           ) : vista.fase === "error" ? (
             <AvisoError
@@ -376,7 +376,7 @@ export function App() {
                 ejecutar(peticion, globales);
               }}
             />
-          ) : vista.fase === "listo" || (reproduccion && ultimoResultado.current) ? (
+          ) : vista.fase === "listo" || ultimoResultado.current ? (
             <div
               className={cn(
                 "transition-opacity",

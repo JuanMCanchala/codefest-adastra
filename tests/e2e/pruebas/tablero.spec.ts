@@ -447,6 +447,38 @@ test.describe("Tablero · trazabilidad", () => {
     await expect(page.getByRole("button", { name: "Volumen" })).toHaveCount(0);
   });
 
+  test("acercarse hasta el detalle municipal no devuelve la cámara al inicio", async ({
+    page,
+  }, testInfo) => {
+    test.skip(esMovil(testInfo), "El mapa solo ocupa la mitad del lienzo en escritorio.");
+    await abrirTablero(page);
+    await page.getByRole("button", { name: "HUD" }).click();
+
+    const lectura = page.getByText(/^Z \d+\.\d{2}$/);
+    await expect(lectura).toBeVisible();
+    const zoomDe = async () => Number.parseFloat((await lectura.innerText()).replace("Z ", ""));
+    const inicial = await zoomDe();
+
+    // Cuatro pasos cruzan el umbral que cambia de departamentos a municipios. Ese cambio
+    // recalcula el componente y baja otra geometría: si el lienzo se desmontara, el mapa
+    // renacería en su encuadre inicial y acercarse sería imposible.
+    const acercar = page.locator("button.maplibregl-ctrl-zoom-in").first();
+    for (let paso = 0; paso < 4; paso += 1) {
+      await acercar.click();
+      await page.waitForTimeout(700);
+    }
+    await expect(page.getByText("Detalle municipal · aleje el zoom para volver a departamentos")).toBeVisible();
+    await expect(async () => {
+      expect(await zoomDe()).toBeGreaterThan(inicial + 3);
+    }).toPass({ timeout: 15_000 });
+
+    // Y siempre hay vuelta atrás al encuadre de los datos.
+    await page.getByRole("button", { name: "Encuadrar" }).click();
+    await expect(async () => {
+      expect(await zoomDe()).toBeLessThan(inicial + 1);
+    }).toPass({ timeout: 15_000 });
+  });
+
   test("una consulta nueva reencuadra la cámara sobre las regiones con dato", async ({
     page,
   }, testInfo) => {

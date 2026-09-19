@@ -56,6 +56,19 @@ Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `compos
 `total_evidencia`), `refs` ≤ 20 por elemento cliqueable, `top` ≤ 30 (≤ 60 nodos en la red),
 `limite` ≤ 20 en `panel_evidencia`.
 
+### Navegación
+
+El mapa se explora como un visor geoespacial: arrastrar mueve, la rueda acerca, el botón
+derecho (o Ctrl+arrastrar) gira e inclina, y la brújula del control devuelve el norte. El
+zoom llega hasta 16 en Colombia y 12 en el mundo, así que con imagen de satélite se puede
+bajar a ver el terreno de un municipio; el relleno del dato se desvanece al acercarse para
+no taparlo. El botón **Encuadrar** devuelve la cámara a las regiones con dato.
+
+Para que eso sea posible, ni un recálculo ni un cambio de nivel sustituyen el lienzo por el
+estado de carga: se mantiene en pantalla el último resultado, atenuado, y la geometría
+anterior hasta que llega la nueva. Si el mapa se desmontara, volvería a nacer en su encuadre
+inicial y acercarse a un municipio sería imposible.
+
 ### Mapa base y HUD
 
 Los dos componentes espaciales comparten `MapaCoropleta`. Sobre el lienzo hay dos controles:

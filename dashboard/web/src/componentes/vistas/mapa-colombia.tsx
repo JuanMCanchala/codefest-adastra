@@ -1,3 +1,4 @@
+import type { FeatureCollection } from "geojson";
 import { Info } from "lucide-react";
 import { useMemo, useRef } from "react";
 
@@ -41,8 +42,25 @@ export function VistaMapaColombia({
     nivel === "municipio" ? obtenerGeoMunicipios(senal) : obtenerGeoDepartamentos(senal),
   );
 
-  const claveGeo = nivel === "municipio" ? "divipola_mpio" : "divipola_dpto";
-  const claveNombre = nivel === "municipio" ? "municipio" : "departamento";
+  /**
+   * Geometría dibujada. Al cruzar el umbral municipal hay que bajar el otro GeoJSON, y si
+   * mientras tanto la vista cambiara al estado de carga, el mapa se desmontaría y volvería
+   * al encuadre inicial: acercarse sería imposible. Se sigue dibujando la capa anterior
+   * -con las claves que le corresponden- hasta que la nueva está lista.
+   */
+  const dibujada = useRef<{
+    geojson: FeatureCollection;
+    claveGeo: string;
+    claveNombre: string;
+  } | null>(null);
+  if (geo.fase === "listo") {
+    dibujada.current = {
+      geojson: geo.dato,
+      claveGeo: nivel === "municipio" ? "divipola_mpio" : "divipola_dpto",
+      claveNombre: nivel === "municipio" ? "municipio" : "departamento",
+    };
+  }
+  const capa = dibujada.current;
 
   const valores = useMemo(() => {
     const mapa = new Map<string, number>();
@@ -102,11 +120,11 @@ export function VistaMapaColombia({
       ? (datos.find((f) => f.nombre === seleccion.titulo)?.divipola ?? null)
       : null;
 
-  if (geo.fase === "cargando") {
-    return <Cargando mensaje="Descargando geometrías del Marco Geoestadístico Nacional…" />;
-  }
-  if (geo.fase === "error") {
+  if (geo.fase === "error" && !capa) {
     return <AvisoError mensaje={geo.mensaje} onReintentar={geo.recargar} />;
+  }
+  if (!capa) {
+    return <Cargando mensaje="Descargando geometrías del Marco Geoestadístico Nacional…" />;
   }
   // Durante la reproducción un año sin alertas no cambia la vista por el vacío: eso
   // desmontaría el mapa y el siguiente año volvería a montarlo, reencuadrando la cámara.
@@ -124,16 +142,16 @@ export function VistaMapaColombia({
     <div className="grid grid-cols-[minmax(0,1fr)] gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="relative h-[520px] border-b border-borde lg:border-b-0 lg:border-r">
         <MapaCoropleta
-          geojson={geo.dato}
-          claveGeo={claveGeo}
-          claveNombre={claveNombre}
+          geojson={capa.geojson}
+          claveGeo={capa.claveGeo}
+          claveNombre={capa.claveNombre}
           valores={valores}
           maximo={maximoEscala}
           unidad="alertas"
           centro={CENTRO}
           zoom={4.6}
-          zoomMinimo={4}
-          zoomMaximo={9.5}
+          zoomMinimo={3}
+          zoomMaximo={16}
           seleccionada={seleccionada}
           onClicRegion={seleccionarDivipola}
           enfoque={enfoque}
