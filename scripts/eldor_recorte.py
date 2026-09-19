@@ -43,6 +43,9 @@ log = logging.getLogger("recorte")
 
 # Paleta por clase canónica 1..14. Los indicadores de minería van en cálidos y el resto
 # del terreno en fríos, para que la huella se lea de un vistazo sin consultar la leyenda.
+# La regeneración natural va en oliva y no en verde: crece solo sobre suelo intervenido
+# antes, así que tiene que distinguirse del bosque primario de un golpe de vista. En
+# dos verdes parecidos, el frente de deforestación no se ve.
 COLORES: dict[int, tuple[int, int, int]] = {
     1: (255, 214, 102),  # Edificación
     2: (255, 61, 61),  # Balsa minera
@@ -53,8 +56,8 @@ COLORES: dict[int, tuple[int, int, int]] = {
     7: (214, 92, 40),  # Montículos compactos
     8: (240, 150, 60),  # Montículos de cascajo
     9: (140, 196, 120),  # Pasto
-    10: (96, 176, 128),  # Regeneración natural tipo 1
-    11: (132, 200, 160),  # Regeneración natural tipo 2
+    10: (154, 168, 85),  # Regeneración natural tipo 1
+    11: (185, 196, 122),  # Regeneración natural tipo 2
     12: (232, 196, 140),  # Suelo desnudo
     13: (198, 62, 148),  # Tolva
     14: (250, 90, 200),  # Vehículos

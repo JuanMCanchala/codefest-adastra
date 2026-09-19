@@ -43,7 +43,7 @@ dashboard/
 | Método | Ruta | Respuesta |
 | --- | --- | --- |
 | GET | `/api/salud` | `{estado, tablas: {...conteos}, textos: {disponible, indexado}}` |
-| GET | `/api/catalogo` | los 10 componentes (los 8 del agente más `distribucion` y `evidencia_satelital`) con sus filtros, opciones y valores por defecto |
+| GET | `/api/catalogo` | los 11 componentes (los 8 del agente más `distribucion`, `evidencia_satelital` y `deforestacion`) con sus filtros, opciones y valores por defecto |
 | POST | `/api/componente` | `{componente, fenomeno?, filtros?}` → datos, `evidencia`, `nota_metodo`, `total_evidencia`, `filtros_ignorados` |
 | POST | `/api/visualizar` | `{instruccion}` → agente del Reto 1 → especificación ejecutada |
 | GET | `/api/evidencia/{chunk_id}` | fragmento con `doc_id`, fuente, metadatos del documento y texto |
@@ -52,10 +52,12 @@ dashboard/
 
 Componentes del catálogo cerrado (el mismo de `agent/app/catalogo.py`): `composicion_corpus`,
 `linea_tiempo`, `matriz_calor`, `red_entidades`, `mapa_colombia`, `mapa_mundo`,
-`cuadrante_priorizacion`, `panel_evidencia`; más `distribucion` (histograma, Anexo B.2.1) y
+`cuadrante_priorizacion`, `panel_evidencia`; más `distribucion` (histograma, Anexo B.2.1),
 `evidencia_satelital` (el ortomosaico, la segmentación del modelo y la anotación humana del
-sitio minero, uno al lado del otro), que solo se alcanzan desde el selector del tablero o por
-URL porque el catálogo del agente quedó congelado con la evaluación del Reto 1.
+sitio minero, uno al lado del otro) y `deforestacion` (hectáreas de bosque perdidas en el
+Chocó, apiladas por la causa que declara la fuente), que solo se alcanzan desde el selector
+del tablero o por URL porque el catálogo del agente quedó congelado con la evaluación del
+Reto 1.
 
 `evidencia_satelital` es el único componente que no consulta la base: enseña los trípticos que
 precalcula `scripts/eldor_recorte.py` y que viajan dentro de la SPA (`web/public/eldor/`). Su
@@ -69,6 +71,16 @@ frente de deforestación: selva en pie junto a terreno desmontado que rebrota). 
 encabeza con bosque primario, área intervenida y regeneración natural en vez de con la huella
 minera, y su nota de método advierte de lo que la cifra **no** es: cobertura medida en un solo
 vuelo, no pérdida de bosque entre dos fechas, que exigiría dos vuelos del mismo sitio.
+
+`deforestacion` tampoco consulta la base analítica: lee `datos/deforestacion/choco.json`, que
+precalcula `scripts/deforestacion_choco.py` a partir del conjunto oficial `iczg-dyt3` de Datos
+Abiertos (7.937 polígonos fotointerpretados sobre Sentinel-2, 2014-2021). Existe porque Amazon
+Mining Watch —la fuente colombiana del agente satelital— solo cubre la cuenca amazónica y deja
+el Pacífico fuera; y aporta lo que ninguna otra fuente del proyecto tiene, la **causa** de cada
+polígono. Su trazabilidad es el conjunto, el método, el periodo y el código DIVIPOLA de cada
+municipio, resuelto contra las mismas geometrías del DANE que dibuja el mapa, que es lo que
+permite cruzarlo con las alertas tempranas del corpus. Sin el JSON en disco devuelve
+`procedencia: null` y la vista lo dice.
 
 Límites: `evidencia` ≤ 200 elementos (con
 `total_evidencia`), `refs` ≤ 20 por elemento cliqueable, `top` ≤ 30 (≤ 60 nodos en la red),

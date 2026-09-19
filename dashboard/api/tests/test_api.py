@@ -60,10 +60,12 @@ def test_catalogo(cliente) -> None:
         assert componente["filtros"]
 
 
-# `evidencia_satelital` no sale del corpus: es una medición sobre imagen, y su
-# trazabilidad es espacial (sitio, CRS, ventana del recorte, vuelo, checkpoint) en vez de
-# `doc_id`/`chunk_id`. Se comprueba en su propia prueba, más abajo.
-SIN_CORPUS = {"evidencia_satelital"}
+# Estos dos no salen del corpus, así que no pueden citar `doc_id`/`chunk_id`:
+# `evidencia_satelital` es una medición sobre imagen y cita sitio, CRS, ventana del
+# recorte, vuelo y checkpoint; `deforestacion` lee un conjunto oficial y cita su
+# identificador, método, periodo y el DIVIPOLA de cada municipio. Cada uno tiene su
+# propia prueba de trazabilidad más abajo, tan exigente como la que se salta.
+SIN_CORPUS = {"evidencia_satelital", "deforestacion"}
 
 
 @pytest.mark.parametrize("componente", [c for c in CATALOGO if c not in SIN_CORPUS])
@@ -113,6 +115,64 @@ def test_evidencia_satelital_es_trazable_en_el_espacio(cliente) -> None:
     assert triptico["clases"], "el recorte no declara ninguna clase de cobertura"
     for campo in (triptico["sitio"], triptico["fecha_captura"], triptico["modelo"]):
         assert campo in triptico["procedencia"] or campo
+
+
+def test_deforestacion_es_trazable_a_su_conjunto(cliente) -> None:
+    """La pérdida de bosque cita conjunto, método, periodo y el DIVIPOLA de cada municipio."""
+    inicio = time.perf_counter()
+    respuesta = cliente.post("/api/componente", json={"componente": "deforestacion"})
+    LATENCIAS["deforestacion"] = (time.perf_counter() - inicio) * 1000
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    assert cuerpo["titulo"]
+    assert cuerpo["nota_metodo"]
+    assert cuerpo["filtros_ignorados"] == []
+
+    datos = cuerpo["datos"]
+    if datos["procedencia"] is None:
+        pytest.skip("no hay datos de deforestación en este árbol")
+
+    for clave in ("fuente", "dataset", "metodo", "periodo", "poligonos"):
+        assert datos["procedencia"][clave], f"la procedencia no declara «{clave}»"
+    assert datos["serie"], "la serie temporal viene vacía"
+    assert datos["municipios"], "no hay municipios"
+    assert datos["total_ha"] > 0
+    for municipio in datos["municipios"]:
+        # DIVIPOLA municipal: cinco dígitos, y los dos primeros son el departamento.
+        assert municipio["divipola"].isdigit()
+        assert len(municipio["divipola"]) == 5
+        assert municipio["ha"] > 0
+    # Sin filtro de causa, el total es la suma de las causas dentro del rango completo.
+    assert sum(c["ha"] for c in datos["causas"]) == pytest.approx(datos["total_ha"], rel=1e-3)
+
+
+def test_deforestacion_filtra_por_causa(cliente) -> None:
+    """Filtrar por «Minería» deja solo su superficie, y nunca más que el total."""
+    completo = cliente.post("/api/componente", json={"componente": "deforestacion"}).json()
+    if completo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de deforestación en este árbol")
+    minera = cliente.post(
+        "/api/componente",
+        json={"componente": "deforestacion", "filtros": {"causa": "Minería"}},
+    ).json()
+    assert minera["filtros_ignorados"] == []
+    assert 0 < minera["datos"]["total_ha"] < completo["datos"]["total_ha"]
+    assert minera["datos"]["causa"] == "Minería"
+    assert "Minería" in minera["titulo"]
+
+
+def test_deforestacion_ignora_una_causa_que_no_existe(cliente) -> None:
+    """Una causa inventada se descarta y se avisa, en vez de devolver el lienzo vacío."""
+    respuesta = cliente.post(
+        "/api/componente",
+        json={"componente": "deforestacion", "filtros": {"causa": "Marcianos"}},
+    )
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    if cuerpo["datos"]["procedencia"] is None:
+        pytest.skip("no hay datos de deforestación en este árbol")
+    assert cuerpo["filtros_ignorados"] == ["causa"]
+    assert cuerpo["datos"]["municipios"]
 
 
 def test_evidencia_satelital_ignora_un_sitio_que_no_existe(cliente) -> None:

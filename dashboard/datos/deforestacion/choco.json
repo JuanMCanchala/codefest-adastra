@@ -1,0 +1,2614 @@
+{
+ "procedencia": {
+  "fuente": "AREAS DEFORESTADAS CHOCO — Datos Abiertos Colombia",
+  "dataset": "iczg-dyt3",
+  "ficha": "https://www.datos.gov.co/d/iczg-dyt3",
+  "api": "https://www.datos.gov.co/resource/iczg-dyt3.json",
+  "metodo": "fotointerpretación de polígonos sobre imagen Sentinel-2 (10 m/px)",
+  "periodo": "2014-2021",
+  "poligonos": 7937,
+  "descargado": "2026-09-19",
+  "cobertura": "departamento del Chocó. Complementa a Amazon Mining Watch, que solo cubre la cuenca amazónica y deja el Pacífico fuera."
+ },
+ "total_ha": 63970.28,
+ "serie": [
+  {
+   "anio": "2014",
+   "ha": 14456.81,
+   "poligonos": 1448
+  },
+  {
+   "anio": "2015",
+   "ha": 2467.74,
+   "poligonos": 309
+  },
+  {
+   "anio": "2016",
+   "ha": 26511.88,
+   "poligonos": 227
+  },
+  {
+   "anio": "2017",
+   "ha": 1943.73,
+   "poligonos": 228
+  },
+  {
+   "anio": "2018",
+   "ha": 1396.6,
+   "poligonos": 200
+  },
+  {
+   "anio": "2019",
+   "ha": 9344.5,
+   "poligonos": 2199
+  },
+  {
+   "anio": "2020",
+   "ha": 3397.26,
+   "poligonos": 1723
+  },
+  {
+   "anio": "2021",
+   "ha": 4451.76,
+   "poligonos": 1603
+  }
+ ],
+ "causas": [
+  {
+   "causa": "Incendio",
+   "ha": 25715.04,
+   "poligonos": 36
+  },
+  {
+   "causa": "Minería",
+   "ha": 19378.91,
+   "poligonos": 1915
+  },
+  {
+   "causa": "Cultivo",
+   "ha": 12807.39,
+   "poligonos": 5074
+  },
+  {
+   "causa": "Desconocida",
+   "ha": 3583.99,
+   "poligonos": 128
+  },
+  {
+   "causa": "Sin atribuir",
+   "ha": 840.27,
+   "poligonos": 219
+  },
+  {
+   "causa": "Frontera Agropecuaria",
+   "ha": 686.67,
+   "poligonos": 208
+  },
+  {
+   "causa": "Ganadería",
+   "ha": 681.13,
+   "poligonos": 142
+  },
+  {
+   "causa": "Obras Civiles",
+   "ha": 108.08,
+   "poligonos": 23
+  },
+  {
+   "causa": "Deslizamiento",
+   "ha": 107.35,
+   "poligonos": 168
+  },
+  {
+   "causa": "Crecimiento Urbano",
+   "ha": 44.13,
+   "poligonos": 6
+  },
+  {
+   "causa": "Derrumbe",
+   "ha": 14.95,
+   "poligonos": 17
+  },
+  {
+   "causa": "Relleno Sanitario",
+   "ha": 2.37,
+   "poligonos": 1
+  }
+ ],
+ "serie_por_causa": [
+  {
+   "anio": "2014",
+   "causa": "Cultivo",
+   "ha": 1930.1
+  },
+  {
+   "anio": "2014",
+   "causa": "Desconocida",
+   "ha": 10.35
+  },
+  {
+   "anio": "2014",
+   "causa": "Minería",
+   "ha": 12516.36
+  },
+  {
+   "anio": "2015",
+   "causa": "Crecimiento Urbano",
+   "ha": 31.38
+  },
+  {
+   "anio": "2015",
+   "causa": "Cultivo",
+   "ha": 591.4
+  },
+  {
+   "anio": "2015",
+   "causa": "Desconocida",
+   "ha": 713.64
+  },
+  {
+   "anio": "2015",
+   "causa": "Deslizamiento",
+   "ha": 0.95
+  },
+  {
+   "anio": "2015",
+   "causa": "Frontera Agropecuaria",
+   "ha": 3.01
+  },
+  {
+   "anio": "2015",
+   "causa": "Ganadería",
+   "ha": 310.62
+  },
+  {
+   "anio": "2015",
+   "causa": "Minería",
+   "ha": 816.74
+  },
+  {
+   "anio": "2016",
+   "causa": "Cultivo",
+   "ha": 1582.54
+  },
+  {
+   "anio": "2016",
+   "causa": "Desconocida",
+   "ha": 1705.12
+  },
+  {
+   "anio": "2016",
+   "causa": "Frontera Agropecuaria",
+   "ha": 22.89
+  },
+  {
+   "anio": "2016",
+   "causa": "Incendio",
+   "ha": 20845.19
+  },
+  {
+   "anio": "2016",
+   "causa": "Minería",
+   "ha": 2356.14
+  },
+  {
+   "anio": "2017",
+   "causa": "Crecimiento Urbano",
+   "ha": 6.38
+  },
+  {
+   "anio": "2017",
+   "causa": "Cultivo",
+   "ha": 629.05
+  },
+  {
+   "anio": "2017",
+   "causa": "Desconocida",
+   "ha": 50.8
+  },
+  {
+   "anio": "2017",
+   "causa": "Frontera Agropecuaria",
+   "ha": 285.01
+  },
+  {
+   "anio": "2017",
+   "causa": "Minería",
+   "ha": 972.49
+  },
+  {
+   "anio": "2018",
+   "causa": "Cultivo",
+   "ha": 135.97
+  },
+  {
+   "anio": "2018",
+   "causa": "Desconocida",
+   "ha": 410.92
+  },
+  {
+   "anio": "2018",
+   "causa": "Frontera Agropecuaria",
+   "ha": 373.21
+  },
+  {
+   "anio": "2018",
+   "causa": "Incendio",
+   "ha": 212.46
+  },
+  {
+   "anio": "2018",
+   "causa": "Minería",
+   "ha": 264.05
+  },
+  {
+   "anio": "2019",
+   "causa": "Cultivo",
+   "ha": 3192.67
+  },
+  {
+   "anio": "2019",
+   "causa": "Desconocida",
+   "ha": 645.04
+  },
+  {
+   "anio": "2019",
+   "causa": "Deslizamiento",
+   "ha": 83.03
+  },
+  {
+   "anio": "2019",
+   "causa": "Ganadería",
+   "ha": 293.82
+  },
+  {
+   "anio": "2019",
+   "causa": "Incendio",
+   "ha": 4548.37
+  },
+  {
+   "anio": "2019",
+   "causa": "Minería",
+   "ha": 544.19
+  },
+  {
+   "anio": "2019",
+   "causa": "Obras Civiles",
+   "ha": 35.01
+  },
+  {
+   "anio": "2019",
+   "causa": "Relleno Sanitario",
+   "ha": 2.37
+  },
+  {
+   "anio": "2020",
+   "causa": "Cultivo",
+   "ha": 2718.64
+  },
+  {
+   "anio": "2020",
+   "causa": "Derrumbe",
+   "ha": 14.95
+  },
+  {
+   "anio": "2020",
+   "causa": "Desconocida",
+   "ha": 3.61
+  },
+  {
+   "anio": "2020",
+   "causa": "Incendio",
+   "ha": 109.02
+  },
+  {
+   "anio": "2020",
+   "causa": "Minería",
+   "ha": 524.42
+  },
+  {
+   "anio": "2020",
+   "causa": "Obras Civiles",
+   "ha": 26.63
+  },
+  {
+   "anio": "2021",
+   "causa": "Crecimiento Urbano",
+   "ha": 6.37
+  },
+  {
+   "anio": "2021",
+   "causa": "Cultivo",
+   "ha": 2027.04
+  },
+  {
+   "anio": "2021",
+   "causa": "Desconocida",
+   "ha": 44.51
+  },
+  {
+   "anio": "2021",
+   "causa": "Deslizamiento",
+   "ha": 23.37
+  },
+  {
+   "anio": "2021",
+   "causa": "Frontera Agropecuaria",
+   "ha": 2.56
+  },
+  {
+   "anio": "2021",
+   "causa": "Ganadería",
+   "ha": 76.68
+  },
+  {
+   "anio": "2021",
+   "causa": "Minería",
+   "ha": 1384.52
+  },
+  {
+   "anio": "2021",
+   "causa": "Obras Civiles",
+   "ha": 46.44
+  },
+  {
+   "anio": "2021",
+   "causa": "Sin atribuir",
+   "ha": 840.27
+  }
+ ],
+ "municipios": [
+  {
+   "divipola": "27615",
+   "nombre": "Riosucio",
+   "departamento": "Chocó",
+   "ha": 22823.82,
+   "poligonos": 1873,
+   "por_causa": {
+    "Incendio": 14334.54,
+    "Cultivo": 5673.68,
+    "Desconocida": 1811.63,
+    "Sin atribuir": 672.24,
+    "Frontera Agropecuaria": 202.44,
+    "Ganadería": 128.72,
+    "Minería": 0.58
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Cultivo",
+     "ha": 502.67,
+     "poligonos": 158
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 339.99,
+     "poligonos": 89
+    },
+    {
+     "anio": "2015",
+     "causa": "Frontera Agropecuaria",
+     "ha": 1.78,
+     "poligonos": 1
+    },
+    {
+     "anio": "2015",
+     "causa": "Ganadería",
+     "ha": 128.72,
+     "poligonos": 21
+    },
+    {
+     "anio": "2016",
+     "causa": "Cultivo",
+     "ha": 1310.01,
+     "poligonos": 30
+    },
+    {
+     "anio": "2016",
+     "causa": "Desconocida",
+     "ha": 1589.46,
+     "poligonos": 16
+    },
+    {
+     "anio": "2016",
+     "causa": "Frontera Agropecuaria",
+     "ha": 12.94,
+     "poligonos": 5
+    },
+    {
+     "anio": "2016",
+     "causa": "Incendio",
+     "ha": 13856.28,
+     "poligonos": 13
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 433.98,
+     "poligonos": 20
+    },
+    {
+     "anio": "2017",
+     "causa": "Desconocida",
+     "ha": 50.8,
+     "poligonos": 10
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 115.61,
+     "poligonos": 43
+    },
+    {
+     "anio": "2018",
+     "causa": "Cultivo",
+     "ha": 105.67,
+     "poligonos": 16
+    },
+    {
+     "anio": "2018",
+     "causa": "Desconocida",
+     "ha": 166.35,
+     "poligonos": 21
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 69.78,
+     "poligonos": 26
+    },
+    {
+     "anio": "2018",
+     "causa": "Incendio",
+     "ha": 212.46,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 1485.39,
+     "poligonos": 582
+    },
+    {
+     "anio": "2019",
+     "causa": "Incendio",
+     "ha": 265.8,
+     "poligonos": 11
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 0.58,
+     "poligonos": 1
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 1217.45,
+     "poligonos": 538
+    },
+    {
+     "anio": "2020",
+     "causa": "Desconocida",
+     "ha": 3.61,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 278.52,
+     "poligonos": 107
+    },
+    {
+     "anio": "2021",
+     "causa": "Desconocida",
+     "ha": 1.41,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Frontera Agropecuaria",
+     "ha": 2.33,
+     "poligonos": 2
+    },
+    {
+     "anio": "2021",
+     "causa": "Sin atribuir",
+     "ha": 672.24,
+     "poligonos": 160
+    }
+   ]
+  },
+  {
+   "divipola": "27800",
+   "nombre": "Unguía",
+   "departamento": "Chocó",
+   "ha": 12553.56,
+   "poligonos": 367,
+   "por_causa": {
+    "Incendio": 11098.76,
+    "Cultivo": 1115.95,
+    "Sin atribuir": 166.43,
+    "Ganadería": 143.6,
+    "Desconocida": 26.58,
+    "Frontera Agropecuaria": 2.23
+   },
+   "detalle": [
+    {
+     "anio": "2015",
+     "causa": "Ganadería",
+     "ha": 41.85,
+     "poligonos": 5
+    },
+    {
+     "anio": "2016",
+     "causa": "Cultivo",
+     "ha": 196.51,
+     "poligonos": 7
+    },
+    {
+     "anio": "2016",
+     "causa": "Incendio",
+     "ha": 6988.91,
+     "poligonos": 1
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 73.13,
+     "poligonos": 5
+    },
+    {
+     "anio": "2018",
+     "causa": "Desconocida",
+     "ha": 26.58,
+     "poligonos": 2
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 2.23,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 463.72,
+     "poligonos": 168
+    },
+    {
+     "anio": "2019",
+     "causa": "Ganadería",
+     "ha": 101.74,
+     "poligonos": 8
+    },
+    {
+     "anio": "2019",
+     "causa": "Incendio",
+     "ha": 4109.85,
+     "poligonos": 7
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 205.18,
+     "poligonos": 72
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 177.42,
+     "poligonos": 33
+    },
+    {
+     "anio": "2021",
+     "causa": "Sin atribuir",
+     "ha": 166.43,
+     "poligonos": 58
+    }
+   ]
+  },
+  {
+   "divipola": "27135",
+   "nombre": "El Cantón Del San Pablo",
+   "departamento": "Chocó",
+   "ha": 3139.75,
+   "poligonos": 256,
+   "por_causa": {
+    "Minería": 3139.75
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 2205.81,
+     "poligonos": 105
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 352.41,
+     "poligonos": 39
+    },
+    {
+     "anio": "2017",
+     "causa": "Minería",
+     "ha": 77.24,
+     "poligonos": 12
+    },
+    {
+     "anio": "2018",
+     "causa": "Minería",
+     "ha": 92.18,
+     "poligonos": 5
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 90.73,
+     "poligonos": 18
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 99.25,
+     "poligonos": 43
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 222.12,
+     "poligonos": 34
+    }
+   ]
+  },
+  {
+   "divipola": "27491",
+   "nombre": "Nóvita",
+   "departamento": "Chocó",
+   "ha": 2920.03,
+   "poligonos": 250,
+   "por_causa": {
+    "Minería": 2820.73,
+    "Cultivo": 99.3
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 2334.26,
+     "poligonos": 97
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 9.66,
+     "poligonos": 2
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 312.76,
+     "poligonos": 3
+    },
+    {
+     "anio": "2018",
+     "causa": "Minería",
+     "ha": 35.73,
+     "poligonos": 11
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 12.71,
+     "poligonos": 15
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 97.24,
+     "poligonos": 41
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 18.44,
+     "poligonos": 19
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 17.51,
+     "poligonos": 11
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 68.16,
+     "poligonos": 46
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 13.58,
+     "poligonos": 5
+    }
+   ]
+  },
+  {
+   "divipola": "27600",
+   "nombre": "Río Quito",
+   "departamento": "Chocó",
+   "ha": 2371.94,
+   "poligonos": 267,
+   "por_causa": {
+    "Minería": 2370.43,
+    "Cultivo": 1.52
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 932.59,
+     "poligonos": 97
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 19.73,
+     "poligonos": 5
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 880.16,
+     "poligonos": 40
+    },
+    {
+     "anio": "2017",
+     "causa": "Minería",
+     "ha": 114.44,
+     "poligonos": 16
+    },
+    {
+     "anio": "2018",
+     "causa": "Minería",
+     "ha": 31.96,
+     "poligonos": 11
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 0.48,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 54.98,
+     "poligonos": 22
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 175.74,
+     "poligonos": 45
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 1.04,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 160.84,
+     "poligonos": 29
+    }
+   ]
+  },
+  {
+   "divipola": "27425",
+   "nombre": "Medio Atrato",
+   "departamento": "Chocó",
+   "ha": 2268.91,
+   "poligonos": 109,
+   "por_causa": {
+    "Minería": 2193.24,
+    "Cultivo": 48.94,
+    "Frontera Agropecuaria": 26.73
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 1805.78,
+     "poligonos": 43
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 5.83,
+     "poligonos": 1
+    },
+    {
+     "anio": "2015",
+     "causa": "Frontera Agropecuaria",
+     "ha": 1.23,
+     "poligonos": 1
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 94.7,
+     "poligonos": 7
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 178.84,
+     "poligonos": 7
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 16.12,
+     "poligonos": 4
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 25.5,
+     "poligonos": 2
+    },
+    {
+     "anio": "2017",
+     "causa": "Minería",
+     "ha": 40.07,
+     "poligonos": 10
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 3.82,
+     "poligonos": 4
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 15.82,
+     "poligonos": 6
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 4.72,
+     "poligonos": 6
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 45.81,
+     "poligonos": 9
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 18.45,
+     "poligonos": 6
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 12.21,
+     "poligonos": 3
+    }
+   ]
+  },
+  {
+   "divipola": "27361",
+   "nombre": "Istmina",
+   "departamento": "Chocó",
+   "ha": 1779.92,
+   "poligonos": 342,
+   "por_causa": {
+    "Minería": 1597.68,
+    "Cultivo": 179.88,
+    "Relleno Sanitario": 2.37
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 1083.2,
+     "poligonos": 88
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 19.48,
+     "poligonos": 9
+    },
+    {
+     "anio": "2016",
+     "causa": "Cultivo",
+     "ha": 2.39,
+     "poligonos": 1
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 110.67,
+     "poligonos": 7
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 10.77,
+     "poligonos": 14
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 61.57,
+     "poligonos": 24
+    },
+    {
+     "anio": "2019",
+     "causa": "Relleno Sanitario",
+     "ha": 2.37,
+     "poligonos": 1
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 51.52,
+     "poligonos": 22
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 55.55,
+     "poligonos": 27
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 95.72,
+     "poligonos": 77
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 286.68,
+     "poligonos": 72
+    }
+   ]
+  },
+  {
+   "divipola": "27150",
+   "nombre": "Carmen Del Darién",
+   "departamento": "Chocó",
+   "ha": 1771.36,
+   "poligonos": 364,
+   "por_causa": {
+    "Cultivo": 1265.81,
+    "Frontera Agropecuaria": 212.88,
+    "Desconocida": 115.66,
+    "Incendio": 109.02,
+    "Ganadería": 67.99
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Cultivo",
+     "ha": 132.6,
+     "poligonos": 36
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 9.39,
+     "poligonos": 8
+    },
+    {
+     "anio": "2015",
+     "causa": "Ganadería",
+     "ha": 66.31,
+     "poligonos": 13
+    },
+    {
+     "anio": "2016",
+     "causa": "Cultivo",
+     "ha": 27.59,
+     "poligonos": 1
+    },
+    {
+     "anio": "2016",
+     "causa": "Desconocida",
+     "ha": 115.66,
+     "poligonos": 2
+    },
+    {
+     "anio": "2016",
+     "causa": "Frontera Agropecuaria",
+     "ha": 9.95,
+     "poligonos": 2
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 3.53,
+     "poligonos": 1
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 14.11,
+     "poligonos": 2
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 188.82,
+     "poligonos": 28
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 263.51,
+     "poligonos": 84
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 401.62,
+     "poligonos": 81
+    },
+    {
+     "anio": "2020",
+     "causa": "Incendio",
+     "ha": 109.02,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 427.57,
+     "poligonos": 104
+    },
+    {
+     "anio": "2021",
+     "causa": "Ganadería",
+     "ha": 1.68,
+     "poligonos": 1
+    }
+   ]
+  },
+  {
+   "divipola": "27810",
+   "nombre": "Unión Panamericana",
+   "departamento": "Chocó",
+   "ha": 1531.97,
+   "poligonos": 152,
+   "por_causa": {
+    "Minería": 1475.65,
+    "Cultivo": 36.41,
+    "Crecimiento Urbano": 10.34,
+    "Frontera Agropecuaria": 6.65,
+    "Obras Civiles": 2.92
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 681.64,
+     "poligonos": 55
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 37.37,
+     "poligonos": 9
+    },
+    {
+     "anio": "2016",
+     "causa": "Cultivo",
+     "ha": 2.14,
+     "poligonos": 1
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 115.16,
+     "poligonos": 7
+    },
+    {
+     "anio": "2017",
+     "causa": "Crecimiento Urbano",
+     "ha": 6.38,
+     "poligonos": 1
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 1.31,
+     "poligonos": 1
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 4.31,
+     "poligonos": 2
+    },
+    {
+     "anio": "2017",
+     "causa": "Minería",
+     "ha": 556.81,
+     "poligonos": 3
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 2.35,
+     "poligonos": 2
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 2.47,
+     "poligonos": 2
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 6.09,
+     "poligonos": 9
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 19.04,
+     "poligonos": 16
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 13.71,
+     "poligonos": 11
+    },
+    {
+     "anio": "2020",
+     "causa": "Obras Civiles",
+     "ha": 2.92,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Crecimiento Urbano",
+     "ha": 3.96,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 11.45,
+     "poligonos": 8
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 64.87,
+     "poligonos": 23
+    }
+   ]
+  },
+  {
+   "divipola": "27050",
+   "nombre": "Atrato",
+   "departamento": "Chocó",
+   "ha": 1320.13,
+   "poligonos": 134,
+   "por_causa": {
+    "Minería": 1196.66,
+    "Cultivo": 82.75,
+    "Frontera Agropecuaria": 39.97,
+    "Crecimiento Urbano": 0.76
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 628.37,
+     "poligonos": 49
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 494.31,
+     "poligonos": 3
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 21.83,
+     "poligonos": 8
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 34.02,
+     "poligonos": 12
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 12.4,
+     "poligonos": 2
+    },
+    {
+     "anio": "2017",
+     "causa": "Minería",
+     "ha": 5.76,
+     "poligonos": 2
+    },
+    {
+     "anio": "2018",
+     "causa": "Cultivo",
+     "ha": 15.26,
+     "poligonos": 7
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 27.34,
+     "poligonos": 9
+    },
+    {
+     "anio": "2018",
+     "causa": "Minería",
+     "ha": 23.76,
+     "poligonos": 8
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 23.03,
+     "poligonos": 6
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 10.37,
+     "poligonos": 11
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 3.54,
+     "poligonos": 5
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 0.77,
+     "poligonos": 2
+    },
+    {
+     "anio": "2021",
+     "causa": "Crecimiento Urbano",
+     "ha": 0.76,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 6.91,
+     "poligonos": 3
+    },
+    {
+     "anio": "2021",
+     "causa": "Frontera Agropecuaria",
+     "ha": 0.23,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 11.48,
+     "poligonos": 5
+    }
+   ]
+  },
+  {
+   "divipola": "27160",
+   "nombre": "Cértegui",
+   "departamento": "Chocó",
+   "ha": 1254.97,
+   "poligonos": 198,
+   "por_causa": {
+    "Minería": 1201.57,
+    "Obras Civiles": 35.01,
+    "Cultivo": 18.4
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 429.54,
+     "poligonos": 57
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 10.8,
+     "poligonos": 3
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 242.85,
+     "poligonos": 17
+    },
+    {
+     "anio": "2017",
+     "causa": "Minería",
+     "ha": 109.11,
+     "poligonos": 17
+    },
+    {
+     "anio": "2018",
+     "causa": "Minería",
+     "ha": 71.23,
+     "poligonos": 9
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 0.27,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 104.74,
+     "poligonos": 22
+    },
+    {
+     "anio": "2019",
+     "causa": "Obras Civiles",
+     "ha": 35.01,
+     "poligonos": 8
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 1.08,
+     "poligonos": 1
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 75.26,
+     "poligonos": 19
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 17.05,
+     "poligonos": 13
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 158.04,
+     "poligonos": 31
+    }
+   ]
+  },
+  {
+   "divipola": "27413",
+   "nombre": "Lloró",
+   "departamento": "Chocó",
+   "ha": 1047.61,
+   "poligonos": 181,
+   "por_causa": {
+    "Minería": 947.1,
+    "Cultivo": 84.65,
+    "Deslizamiento": 15.87
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 794.12,
+     "poligonos": 33
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 60.25,
+     "poligonos": 7
+    },
+    {
+     "anio": "2018",
+     "causa": "Cultivo",
+     "ha": 5.96,
+     "poligonos": 2
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 58.58,
+     "poligonos": 83
+    },
+    {
+     "anio": "2019",
+     "causa": "Deslizamiento",
+     "ha": 15.87,
+     "poligonos": 13
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 0.47,
+     "poligonos": 1
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 5.54,
+     "poligonos": 8
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 19.63,
+     "poligonos": 8
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 87.19,
+     "poligonos": 26
+    }
+   ]
+  },
+  {
+   "divipola": "27450",
+   "nombre": "Medio San Juan",
+   "departamento": "Chocó",
+   "ha": 917.9,
+   "poligonos": 88,
+   "por_causa": {
+    "Desconocida": 645.04,
+    "Minería": 204.05,
+    "Cultivo": 68.81
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 38.69,
+     "poligonos": 14
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 21.31,
+     "poligonos": 6
+    },
+    {
+     "anio": "2016",
+     "causa": "Cultivo",
+     "ha": 8.37,
+     "poligonos": 3
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 46.51,
+     "poligonos": 5
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 45.09,
+     "poligonos": 6
+    },
+    {
+     "anio": "2017",
+     "causa": "Minería",
+     "ha": 8.19,
+     "poligonos": 1
+    },
+    {
+     "anio": "2018",
+     "causa": "Minería",
+     "ha": 9.19,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Desconocida",
+     "ha": 645.04,
+     "poligonos": 12
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 35.65,
+     "poligonos": 12
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 3.72,
+     "poligonos": 6
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 15.35,
+     "poligonos": 10
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 40.78,
+     "poligonos": 12
+    }
+   ]
+  },
+  {
+   "divipola": "27001",
+   "nombre": "Quibdó",
+   "departamento": "Chocó",
+   "ha": 864.9,
+   "poligonos": 169,
+   "por_causa": {
+    "Minería": 711.97,
+    "Cultivo": 119.89,
+    "Crecimiento Urbano": 33.04
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 355.08,
+     "poligonos": 36
+    },
+    {
+     "anio": "2015",
+     "causa": "Crecimiento Urbano",
+     "ha": 31.38,
+     "poligonos": 2
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 42.41,
+     "poligonos": 5
+    },
+    {
+     "anio": "2016",
+     "causa": "Cultivo",
+     "ha": 21.19,
+     "poligonos": 1
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 79.5,
+     "poligonos": 8
+    },
+    {
+     "anio": "2017",
+     "causa": "Minería",
+     "ha": 60.87,
+     "poligonos": 8
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 58.33,
+     "poligonos": 8
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 11.9,
+     "poligonos": 16
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 29.8,
+     "poligonos": 36
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 1.47,
+     "poligonos": 6
+    },
+    {
+     "anio": "2021",
+     "causa": "Crecimiento Urbano",
+     "ha": 1.66,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 10.58,
+     "poligonos": 10
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 160.75,
+     "poligonos": 32
+    }
+   ]
+  },
+  {
+   "divipola": "27006",
+   "nombre": "Acandí",
+   "departamento": "Chocó",
+   "ha": 844.47,
+   "poligonos": 329,
+   "por_causa": {
+    "Cultivo": 570.55,
+    "Ganadería": 225.26,
+    "Frontera Agropecuaria": 48.66
+   },
+   "detalle": [
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 31.47,
+     "poligonos": 6
+    },
+    {
+     "anio": "2015",
+     "causa": "Ganadería",
+     "ha": 33.18,
+     "poligonos": 5
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 4.99,
+     "poligonos": 1
+    },
+    {
+     "anio": "2018",
+     "causa": "Cultivo",
+     "ha": 5.03,
+     "poligonos": 2
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 48.66,
+     "poligonos": 17
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 264.74,
+     "poligonos": 114
+    },
+    {
+     "anio": "2019",
+     "causa": "Ganadería",
+     "ha": 192.08,
+     "poligonos": 52
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 164.18,
+     "poligonos": 94
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 100.13,
+     "poligonos": 38
+    }
+   ]
+  },
+  {
+   "divipola": "27250",
+   "nombre": "El Litoral Del San Juan",
+   "departamento": "Chocó",
+   "ha": 830.13,
+   "poligonos": 134,
+   "por_causa": {
+    "Desconocida": 713.64,
+    "Cultivo": 116.49
+   },
+   "detalle": [
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 2.5,
+     "poligonos": 4
+    },
+    {
+     "anio": "2015",
+     "causa": "Desconocida",
+     "ha": 713.64,
+     "poligonos": 1
+    },
+    {
+     "anio": "2018",
+     "causa": "Cultivo",
+     "ha": 0.56,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 37.83,
+     "poligonos": 65
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 4.35,
+     "poligonos": 12
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 71.25,
+     "poligonos": 51
+    }
+   ]
+  },
+  {
+   "divipola": "27660",
+   "nombre": "San José Del Palmar",
+   "departamento": "Chocó",
+   "ha": 645.03,
+   "poligonos": 408,
+   "por_causa": {
+    "Cultivo": 578.8,
+    "Minería": 34.32,
+    "Frontera Agropecuaria": 16.97,
+    "Derrumbe": 14.95
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 34.32,
+     "poligonos": 2
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 8.65,
+     "poligonos": 5
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 7.65,
+     "poligonos": 4
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 9.31,
+     "poligonos": 7
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 135.09,
+     "poligonos": 138
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 236.66,
+     "poligonos": 157
+    },
+    {
+     "anio": "2020",
+     "causa": "Derrumbe",
+     "ha": 14.95,
+     "poligonos": 17
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 198.4,
+     "poligonos": 78
+    }
+   ]
+  },
+  {
+   "divipola": "27372",
+   "nombre": "Juradó",
+   "departamento": "Chocó",
+   "ha": 563.28,
+   "poligonos": 293,
+   "por_causa": {
+    "Cultivo": 269.41,
+    "Incendio": 172.72,
+    "Frontera Agropecuaria": 93.26,
+    "Ganadería": 27.89
+   },
+   "detalle": [
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 45.52,
+     "poligonos": 34
+    },
+    {
+     "anio": "2015",
+     "causa": "Ganadería",
+     "ha": 27.89,
+     "poligonos": 5
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 93.26,
+     "poligonos": 33
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 120.08,
+     "poligonos": 117
+    },
+    {
+     "anio": "2019",
+     "causa": "Incendio",
+     "ha": 172.72,
+     "poligonos": 2
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 62.08,
+     "poligonos": 83
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 41.72,
+     "poligonos": 19
+    }
+   ]
+  },
+  {
+   "divipola": "27205",
+   "nombre": "Condoto",
+   "departamento": "Chocó",
+   "ha": 551.51,
+   "poligonos": 114,
+   "por_causa": {
+    "Minería": 539.5,
+    "Frontera Agropecuaria": 11.15,
+    "Cultivo": 0.86
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 425.88,
+     "poligonos": 40
+    },
+    {
+     "anio": "2016",
+     "causa": "Minería",
+     "ha": 15.45,
+     "poligonos": 1
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 11.15,
+     "poligonos": 4
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 0.86,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 50.68,
+     "poligonos": 46
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 11.72,
+     "poligonos": 7
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 35.77,
+     "poligonos": 15
+    }
+   ]
+  },
+  {
+   "divipola": "27075",
+   "nombre": "Bahía Solano",
+   "departamento": "Chocó",
+   "ha": 508.81,
+   "poligonos": 130,
+   "por_causa": {
+    "Cultivo": 484.83,
+    "Ganadería": 12.67,
+    "Desconocida": 10.35,
+    "Deslizamiento": 0.95
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Cultivo",
+     "ha": 360.57,
+     "poligonos": 46
+    },
+    {
+     "anio": "2014",
+     "causa": "Desconocida",
+     "ha": 10.35,
+     "poligonos": 15
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 48.71,
+     "poligonos": 17
+    },
+    {
+     "anio": "2015",
+     "causa": "Deslizamiento",
+     "ha": 0.95,
+     "poligonos": 2
+    },
+    {
+     "anio": "2015",
+     "causa": "Ganadería",
+     "ha": 12.67,
+     "poligonos": 3
+    },
+    {
+     "anio": "2016",
+     "causa": "Cultivo",
+     "ha": 14.34,
+     "poligonos": 2
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 8.98,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 4.97,
+     "poligonos": 7
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 23.52,
+     "poligonos": 19
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 23.75,
+     "poligonos": 18
+    }
+   ]
+  },
+  {
+   "divipola": "27099",
+   "nombre": "Bojayá",
+   "departamento": "Chocó",
+   "ha": 491.19,
+   "poligonos": 171,
+   "por_causa": {
+    "Cultivo": 273.2,
+    "Desconocida": 217.99
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Cultivo",
+     "ha": 108.91,
+     "poligonos": 50
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 27.17,
+     "poligonos": 3
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 6.1,
+     "poligonos": 1
+    },
+    {
+     "anio": "2018",
+     "causa": "Desconocida",
+     "ha": 217.99,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 62.88,
+     "poligonos": 73
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 43.47,
+     "poligonos": 32
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 24.67,
+     "poligonos": 11
+    }
+   ]
+  },
+  {
+   "divipola": "27787",
+   "nombre": "Tadó",
+   "departamento": "Chocó",
+   "ha": 487.93,
+   "poligonos": 155,
+   "por_causa": {
+    "Minería": 335.38,
+    "Cultivo": 128.22,
+    "Frontera Agropecuaria": 10.73,
+    "Deslizamiento": 8.74,
+    "Obras Civiles": 3.24,
+    "Sin atribuir": 1.6
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 334.9,
+     "poligonos": 50
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 31.56,
+     "poligonos": 7
+    },
+    {
+     "anio": "2017",
+     "causa": "Cultivo",
+     "ha": 1.79,
+     "poligonos": 1
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 10.73,
+     "poligonos": 6
+    },
+    {
+     "anio": "2018",
+     "causa": "Cultivo",
+     "ha": 3.48,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 12.2,
+     "poligonos": 26
+    },
+    {
+     "anio": "2019",
+     "causa": "Deslizamiento",
+     "ha": 8.74,
+     "poligonos": 26
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 0.28,
+     "poligonos": 1
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 8.74,
+     "poligonos": 1
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 0.19,
+     "poligonos": 1
+    },
+    {
+     "anio": "2020",
+     "causa": "Obras Civiles",
+     "ha": 3.24,
+     "poligonos": 2
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 70.45,
+     "poligonos": 32
+    },
+    {
+     "anio": "2021",
+     "causa": "Sin atribuir",
+     "ha": 1.6,
+     "poligonos": 1
+    }
+   ]
+  },
+  {
+   "divipola": "27025",
+   "nombre": "Alto Baudó",
+   "departamento": "Chocó",
+   "ha": 439.9,
+   "poligonos": 284,
+   "por_causa": {
+    "Cultivo": 431.42,
+    "Minería": 8.48
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Cultivo",
+     "ha": 257.12,
+     "poligonos": 134
+    },
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 8.48,
+     "poligonos": 4
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 7.94,
+     "poligonos": 6
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 63.4,
+     "poligonos": 71
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 102.96,
+     "poligonos": 69
+    }
+   ]
+  },
+  {
+   "divipola": "27430",
+   "nombre": "Medio Baudó",
+   "departamento": "Chocó",
+   "ha": 406.86,
+   "poligonos": 224,
+   "por_causa": {
+    "Cultivo": 375.24,
+    "Obras Civiles": 24.64,
+    "Frontera Agropecuaria": 4.84,
+    "Minería": 2.14
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Cultivo",
+     "ha": 224.13,
+     "poligonos": 62
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 4.84,
+     "poligonos": 4
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 35.76,
+     "poligonos": 58
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 32.5,
+     "poligonos": 42
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 2.14,
+     "poligonos": 1
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 82.85,
+     "poligonos": 56
+    },
+    {
+     "anio": "2021",
+     "causa": "Obras Civiles",
+     "ha": 24.64,
+     "poligonos": 1
+    }
+   ]
+  },
+  {
+   "divipola": "27073",
+   "nombre": "Bagadó",
+   "departamento": "Chocó",
+   "ha": 387.57,
+   "poligonos": 175,
+   "por_causa": {
+    "Minería": 275.63,
+    "Cultivo": 99.98,
+    "Deslizamiento": 11.96
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 225.85,
+     "poligonos": 22
+    },
+    {
+     "anio": "2015",
+     "causa": "Minería",
+     "ha": 26.2,
+     "poligonos": 4
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 30.51,
+     "poligonos": 42
+    },
+    {
+     "anio": "2019",
+     "causa": "Deslizamiento",
+     "ha": 11.96,
+     "poligonos": 23
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 53.02,
+     "poligonos": 67
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 16.45,
+     "poligonos": 9
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 23.58,
+     "poligonos": 8
+    }
+   ]
+  },
+  {
+   "divipola": "27077",
+   "nombre": "Bajo Baudó",
+   "departamento": "Chocó",
+   "ha": 385.91,
+   "poligonos": 205,
+   "por_causa": {
+    "Cultivo": 376.8,
+    "Frontera Agropecuaria": 9.11
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Cultivo",
+     "ha": 227.58,
+     "poligonos": 79
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 19.04,
+     "poligonos": 15
+    },
+    {
+     "anio": "2017",
+     "causa": "Frontera Agropecuaria",
+     "ha": 1.44,
+     "poligonos": 1
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 7.67,
+     "poligonos": 2
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 19.16,
+     "poligonos": 23
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 36.51,
+     "poligonos": 42
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 74.51,
+     "poligonos": 43
+    }
+   ]
+  },
+  {
+   "divipola": "27580",
+   "nombre": "Río Iró",
+   "departamento": "Chocó",
+   "ha": 311.43,
+   "poligonos": 143,
+   "por_causa": {
+    "Minería": 202.05,
+    "Cultivo": 71.86,
+    "Obras Civiles": 35.63,
+    "Frontera Agropecuaria": 1.05,
+    "Deslizamiento": 0.83
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 171.34,
+     "poligonos": 17
+    },
+    {
+     "anio": "2015",
+     "causa": "Cultivo",
+     "ha": 2.1,
+     "poligonos": 1
+    },
+    {
+     "anio": "2018",
+     "causa": "Frontera Agropecuaria",
+     "ha": 1.05,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 9.48,
+     "poligonos": 12
+    },
+    {
+     "anio": "2019",
+     "causa": "Deslizamiento",
+     "ha": 0.83,
+     "poligonos": 1
+    },
+    {
+     "anio": "2019",
+     "causa": "Minería",
+     "ha": 3.55,
+     "poligonos": 7
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 19.69,
+     "poligonos": 50
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 0.87,
+     "poligonos": 1
+    },
+    {
+     "anio": "2020",
+     "causa": "Obras Civiles",
+     "ha": 16.93,
+     "poligonos": 5
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 40.59,
+     "poligonos": 38
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 26.29,
+     "poligonos": 7
+    },
+    {
+     "anio": "2021",
+     "causa": "Obras Civiles",
+     "ha": 18.7,
+     "poligonos": 3
+    }
+   ]
+  },
+  {
+   "divipola": "27495",
+   "nombre": "Nuquí",
+   "departamento": "Chocó",
+   "ha": 216.09,
+   "poligonos": 131,
+   "por_causa": {
+    "Cultivo": 216.09
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Cultivo",
+     "ha": 116.52,
+     "poligonos": 57
+    },
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 57.79,
+     "poligonos": 42
+    },
+    {
+     "anio": "2020",
+     "causa": "Cultivo",
+     "ha": 17.66,
+     "poligonos": 14
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 24.13,
+     "poligonos": 18
+    }
+   ]
+  },
+  {
+   "divipola": "27245",
+   "nombre": "El Carmen De Atrato",
+   "departamento": "Chocó",
+   "ha": 206.34,
+   "poligonos": 222,
+   "por_causa": {
+    "Ganadería": 75.0,
+    "Deslizamiento": 69.0,
+    "Desconocida": 43.1,
+    "Cultivo": 16.14,
+    "Obras Civiles": 3.1
+   },
+   "detalle": [
+    {
+     "anio": "2019",
+     "causa": "Cultivo",
+     "ha": 10.3,
+     "poligonos": 32
+    },
+    {
+     "anio": "2019",
+     "causa": "Deslizamiento",
+     "ha": 45.63,
+     "poligonos": 75
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 5.83,
+     "poligonos": 11
+    },
+    {
+     "anio": "2021",
+     "causa": "Desconocida",
+     "ha": 43.1,
+     "poligonos": 46
+    },
+    {
+     "anio": "2021",
+     "causa": "Deslizamiento",
+     "ha": 23.37,
+     "poligonos": 28
+    },
+    {
+     "anio": "2021",
+     "causa": "Ganadería",
+     "ha": 75.0,
+     "poligonos": 29
+    },
+    {
+     "anio": "2021",
+     "causa": "Obras Civiles",
+     "ha": 3.1,
+     "poligonos": 1
+    }
+   ]
+  },
+  {
+   "divipola": "27745",
+   "nombre": "Sipí",
+   "departamento": "Chocó",
+   "ha": 127.07,
+   "poligonos": 69,
+   "por_causa": {
+    "Minería": 122.04,
+    "Obras Civiles": 3.53,
+    "Cultivo": 1.5
+   },
+   "detalle": [
+    {
+     "anio": "2014",
+     "causa": "Minería",
+     "ha": 26.51,
+     "poligonos": 2
+    },
+    {
+     "anio": "2020",
+     "causa": "Minería",
+     "ha": 15.19,
+     "poligonos": 16
+    },
+    {
+     "anio": "2020",
+     "causa": "Obras Civiles",
+     "ha": 3.53,
+     "poligonos": 2
+    },
+    {
+     "anio": "2021",
+     "causa": "Cultivo",
+     "ha": 1.5,
+     "poligonos": 3
+    },
+    {
+     "anio": "2021",
+     "causa": "Minería",
+     "ha": 80.34,
+     "poligonos": 46
+    }
+   ]
+  }
+ ],
+ "municipios_sin_divipola": []
+}

@@ -26,7 +26,8 @@ export type NombreComponente =
   | "cuadrante_priorizacion"
   | "panel_evidencia"
   | "distribucion"
-  | "evidencia_satelital";
+  | "evidencia_satelital"
+  | "deforestacion";
 
 export type Filtros = Record<string, string | number | null>;
 
@@ -183,6 +184,55 @@ export interface DatosEvidenciaSatelital {
   triptico: TripticoSatelital | null;
 }
 
+/** Un año de la serie de pérdida de bosque. */
+export interface AnioDeforestacion {
+  anio: string;
+  ha: number;
+  poligonos?: number;
+}
+
+/** Una causa declarada por la fuente (Minería, Incendio, Cultivo…). */
+export interface CausaDeforestacion {
+  causa: string;
+  ha: number;
+  /** Ausente cuando el desglose se recalcula sobre un rango de años recortado. */
+  poligonos?: number;
+}
+
+export interface MunicipioDeforestacion {
+  divipola: string;
+  nombre: string;
+  departamento: string;
+  ha: number;
+  poligonos: number;
+  /** Reparto de esas hectáreas entre las causas declaradas. */
+  por_causa: Record<string, number>;
+}
+
+/** De dónde sale la cifra: es lo que aquí hace de `doc_id`/`chunk_id`. */
+export interface ProcedenciaDeforestacion {
+  fuente: string;
+  dataset: string;
+  ficha: string;
+  metodo: string;
+  periodo: string;
+  poligonos: number;
+  descargado: string;
+  cobertura: string;
+}
+
+export interface DatosDeforestacion {
+  serie: AnioDeforestacion[];
+  causas: CausaDeforestacion[];
+  municipios: MunicipioDeforestacion[];
+  /** Cuántos municipios tienen datos en el rango, antes de recortar a `top`. */
+  municipios_totales: number;
+  total_ha: number;
+  /** Causa en curso, o `null` si se están viendo todas. */
+  causa: string | null;
+  procedencia: ProcedenciaDeforestacion | null;
+}
+
 export interface FilaEvidencia {
   doc_id: string;
   chunk_id: IdChunk;
@@ -234,6 +284,10 @@ export type ResultadoComponente =
   | (SobreComponente & {
       componente: "evidencia_satelital";
       datos: DatosEvidenciaSatelital;
+    })
+  | (SobreComponente & {
+      componente: "deforestacion";
+      datos: DatosDeforestacion;
     });
 
 export interface CuerpoComponente {

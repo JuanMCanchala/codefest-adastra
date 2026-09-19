@@ -15,6 +15,7 @@ from ..evidencia import IndiceTextos
 from . import (
     composicion_corpus,
     cuadrante_priorizacion,
+    deforestacion,
     distribucion,
     evidencia_satelital,
     linea_tiempo,
@@ -40,6 +41,8 @@ CATALOGO: dict[str, str] = {
     "por municipio, menciones por entidad…): la tarea «distribución» del Anexo B.2.1.",
     "evidencia_satelital": "Ortomosaico, segmentación del modelo y anotación humana del "
     "sitio minero: la imagen de la que salen las hectáreas del agente satelital.",
+    "deforestacion": "Hectáreas de bosque perdidas en el Chocó por municipio y por causa "
+    "declarada (minería, incendio, cultivo), donde Amazon Mining Watch no llega.",
 }
 
 MODULOS: dict[str, ModuleType] = {
@@ -53,6 +56,7 @@ MODULOS: dict[str, ModuleType] = {
     "panel_evidencia": panel_evidencia,
     "distribucion": distribucion,
     "evidencia_satelital": evidencia_satelital,
+    "deforestacion": deforestacion,
 }
 
 

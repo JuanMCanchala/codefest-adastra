@@ -1,6 +1,7 @@
 import type { ResultadoComponente } from "@/api/tipos";
 import { VistaComposicionCorpus } from "@/componentes/vistas/composicion-corpus";
 import { VistaCuadrantePriorizacion } from "@/componentes/vistas/cuadrante-priorizacion";
+import { VistaDeforestacion } from "@/componentes/vistas/deforestacion";
 import { VistaDistribucion } from "@/componentes/vistas/distribucion";
 import { VistaEvidenciaSatelital } from "@/componentes/vistas/evidencia-satelital";
 import { VistaLineaTiempo } from "@/componentes/vistas/linea-tiempo";
@@ -84,5 +85,7 @@ export function CuerpoComponente({
       return <VistaDistribucion {...comunes} datos={resultado.datos} />;
     case "evidencia_satelital":
       return <VistaEvidenciaSatelital {...comunes} datos={resultado.datos} />;
+    case "deforestacion":
+      return <VistaDeforestacion {...comunes} datos={resultado.datos} />;
   }
 }
