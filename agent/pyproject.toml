@@ -1,0 +1,20 @@
+[project]
+name = "codefest-agent"
+version = "0.1.0"
+description = "Sistema multiagente del Reto 1 (CODEFEST AD ASTRA 2026, Etapa 2)"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0-only" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "BLE", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]  # tildes y comillas tipográficas en textos en español
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

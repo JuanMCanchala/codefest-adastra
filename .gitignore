@@ -1,7 +1,7 @@
-__pycache__/
-*.pyc
-.venv/
-.env
-node_modules/
-data/
 *.faiss
+*.pyc
+.env
+.venv/
+__pycache__/
+data/
+node_modules/

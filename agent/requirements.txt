@@ -1,0 +1,15 @@
+# Servicio HTTP
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.8
+pydantic-settings>=2.4
+# Orquestacion multiagente
+langgraph>=1.0
+# Amazon Bedrock (API Key de ADL via AWS_BEARER_TOKEN_BEDROCK)
+boto3>=1.40
+# Recuperacion (base vectorial de la Etapa 1)
+faiss-cpu>=1.8
+FlagEmbedding>=1.2
+sentence-transformers>=5.0
+pyyaml>=6.0
+networkx>=3.2
