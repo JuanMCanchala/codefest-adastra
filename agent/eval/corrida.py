@@ -12,6 +12,7 @@ costar falsos positivos.
 from __future__ import annotations
 
 import json
+import logging
 import re
 import statistics
 from dataclasses import asdict, dataclass
@@ -22,6 +23,11 @@ from typing import Any
 from app.guard import RECHAZO
 from eval.cliente import ClienteAgente
 from eval.metricas import Metricas
+
+log = logging.getLogger(__name__)
+
+# Reintentos del juez ante JSON malformado antes de dar la pregunta por perdida.
+INTENTOS_JUEZ = 3
 
 DIR_EVAL = Path(__file__).parent
 DIR_DATOS = DIR_EVAL / "datos"
@@ -132,7 +138,41 @@ def correr_calidad(
                 )
             )
             continue
-        c = metricas.evaluar(p["text"], r.respuesta, r.retrieval_context)
+        # El juez es un LLM y de vez en cuando devuelve JSON malformado; deepeval lo
+        # convierte en excepción. Sin esta guarda, una sola pregunta tumbaba la corrida
+        # entera de 100 peticiones (pasó el 19-sep-2026 con gemma-3-27b en Faithfulness).
+        # Se reintenta —el fallo es de muestreo, no determinista— y si persiste la
+        # pregunta se marca como error: `validos` ya las excluye de los agregados, así
+        # que el resultado sigue siendo honesto en vez de perderse.
+        c = None
+        for intento in range(1, INTENTOS_JUEZ + 1):
+            try:
+                c = metricas.evaluar(p["text"], r.respuesta, r.retrieval_context)
+                break
+            except Exception as exc:  # noqa: BLE001 - el juez puede fallar de muchas formas
+                log.warning(
+                    "juez falló en %s (intento %d/%d): %s",
+                    p["query_id"],
+                    intento,
+                    INTENTOS_JUEZ,
+                    exc,
+                )
+                ultimo = exc
+        if c is None:
+            registros.append(
+                RegistroCalidad(
+                    query_id=p["query_id"],
+                    texto=p["text"],
+                    respuesta=r.respuesta,
+                    estado=r.estado,
+                    num_interacciones=r.num_interacciones,
+                    agentes_invocados=r.agentes_invocados,
+                    tokens_total=r.tokens_total,
+                    latencia_ms=r.latencia_ms_medida,
+                    error=f"juez: {ultimo}"[:300],
+                )
+            )
+            continue
         registros.append(
             RegistroCalidad(
                 query_id=p["query_id"],
