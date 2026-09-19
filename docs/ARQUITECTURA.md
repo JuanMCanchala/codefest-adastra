@@ -669,10 +669,11 @@ es de **una vista a la vez**, conducida por el agente, porque §3.3.2 exige que 
 —y no el usuario moviendo controles— quien decida qué componente activar y con qué filtros.
 Eso cambia la forma que toma la coordinación, y conviene decir exactamente cuál es:
 
-- **La ventana del agente nace abierta en escritorio.** Es la única puerta de entrada al
-  camino conversacional, que es lo que evalúa el bloque B; cerrada era un icono de 48 px sin
-  texto en una esquina, y un evaluador que no pasara el ratón por allí no encontraba cómo
-  preguntar. En móvil nace cerrada, porque abierta taparía el componente entero.
+- **La ventana del agente nace cerrada y se abre sobre su burbuja.** El tablero es lo primero
+  que hay que ver; la burbuja de la esquina inferior derecha llama al agente, la ventana
+  aparece justo encima de ella y se arrastra por la cabecera a lo largo del borde inferior si
+  tapa algo. Al recargar vuelve cerrada: el estado de la conversación vive en la URL y en el
+  hilo, no en la ventana.
 - **Filtros globales, sí, pero declarados en lenguaje natural.** `fenomeno`, `desde` y
   `hasta` viven en el estado global del tablero (`web/src/lib/filtros.ts`), no en la
   especificación de un componente: se fijan cuando el experto los menciona («alertas en

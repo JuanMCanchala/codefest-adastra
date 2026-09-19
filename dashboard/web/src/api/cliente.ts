@@ -74,10 +74,7 @@ export function calcularComponente(
   });
 }
 
-export function visualizar(
-  instruccion: string,
-  senal?: AbortSignal,
-): Promise<RespuestaVisualizar> {
+export function visualizar(instruccion: string, senal?: AbortSignal): Promise<RespuestaVisualizar> {
   return pedir<RespuestaVisualizar>("/api/visualizar", {
     method: "POST",
     headers: JSON_POST,
@@ -86,11 +83,22 @@ export function visualizar(
   });
 }
 
-/** Lote de hasta 50 fragmentos; se recortan aquí para no violar el contrato. */
-export async function obtenerEvidencia(
+/** Resultado del lote: los fragmentos abiertos y los `chunk_id` que la API no encontró. */
+export interface LoteEvidencia {
+  fragmentos: Fragmento[];
+  faltantes: IdChunk[];
+}
+
+/**
+ * Lote de hasta 50 fragmentos; se recortan aquí para no violar el contrato.
+ *
+ * Una cita rota no tumba el lote: la API devuelve los que existen y nombra los que no en
+ * `faltantes`, y aquí se conservan para poder decir «no se pudo abrir la referencia».
+ */
+export async function obtenerLoteEvidencia(
   chunkIds: readonly IdChunk[],
   senal?: AbortSignal,
-): Promise<Fragmento[]> {
+): Promise<LoteEvidencia> {
   const claves = chunkIds.slice(0, 50).map((c) => String(c));
   const consulta = new URLSearchParams({ chunk_ids: claves.join(",") });
   const cuerpo = await pedir<unknown>(
@@ -98,15 +106,27 @@ export async function obtenerEvidencia(
     senal ? { signal: senal } : undefined,
   );
   if (Array.isArray(cuerpo)) {
-    return cuerpo as Fragmento[];
+    return { fragmentos: cuerpo as Fragmento[], faltantes: [] };
   }
   if (cuerpo && typeof cuerpo === "object") {
     const lista = (cuerpo as Record<string, unknown>)["fragmentos"];
+    const faltantes = (cuerpo as Record<string, unknown>)["faltantes"];
     if (Array.isArray(lista)) {
-      return lista as Fragmento[];
+      return {
+        fragmentos: lista as Fragmento[],
+        faltantes: Array.isArray(faltantes) ? (faltantes as IdChunk[]) : [],
+      };
     }
   }
   throw new ErrorApi("La API devolvió la evidencia en un formato inesperado.", 500);
+}
+
+/** Solo los fragmentos abiertos, para quien no necesita saber cuáles faltaron. */
+export async function obtenerEvidencia(
+  chunkIds: readonly IdChunk[],
+  senal?: AbortSignal,
+): Promise<Fragmento[]> {
+  return (await obtenerLoteEvidencia(chunkIds, senal)).fragmentos;
 }
 
 export function obtenerGeoDepartamentos(

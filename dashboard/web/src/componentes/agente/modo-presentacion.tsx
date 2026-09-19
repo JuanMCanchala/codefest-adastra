@@ -1,6 +1,9 @@
-import { ChevronLeft, ChevronRight, Sparkles, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote, Sparkles, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 
+import { obtenerEvidencia } from "@/api/cliente";
+import type { Cita } from "@/api/tipos";
+import { TextoConCitas } from "@/componentes/agente/texto-con-citas";
 import { CuerpoComponente } from "@/componentes/vistas/cuerpo-componente";
 import type { NivelMapa } from "@/componentes/vistas/mapa-colombia";
 import { SimboloFenomeno } from "@/componentes/ui/simbolo-fenomeno";
@@ -8,7 +11,8 @@ import { definicionDe } from "@/lib/catalogo";
 import { fenomenoPorId } from "@/lib/fenomenos";
 import type { EntradaHistorial } from "@/lib/historial";
 import type { Seleccion } from "@/lib/seleccion";
-import { cn } from "@/lib/utils";
+import { useRecurso } from "@/lib/usar-recurso";
+import { cn, etiquetaDocumento } from "@/lib/utils";
 
 interface Props {
   /** Más reciente primero, como lo guarda el tablero; aquí se recorre en orden cronológico. */
@@ -43,6 +47,11 @@ export function ModoPresentacion({ historial, idInicial, onSalir }: Props) {
   });
   const [seleccion, setSeleccion] = useState<Seleccion | null>(null);
   const [nivelColombia, setNivelColombia] = useState<NivelMapa>("departamento");
+  const [cita, setCita] = useState<Cita | null>(null);
+  // El fragmento citado se lee aquí mismo, sin salir de la presentación.
+  const fragmento = useRecurso(cita ? `cita-${String(cita.chunk_id)}` : "cita-ninguna", (senal) =>
+    cita ? obtenerEvidencia([cita.chunk_id], senal) : Promise.resolve([]),
+  );
 
   const anterior = useCallback(() => setIndice((i) => Math.max(0, i - 1)), []);
   const siguiente = useCallback(
@@ -52,6 +61,7 @@ export function ModoPresentacion({ historial, idInicial, onSalir }: Props) {
 
   useEffect(() => {
     setSeleccion(null);
+    setCita(null);
   }, [indice]);
 
   // Flechas y Escape, como cualquier presentación proyectada.
@@ -165,9 +175,47 @@ export function ModoPresentacion({ historial, idInicial, onSalir }: Props) {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.06em] text-tenue">Respuesta del agente</p>
-              <p className="mt-1 text-sm leading-relaxed text-texto">
-                {respuesta?.respuesta_agente || "El agente no devolvió texto."}
-              </p>
+              <TextoConCitas
+                texto={respuesta?.respuesta_agente || "El agente no devolvió texto."}
+                citas={respuesta?.citas ?? []}
+                onCita={setCita}
+                activa={cita}
+                className="mt-1 text-sm leading-relaxed text-texto"
+              />
+              {cita ? (
+                <div
+                  className="mt-2 rounded-md border border-borde bg-elevado px-3 py-2"
+                  aria-live="polite"
+                >
+                  <p className="flex items-center gap-1.5 text-xs uppercase tracking-[0.06em] text-tenue">
+                    <Quote aria-hidden="true" className="size-3" />
+                    Referencia [{String(cita.n)}]
+                  </p>
+                  {fragmento.fase === "listo" && fragmento.dato[0] ? (
+                    <>
+                      <p className="mt-1 text-sm font-medium text-texto">
+                        {etiquetaDocumento(fragmento.dato[0].titulo, fragmento.dato[0].fuente)}
+                      </p>
+                      <p className="text-xs text-apagado">
+                        {[
+                          fragmento.dato[0].organizacion,
+                          fragmento.dato[0].fecha,
+                          `fragmento ${String(cita.chunk_id)} de ${cita.doc_id}`,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                      <p className="mt-1.5 max-h-48 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-texto barra-fina">
+                        {fragmento.dato[0].texto}
+                      </p>
+                    </>
+                  ) : fragmento.fase === "error" ? (
+                    <p className="mt-1 text-sm text-alerta">No se pudo leer el fragmento.</p>
+                  ) : (
+                    <p className="mt-1 text-sm text-apagado">Leyendo el fragmento original…</p>
+                  )}
+                </div>
+              ) : null}
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.06em] text-tenue">Por qué esta vista</p>

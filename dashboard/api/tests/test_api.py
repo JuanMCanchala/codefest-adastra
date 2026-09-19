@@ -489,3 +489,59 @@ def test_entidades_con_mayusculas_devuelven_red(cliente, escrito) -> None:
     ).json()
     assert cuerpo["datos"]["nodos"], f"«{escrito}» no resolvió a ninguna entidad"
     assert cuerpo["datos"]["aristas"]
+
+
+def _un_chunk(cliente) -> int:
+    """Un chunk_id real, tomado del propio panel para no fijar un número del corpus."""
+    cuerpo = cliente.post(
+        "/api/componente", json={"componente": "panel_evidencia", "filtros": {"limite": 1}}
+    ).json()
+    return int(cuerpo["datos"][0]["chunk_id"])
+
+
+def test_la_cita_del_agente_abre_el_fragmento_citado(cliente) -> None:
+    """Pulsar «[3]» en la respuesta tiene que llevar a esa frase, no al documento entero.
+
+    Sin el filtro por `chunk_id` lo más fino que se podía pedir era `doc_id`, y el
+    fragmento citado podía no estar entre los diez que devolvía el documento.
+    """
+    chunk = _un_chunk(cliente)
+    cuerpo = cliente.post(
+        "/api/componente", json={"componente": "panel_evidencia", "filtros": {"chunk_id": chunk}}
+    ).json()
+    assert cuerpo["datos"], "la cita no devolvió ningún fragmento"
+    assert int(cuerpo["datos"][0]["chunk_id"]) == chunk, "el fragmento citado no es el primero"
+    assert cuerpo["filtros_ignorados"] == []
+
+
+def test_una_cita_que_no_existe_se_repliega_al_corpus_y_lo_dice(cliente) -> None:
+    """Misma regla que el resto de filtros: nunca un panel en blanco sin explicación."""
+    cuerpo = cliente.post(
+        "/api/componente",
+        json={"componente": "panel_evidencia", "filtros": {"chunk_id": 99999999}},
+    ).json()
+    assert cuerpo["datos"], "una cita rota dejó el panel vacío"
+    assert "chunk_id" in cuerpo["filtros_ignorados"]
+
+
+def test_una_cita_rota_no_tumba_el_resto_del_lote(cliente) -> None:
+    """El panel pide de golpe todas las citas de una respuesta.
+
+    El agente numera sus citas contra la base vectorial, que no es la misma tubería que
+    la tabla `fragmentos`; si una no existe, devolver 404 dejaba al lector sin ver
+    ninguna de las demás.
+    """
+    bueno = _un_chunk(cliente)
+    cuerpo = cliente.get("/api/evidencia", params={"chunk_ids": f"{bueno},999999999"})
+    assert cuerpo.status_code == 200
+    datos = cuerpo.json()
+    assert [f["chunk_id"] for f in datos["fragmentos"]] == [bueno]
+    assert datos["faltantes"] == [999999999]
+
+
+def test_un_lote_entero_de_citas_rotas_sigue_siendo_404(cliente) -> None:
+    """Si no se pudo abrir ni una, es un fallo de verdad y hay que decirlo como tal."""
+    assert (
+        cliente.get("/api/evidencia", params={"chunk_ids": "999999998,999999999"}).status_code
+        == 404
+    )

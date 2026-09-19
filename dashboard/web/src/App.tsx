@@ -361,6 +361,12 @@ function Tablero() {
 
   const evidenciaGlobal: readonly Ref[] = vista.fase === "listo" ? vista.resultado.evidencia : [];
 
+  /** Una referencia pulsada en la conversación tiene que verse: si el panel estaba oculto, vuelve. */
+  const seleccionarDesdeAgente = useCallback((nueva: Seleccion) => {
+    setSeleccion(nueva);
+    setEvidenciaVisible(true);
+  }, []);
+
   return (
     // El armazón ocupa la ventana: el lienzo llena lo que queda y hace su propio scroll,
     // en vez de empujar la página hacia abajo. Por debajo de `lg` vuelve al flujo normal,
@@ -451,7 +457,7 @@ function Tablero() {
         onPresentar={() => setPresentando(true)}
         resultado={vista.fase === "listo" ? vista.resultado : null}
         seleccion={seleccion}
-        onSeleccionar={setSeleccion}
+        onSeleccionar={seleccionarDesdeAgente}
         onAccion={ejecutarAccion}
         nivelColombia={nivelColombia}
         onCambiarNivelColombia={cambiarNivelColombia}

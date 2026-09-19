@@ -215,7 +215,22 @@ def evidencia_lote(request: Request, chunk_ids: str = Query(...)) -> dict[str, A
             raise HTTPException(status_code=422, detail=f"chunk_id inválido: {crudo}")
         identificadores.append(int(crudo))
     bd, textos = request.app.state.bd, request.app.state.textos
-    return {"fragmentos": [_fragmento(bd, textos, cid) for cid in identificadores]}
+    # Un fragmento que falta no puede tumbar el lote entero. El panel pide de golpe las
+    # citas de una respuesta, y las citas las numera el agente contra la base vectorial,
+    # que no es la misma tubería que la tabla `fragmentos`: basta con que una no exista
+    # para que, devolviendo 404, el lector se quedara sin ver ninguna de las demás. Los
+    # que falten se nombran en `faltantes` y quien pregunta sabe cuál no se pudo abrir.
+    hallados, faltantes = [], []
+    for cid in identificadores:
+        try:
+            hallados.append(_fragmento(bd, textos, cid))
+        except HTTPException as fallo:
+            if fallo.status_code != 404:
+                raise
+            faltantes.append(cid)
+    if not hallados and faltantes:
+        raise HTTPException(status_code=404, detail=f"ningún fragmento existe: {faltantes}")
+    return {"fragmentos": hallados, "faltantes": faltantes}
 
 
 @app.get("/api/evidencia/{chunk_id}")

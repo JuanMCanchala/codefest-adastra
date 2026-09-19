@@ -1,7 +1,7 @@
-import { ArrowUpRight, Expand, PanelRightClose, X } from "lucide-react";
+import { ArrowUpRight, Expand, PanelRightClose, TriangleAlert, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { obtenerEvidencia } from "@/api/cliente";
+import { obtenerLoteEvidencia } from "@/api/cliente";
 import type { Ref } from "@/api/tipos";
 import { AvisoError, Cargando, Vacio } from "@/componentes/ui/estados";
 import { Boton } from "@/componentes/ui/boton";
@@ -54,7 +54,9 @@ export function PanelLateralEvidencia({
   const chunkIds = useMemo(() => chunkIdsDe(refs).slice(0, MAX_PANEL), [refs]);
   const clave = chunkIds.join(",");
   const evidencia = useRecurso(clave, (senal) =>
-    chunkIds.length === 0 ? Promise.resolve([]) : obtenerEvidencia(chunkIds, senal),
+    chunkIds.length === 0
+      ? Promise.resolve({ fragmentos: [], faltantes: [] })
+      : obtenerLoteEvidencia(chunkIds, senal),
   );
 
   return (
@@ -120,7 +122,24 @@ export function PanelLateralEvidencia({
           <AvisoError mensaje={evidencia.mensaje} onReintentar={evidencia.recargar} />
         ) : (
           <ul>
-            {evidencia.dato.map((fragmento) => {
+            {/* Una referencia que no se pudo abrir se dice, no se calla: el lector debe
+                saber que le falta una fuente, no creer que el agente citó menos. */}
+            {evidencia.dato.faltantes.length > 0 ? (
+              <li
+                role="status"
+                className="flex items-start gap-1.5 border-b border-borde bg-alerta/10 px-4 py-2 text-sm text-alerta"
+              >
+                <TriangleAlert aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+                <span>
+                  No se pudo abrir{" "}
+                  {evidencia.dato.faltantes.length === 1
+                    ? "la referencia al fragmento"
+                    : "las referencias a los fragmentos"}{" "}
+                  {evidencia.dato.faltantes.map(String).join(", ")}: no está en la base del tablero.
+                </span>
+              </li>
+            ) : null}
+            {evidencia.dato.fragmentos.map((fragmento) => {
               const fenomeno = fenomenoPorId(fragmento.fenomeno);
               return (
                 <li

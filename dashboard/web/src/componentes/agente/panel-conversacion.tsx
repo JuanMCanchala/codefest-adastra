@@ -1,7 +1,8 @@
 import { Sparkles, Timer, TriangleAlert } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-import type { ResultadoComponente } from "@/api/tipos";
+import type { Cita, ResultadoComponente } from "@/api/tipos";
+import { TextoConCitas } from "@/componentes/agente/texto-con-citas";
 import { Insignia } from "@/componentes/ui/insignia";
 import { definicionDe } from "@/lib/catalogo";
 import type { EntradaHistorial } from "@/lib/historial";
@@ -21,6 +22,8 @@ interface Props {
   historial: readonly EntradaHistorial[];
   idActivo: string | null;
   onRecuperar: (id: string) => void;
+  /** Abre en el panel de evidencia el fragmento al que apunta una referencia `[n]`. */
+  onCita: (cita: Cita, idTurno: string) => void;
 }
 
 /**
@@ -38,6 +41,7 @@ export function PanelConversacion({
   historial,
   idActivo,
   onRecuperar,
+  onCita,
 }: Props) {
   const tecnica = useVistaTecnica();
   const fondo = useRef<HTMLDivElement | null>(null);
@@ -142,9 +146,12 @@ export function PanelConversacion({
 
                 {turno.respuesta ? (
                   <>
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-texto">
-                      {turno.respuesta.respuesta_agente || "El agente no devolvió texto."}
-                    </p>
+                    <TextoConCitas
+                      texto={turno.respuesta.respuesta_agente || "El agente no devolvió texto."}
+                      citas={turno.respuesta.citas}
+                      onCita={(cita) => onCita(cita, turno.id)}
+                      className="text-sm leading-relaxed text-texto"
+                    />
 
                     {especificacion?.justificacion ? (
                       <p className="mt-2 text-sm leading-relaxed text-apagado">
@@ -154,8 +161,8 @@ export function PanelConversacion({
 
                     {!especificacion ? (
                       <p className="mt-2 text-sm leading-relaxed text-apagado">
-                        No propuso ninguna visualización para esta instrucción. Pida el
-                        componente que quiere ver.
+                        No propuso ninguna visualización para esta instrucción. Pida el componente
+                        que quiere ver.
                       </p>
                     ) : null}
 

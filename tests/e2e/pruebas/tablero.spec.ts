@@ -124,8 +124,8 @@ function chunkIdsDe(refs: readonly Ref[]): string[] {
 }
 
 /**
- * La ventana del agente nace cerrada —el tablero es lo primero que hay que ver— y estas
- * pruebas hablan con el agente casi todas: si la burbuja está cerrada, se abre.
+ * La ventana del agente nace cerrada —el tablero es lo primero que hay que ver— y se abre
+ * sobre la burbuja, tapando el panel de evidencia: solo la abren las pruebas que le hablan.
  */
 async function abrirAgente(page: Page): Promise<void> {
   const boton = page.getByRole("button", { name: "Abrir el agente" });
@@ -152,9 +152,7 @@ async function abrirTablero(page: Page): Promise<Resultado> {
   );
   await page.goto(TABLERO_URL);
   await salud;
-  const resultado = (await (await componente).json()) as Resultado;
-  await abrirAgente(page);
-  return resultado;
+  return (await (await componente).json()) as Resultado;
 }
 
 /** Espera el siguiente `POST /api/componente` provocado por `accion`. */
@@ -206,7 +204,6 @@ async function abrirTableroEn(
   );
   await page.goto(`${TABLERO_URL}/?${consulta.toString()}`);
   const respuesta = await componente;
-  await abrirAgente(page);
   return {
     cuerpo: respuesta.request().postDataJSON() as CuerpoComponente,
     resultado: (await respuesta.json()) as Resultado,
@@ -324,6 +321,7 @@ test.describe("Tablero · carga inicial", () => {
 
   test("la burbuja se cierra y se vuelve a abrir desde la esquina", async ({ page }) => {
     await abrirTablero(page);
+    await abrirAgente(page);
     await expect(campoInstruccion(page)).toBeVisible();
 
     await agente(page).getByRole("button", { name: "Cerrar el agente" }).click();
@@ -389,6 +387,7 @@ test.describe("Tablero · vista técnica", () => {
     await guardia.simular(page, "**/api/visualizar", { json: V });
     await conVistaTecnica(page);
     await abrirTablero(page);
+    await abrirAgente(page);
 
     await campoInstruccion(page).fill("Departamentos con más alertas por minería ilegal");
     await campoInstruccion(page).press("Enter");
@@ -512,6 +511,7 @@ test.describe("Tablero · trazabilidad", () => {
 test.describe("Tablero · mandos de la vista", () => {
   test("pantalla completa deja solo el componente y se sale con Escape", async ({ page }) => {
     await abrirTablero(page);
+    await abrirAgente(page);
     await expect(panel(page)).toBeVisible();
 
     await botonPantallaCompleta(page).click();
@@ -693,6 +693,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
       retener: true,
     });
     const inicial = await abrirTablero(page);
+    await abrirAgente(page);
 
     let recalculos = 0;
     await page.route("**/api/componente", async (ruta) => {
@@ -773,6 +774,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
   }) => {
     const visualizar = await guardia.simular(page, "**/api/visualizar", { json: V });
     await abrirTablero(page);
+    await abrirAgente(page);
 
     const instruccion = "Alertas tempranas por departamento con minería ilegal";
     await campoInstruccion(page).fill(instruccion);
@@ -808,6 +810,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
       { json: V },
     ]);
     const inicial = await abrirTablero(page);
+    await abrirAgente(page);
 
     await campoInstruccion(page).fill(INSTRUCCION);
     await campoInstruccion(page).press("Enter");
@@ -841,6 +844,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
       },
     });
     const inicial = await abrirTablero(page);
+    await abrirAgente(page);
 
     await campoInstruccion(page).fill("¿Qué dice el corpus sobre la minería ilegal?");
     await campoInstruccion(page).press("Enter");
@@ -862,6 +866,7 @@ test.describe("Tablero · instrucción en lenguaje natural", () => {
   }) => {
     const visualizar = await guardia.simular(page, "**/api/visualizar", { json: V });
     await abrirTablero(page);
+    await abrirAgente(page);
 
     await expect(botonVisualizar(page)).toBeDisabled();
     await campoInstruccion(page).fill("   ");
@@ -905,6 +910,7 @@ test.describe("Tablero · presentación", () => {
     page,
   }, testInfo) => {
     const resultado = await abrirTablero(page);
+    await abrirAgente(page);
     await auditarAccesibilidad(page, testInfo, "tablero-inicial");
 
     const filas = resultado.datos as FilaMapa[];

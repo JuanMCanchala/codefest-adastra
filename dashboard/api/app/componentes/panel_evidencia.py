@@ -34,6 +34,24 @@ SELECT COUNT(*) FROM fragmentos f JOIN documentos d ON d.doc_id = f.doc_id
  WHERE f.doc_id = :doc_id AND (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
 """
 
+# Una cita del agente señala un fragmento concreto. Se devuelve ese y los que le siguen
+# en el documento: quien pulsa «[3]» quiere leer la frase citada, pero necesita lo que
+# viene detrás para saber si dice lo que el agente dice que dice.
+POR_CHUNK = """
+SELECT f.doc_id AS doc_id, f.chunk_id AS chunk_id, d.titulo AS titulo,
+       d.organizacion AS organizacion
+  FROM fragmentos f JOIN documentos d ON d.doc_id = f.doc_id
+ WHERE f.doc_id = (SELECT doc_id FROM fragmentos WHERE chunk_id = :chunk_id)
+   AND f.posicion >= (SELECT posicion FROM fragmentos WHERE chunk_id = :chunk_id)
+   AND (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
+ ORDER BY f.posicion LIMIT :limite
+"""
+TOTAL_CHUNK = """
+SELECT COUNT(*) FROM fragmentos f JOIN documentos d ON d.doc_id = f.doc_id
+ WHERE f.doc_id = (SELECT doc_id FROM fragmentos WHERE chunk_id = :chunk_id)
+   AND (:fenomeno IS NULL OR d.fenomeno = :fenomeno)
+"""
+
 POR_ENTIDAD = """
 SELECT m.doc_id AS doc_id, m.chunk_id AS chunk_id, d.titulo AS titulo,
        d.organizacion AS organizacion
@@ -96,6 +114,7 @@ SELECT COUNT(*) FROM documentos d JOIN fragmentos f ON f.doc_id = d.doc_id AND f
 class Filtros(FiltrosBase):
     entidad: str | None = None
     doc_id: str | None = None
+    chunk_id: int | None = None
     consulta: str | None = None
     fenomeno: int | None = Field(default=None, ge=1, le=3)
     limite: int = Field(default=10, ge=1, le=20)
@@ -110,6 +129,12 @@ def _seleccionar(bd: BaseDatos, f: Filtros, params: dict) -> tuple[list, str, st
     casar con ninguno de los dos. Antes eso devolvía un panel sin una sola cita; ahora cae
     al corpus y el tablero avisa de que la búsqueda no se aplicó.
     """
+    # La cita manda sobre todo lo demás: es el filtro más concreto que existe aquí.
+    if f.chunk_id:
+        filas = bd.consultar(POR_CHUNK, params)
+        if filas:
+            return filas, TOTAL_CHUNK, f"la cita {f.chunk_id}", None
+        return bd.consultar(DEFECTO, params), TOTAL_DEFECTO, "el corpus completo", "chunk_id"
     if f.doc_id:
         filas = bd.consultar(POR_DOC, params)
         if filas:

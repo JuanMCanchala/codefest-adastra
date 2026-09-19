@@ -242,10 +242,17 @@ test.describe("Tablero · Anexo B en la recta final", () => {
       await page.mouse.wheel(0, -400);
       await expect(page.getByText(/Detalle municipal/)).toBeVisible({ timeout: 2_000 });
     }).toPass({ timeout: 30_000 });
-    await page.getByTitle("Fondo del mapa y capas").click();
+    // Al cruzar el umbral el mapa baja la geometría municipal y vuelve a montar sus mandos:
+    // se espera a que la red se calme antes de abrir el menú, o el menú se cierra solo.
+    await page.waitForLoadState("networkidle");
     const fronteras = page.getByRole("menuitemcheckbox", { name: /Fronteras departamentales/ });
-    await expect(fronteras).toBeVisible();
-    await expect(fronteras).toHaveAttribute("aria-checked", "true");
+    await expect(async () => {
+      if ((await fronteras.count()) === 0) {
+        await page.getByTitle("Fondo del mapa y capas").click();
+      }
+      await expect(fronteras).toBeVisible({ timeout: 2_000 });
+      await expect(fronteras).toHaveAttribute("aria-checked", "true", { timeout: 2_000 });
+    }).toPass({ timeout: 20_000 });
     await fronteras.click();
     await expect(fronteras).toHaveAttribute("aria-checked", "false");
     await page.keyboard.press("Escape");
@@ -258,6 +265,50 @@ test.describe("Tablero · Anexo B en la recta final", () => {
     await expect(
       page.getByRole("menuitemcheckbox", { name: /Fronteras departamentales/ }),
     ).toHaveCount(0);
+  });
+
+  test("las referencias [n] de la respuesta abren su fragmento, también en la presentación", async ({
+    page,
+    guardia,
+  }) => {
+    // La grabación real no trae citas; se le añade una que apunta a un fragmento real del
+    // propio resultado, para que el panel tenga algo verdadero que enseñar.
+    const ref = V.resultado.evidencia[0]!;
+    const conCita = {
+      ...V,
+      respuesta_agente: `Las alertas por minería ilegal se concentran en Antioquia y Chocó [1].`,
+      citas: [{ n: 1, doc_id: ref.doc_id, chunk_id: ref.chunk_id }],
+    };
+    await abrirEn(page, { componente: "linea_tiempo" });
+    await guardia.simular(page, "**/api/visualizar", { json: conCita });
+    await campoInstruccion(page).fill(INSTRUCCION);
+    await botonVisualizar(page).click();
+    await expect(page.getByRole("heading", { level: 2, name: V.resultado.titulo })).toBeVisible();
+
+    // En la conversación, [1] es un botón que abre ese fragmento en el panel de evidencia.
+    const referencia = agente(page).getByRole("button", { name: /^Referencia 1:/ });
+    await expect(referencia).toBeVisible();
+    const evidencia = page.waitForResponse(
+      (r) =>
+        r.url().includes("/api/evidencia") &&
+        new URL(r.url()).searchParams.get("chunk_ids") === String(ref.chunk_id),
+    );
+    await referencia.click();
+    await evidencia;
+    await expect(panel(page)).toContainText(`Referencia [1] · ${ref.doc_id}`);
+    await expect(panel(page)).toContainText(`fragmento ${String(ref.chunk_id)} de ${ref.doc_id}`);
+
+    // En la presentación, la misma referencia se lee sin salir del recorrido.
+    await agente(page).getByRole("button", { name: /Presentar el recorrido/ }).click();
+    const recorrido = page.getByRole("dialog", { name: "Presentación del recorrido analítico" });
+    await recorrido.getByRole("button", { name: /^Referencia 1:/ }).click();
+    await expect(recorrido).toContainText("Referencia [1]");
+    await expect(recorrido).toContainText(`fragmento ${String(ref.chunk_id)} de ${ref.doc_id}`);
+    // El texto original del fragmento, leído de metadata.jsonl: más que el título.
+    const cuadro = recorrido.locator("[aria-live='polite']").filter({ hasText: "Referencia [1]" });
+    await expect(cuadro).not.toContainText("Leyendo el fragmento");
+    expect(((await cuadro.textContent()) ?? "").length).toBeGreaterThan(200);
+    await page.keyboard.press("Escape");
   });
 
   test("el recorrido de vistas se presenta con las flechas (B.6.1)", async ({

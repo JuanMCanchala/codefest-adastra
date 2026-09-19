@@ -91,12 +91,9 @@ export function BurbujaAgente({
   onCambiarNivelColombia,
 }: Props) {
   const escritorio = useEscritorio();
-  // En escritorio nace abierta: es la única puerta de entrada al agente, que es lo que se
-  // evalúa, y cerrada era un icono de 48 px sin texto en la esquina. En móvil nace cerrada,
-  // porque abierta taparía el componente entero. Se lee del medio una sola vez, al montar.
-  const [abierta, setAbierta] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches,
-  );
+  // Nace cerrada: el tablero es lo primero que hay que ver. La burbuja de la esquina llama al
+  // agente, y la ventana se abre justo encima de ella, no en mitad de la pantalla.
+  const [abierta, setAbierta] = useState(false);
   const [ampliada, setAmpliada] = useState(false);
   const [verHistorial, setVerHistorial] = useState(false);
   // La animación de aparición responde a un clic en la burbuja; en la carga inicial, con la
@@ -207,6 +204,18 @@ export function BurbujaAgente({
       verHistorial={verHistorial}
       historial={historial}
       idActivo={idActivo}
+      onCita={(cita, idTurno) => {
+        // Si el turno citado no es el que está dibujado, primero se recupera su vista.
+        if (idTurno !== idActivo) {
+          onRecuperar(idTurno);
+        }
+        onSeleccionar({
+          titulo: `Referencia [${String(cita.n)}] · ${cita.doc_id}`,
+          detalle: "Fragmento citado por el agente en su respuesta",
+          origen: resultado?.componente ?? "panel_evidencia",
+          refs: [{ doc_id: cita.doc_id, chunk_id: cita.chunk_id }],
+        });
+      }}
       onRecuperar={(id) => {
         setVerHistorial(false);
         onRecuperar(id);
@@ -279,9 +288,9 @@ export function BurbujaAgente({
               // Medida fija y borde inferior fijo: el hilo crece hacia dentro, no la ventana.
               "bottom-4 rounded-xl",
               flotante && "max-h-[calc(100dvh-5rem)]",
-              // A la izquierda del panel de evidencia (380 px + margen), para no taparlo:
-              // preguntar y comprobar la fuente van juntos. Al arrastrarla manda `izquierda`.
-              flotante && izquierda === null && "right-[396px]",
+              // Donde estaba la burbuja que la abrió; si tapa algo, se arrastra por la
+              // cabecera a lo largo del borde inferior. Al arrastrarla manda `izquierda`.
+              flotante && izquierda === null && "right-4",
               // Crece desde su esquina inferior derecha, la más cercana a la burbuja que la abrió.
               flotante && abiertaPorClic.current && "brota-de-la-burbuja",
               !flotante && "inset-x-3 h-[70dvh] max-h-[calc(100dvh-5rem)]",
