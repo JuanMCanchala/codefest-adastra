@@ -176,6 +176,37 @@ export interface TripticoSatelital {
   clases: ClaseSatelital[];
   /** Cadena de trazabilidad, el equivalente espacial de un `doc_id`/`chunk_id`. */
   procedencia: string;
+  veredicto: VeredictoMinero;
+}
+
+/**
+ * «Hay minería» o «no», decidido por la medición del segmentador y no por un modelo de
+ * lenguaje. Viaja con el tríptico, así que sigue en pantalla aunque el resumen en prosa de
+ * `POST /api/interpretar` falle o no esté configurado.
+ */
+export interface VeredictoMinero {
+  hay_mineria: boolean;
+  etiqueta: string;
+  /** Suma de las clases marcadas como huella minera, en % del recorte. */
+  porcentaje_minero: number;
+  /** El umbral con el que se comparó, enseñado para que el veredicto sea comprobable. */
+  umbral_pct: number;
+  clases_mineras: string[];
+}
+
+/** Una fila de la tabla de mediciones: la cita del resumen en prosa. */
+export interface CifraLectura {
+  etiqueta: string;
+  valor: string;
+}
+
+/** Respuesta de `POST /api/interpretar`: el texto y las cifras de las que sale. */
+export interface RespuestaLectura {
+  lectura: string;
+  sitio: string;
+  veredicto: VeredictoMinero | null;
+  cifras: CifraLectura[];
+  modelo: string;
 }
 
 export interface DatosEvidenciaSatelital {
@@ -459,6 +490,8 @@ export interface Salud {
   consola_url?: string | null;
   /** `true` si el despliegue montó el corpus original y la API puede servir los archivos. */
   corpus_disponible?: boolean;
+  /** `true` si el despliegue trae `LLM_BASE_URL` y `LLM_API_KEY` para el resumen en prosa. */
+  lectura_disponible?: boolean;
 }
 
 // --- GeoJSON de `/geo/*.geojson` ------------------------------------------------------

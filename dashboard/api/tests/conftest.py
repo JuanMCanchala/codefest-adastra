@@ -9,6 +9,7 @@ import threading
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 
@@ -77,6 +78,48 @@ def agente_falso() -> Iterator[str]:
     hilo = threading.Thread(target=servidor.serve_forever, daemon=True)
     hilo.start()
     yield f"http://127.0.0.1:{servidor.server_address[1]}"
+    servidor.shutdown()
+    servidor.server_close()
+
+
+RESUMEN_FALSO = (
+    "Casi cuatro de cada diez metros cuadrados del recorte son frente minero; el bosque "
+    "primario en pie ya es minoría, con algo más de una quinta parte."
+)
+
+
+class _GatewayFalso(BaseHTTPRequestHandler):
+    """Gateway OpenAI-compatible de mentira: responde fijo y guarda lo que le mandaron."""
+
+    protocol_version = "HTTP/1.1"
+    peticiones: ClassVar[list[dict]] = []
+
+    def do_POST(self) -> None:
+        largo = int(self.headers.get("content-length") or 0)
+        self.peticiones.append(json.loads(self.rfile.read(largo) or b"{}"))
+        datos = json.dumps(
+            {
+                "choices": [{"message": {"content": RESUMEN_FALSO}}],
+                "usage": {"prompt_tokens": 100, "completion_tokens": 40},
+            }
+        ).encode("utf-8")
+        self.send_response(200)
+        self.send_header("content-type", "application/json")
+        self.send_header("content-length", str(len(datos)))
+        self.end_headers()
+        self.wfile.write(datos)
+
+    def log_message(self, *_args) -> None:
+        return
+
+
+@pytest.fixture
+def gateway_falso() -> Iterator[tuple[str, list[dict]]]:
+    _GatewayFalso.peticiones.clear()
+    servidor = ThreadingHTTPServer(("127.0.0.1", 0), _GatewayFalso)
+    hilo = threading.Thread(target=servidor.serve_forever, daemon=True)
+    hilo.start()
+    yield f"http://127.0.0.1:{servidor.server_address[1]}", _GatewayFalso.peticiones
     servidor.shutdown()
     servidor.server_close()
 

@@ -8,6 +8,7 @@ import type {
   PropiedadesDepartamento,
   PropiedadesMunicipio,
   PropiedadesPais,
+  RespuestaLectura,
   ResultadoComponente,
   RespuestaVisualizar,
   Salud,
@@ -79,6 +80,23 @@ export function visualizar(instruccion: string, senal?: AbortSignal): Promise<Re
     method: "POST",
     headers: JSON_POST,
     body: JSON.stringify({ instruccion }),
+    ...(senal ? { signal: senal } : {}),
+  });
+}
+
+/**
+ * Resumen en prosa del tríptico satelital. El veredicto de minería no se pide aquí: ya
+ * viene medido con el componente, y esta llamada solo añade las palabras.
+ */
+export function interpretar(
+  sitio: string,
+  encuadre: string,
+  senal?: AbortSignal,
+): Promise<RespuestaLectura> {
+  return pedir<RespuestaLectura>("/api/interpretar", {
+    method: "POST",
+    headers: JSON_POST,
+    body: JSON.stringify({ sitio, encuadre }),
     ...(senal ? { signal: senal } : {}),
   });
 }

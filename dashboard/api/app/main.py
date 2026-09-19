@@ -20,8 +20,10 @@ from pydantic import BaseModel, Field, field_validator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .componentes import CATALOGO, describir_catalogo, ejecutar
+from .componentes.evidencia_satelital import buscar_triptico
 from .db import BaseDatos
 from .evidencia import MAX_LOTE, IndiceTextos
+from .lectura import PeticionLectura, configurada, resumir
 from .settings import Settings, get_settings
 from .visualizar import (
     Instruccion,
@@ -107,6 +109,7 @@ def salud(request: Request) -> dict[str, Any]:
         "vista_tecnica": cfg.vista_tecnica,
         "consola_url": cfg.consola_url.rstrip("/") or None,
         "corpus_disponible": _raiz_corpus(cfg) is not None,
+        "lectura_disponible": configurada(cfg),
     }
 
 
@@ -149,6 +152,28 @@ async def visualizar(peticion: Instruccion, request: Request) -> JSONResponse:
             "resultado": resultado,
             "traza": leer_traza(cuerpo),
             "citas": leer_citas(cuerpo),
+        }
+    )
+
+
+@app.post("/api/interpretar")
+async def interpretar(peticion: PeticionLectura, request: Request) -> JSONResponse:
+    """Resumen en prosa del tríptico que la vista tiene delante.
+
+    El veredicto de minería no se pide aquí: ya viaja medido en `POST /api/componente`, y
+    esta ruta solo añade las palabras. Si falla, la vista pierde el párrafo y nada más.
+    """
+    triptico = buscar_triptico(peticion.sitio, peticion.encuadre)
+    if triptico is None:
+        raise HTTPException(status_code=404, detail="no hay ningún tríptico renderizado")
+    lectura, cifras = await resumir(request.app.state.cfg, triptico)
+    return JSONResponse(
+        {
+            "lectura": lectura,
+            "sitio": triptico["sitio"],
+            "veredicto": triptico.get("veredicto"),
+            "cifras": cifras,
+            "modelo": request.app.state.cfg.llm_modelo,
         }
     )
 

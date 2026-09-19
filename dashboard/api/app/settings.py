@@ -36,6 +36,17 @@ class Settings(BaseSettings):
     # fragmento; si no, el panel sigue funcionando sin el enlace.
     corpus_dir: Path = Path("")
 
+    # Modelo de lenguaje para el resumen en prosa del tríptico satelital
+    # (`POST /api/interpretar`). Es el mismo gateway OpenAI-compatible de ADL que usa el
+    # agente, pero el tablero lo llama por su cuenta: no comparte proceso con él. Sin
+    # `LLM_API_KEY` el resumen no se ofrece y el tríptico se sirve igual, con su veredicto
+    # medido y sus cifras, que no dependen de ningún modelo de lenguaje.
+    llm_base_url: str = "https://litellm.admin-adl.codefest2026.augusta.avaldigitallabs.com/v1"
+    llm_api_key: str = ""
+    llm_modelo: str = "qwen3-next-80b"
+    llm_timeout_s: float = 30.0
+    llm_max_tokens: int = 400
+
     # Consola de inteligencia (Reto 1). Si el despliegue la publica, el tablero enlaza a ella
     # para poder ir y volver entre preguntar y explorar.
     consola_url: str = ""

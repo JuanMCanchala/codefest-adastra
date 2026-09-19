@@ -11,6 +11,7 @@ from typing import Any
 
 import pytest
 
+from app import lectura
 from app.componentes import CATALOGO, MODULOS
 
 MAX_LATENCIA_MS = 500
@@ -354,6 +355,75 @@ def test_inspectores_es_lista_curada(cliente) -> None:
     assert entradas, "la vista inspectores no trajo entradas"
     for entrada in entradas:
         assert entrada["referencia"], f"{entrada['nombre']} no declara referencia"
+
+
+def _triptico(cliente) -> dict[str, Any] | None:
+    respuesta = cliente.post("/api/componente", json={"componente": "evidencia_satelital"})
+    assert respuesta.status_code == 200
+    return respuesta.json()["datos"]["triptico"]
+
+
+def test_el_veredicto_de_mineria_lo_decide_la_medicion(cliente) -> None:
+    """El veredicto sale de sumar las clases mineras, no de un modelo de lenguaje."""
+    t = _triptico(cliente)
+    if t is None:
+        pytest.skip("no hay trípticos renderizados en este árbol")
+    v = t["veredicto"]
+    esperado = sum(c["porcentaje"] for c in t["clases"] if c["minera"])
+    assert v["porcentaje_minero"] == pytest.approx(esperado, abs=0.01)
+    assert v["hay_mineria"] is (v["porcentaje_minero"] >= v["umbral_pct"])
+    assert v["etiqueta"]
+    # El umbral se enseña: un veredicto con el listón escondido no es comprobable.
+    assert v["umbral_pct"] > 0
+    assert set(v["clases_mineras"]) == {c["clase"] for c in t["clases"] if c["minera"]}
+
+
+def test_sin_modelo_configurado_el_triptico_sigue_entero(cliente) -> None:
+    """Sin `LLM_API_KEY` el resumen se niega limpio y el componente no se entera."""
+    respuesta = cliente.post("/api/interpretar", json={"sitio": "Anel"})
+    assert respuesta.status_code == 503
+    t = _triptico(cliente)
+    if t is None:
+        pytest.skip("no hay trípticos renderizados en este árbol")
+    assert t["veredicto"]["etiqueta"], "el veredicto medido no depende del modelo"
+    assert t["clases"], "las cifras que lo sostienen tampoco"
+
+
+def test_el_resumen_solo_ve_cifras_y_se_guarda(cliente, gateway_falso) -> None:
+    """El aviso le prohíbe describir la imagen, y el mismo recorte no se pide dos veces."""
+    url, peticiones = gateway_falso
+    if _triptico(cliente) is None:
+        pytest.skip("no hay trípticos renderizados en este árbol")
+    previo = cliente.app.state.cfg
+    cliente.app.state.cfg = previo.model_copy(
+        update={"llm_base_url": url, "llm_api_key": "sk-de-prueba"}
+    )
+    lectura._cache.clear()
+    try:
+        respuesta = cliente.post("/api/interpretar", json={"sitio": "Anel"})
+        assert respuesta.status_code == 200
+        cuerpo = respuesta.json()
+        assert cuerpo["lectura"]
+        assert cuerpo["veredicto"]["etiqueta"]
+        etiquetas = [c["etiqueta"] for c in cuerpo["cifras"]]
+        assert "Huella minera" in etiquetas, "el resumen no viaja con las cifras que lo sostienen"
+        assert any(e.startswith("Clase ") for e in etiquetas)
+
+        assert len(peticiones) == 1
+        mensajes = peticiones[0]["messages"]
+        sistema = mensajes[0]["content"]
+        assert "NO ESTÁS VIENDO NINGUNA IMAGEN" in sistema
+        assert "legalidad" in sistema, "el aviso no le prohíbe pronunciarse sobre legalidad"
+        usuario = mensajes[1]["content"]
+        assert "VEREDICTO YA CALCULADO" in usuario, "el modelo no recibe el veredicto hecho"
+        assert "Suelo desnudo" in usuario, "el modelo no recibe el reparto por clases"
+
+        # El mismo recorte no gasta dos llamadas: no hay pregunta del usuario que lo cambie.
+        assert cliente.post("/api/interpretar", json={"sitio": "Anel"}).status_code == 200
+        assert len(peticiones) == 1
+    finally:
+        cliente.app.state.cfg = previo
+        lectura._cache.clear()
 
 
 def test_evidencia_satelital_ignora_un_sitio_que_no_existe(cliente) -> None:

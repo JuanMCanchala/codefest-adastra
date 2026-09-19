@@ -33,6 +33,36 @@ Encuadre = Literal["frontera", "mineria", "bosque"]
 # `scripts/eldor_recorte.py`. Un sitio puede no tener renderizados los tres.
 SUFIJOS: tuple[str, ...] = ("frontera", "mineria", "bosque")
 
+# Cuánto del recorte tiene que ser huella minera para decir que hay minería. El umbral va
+# aquí, declarado y enseñado en la vista, porque es la única parte opinable del veredicto:
+# la medición es del segmentador y la suma es aritmética. A 5,7 cm/px sobre un recorte de
+# ~2,1 ha, el 5 % son ~1.000 m² de suelo desnudo y cascajo seguidos, que es un frente de
+# trabajo, no ruido de clasificación. Los tres sitios de ELDOR están entre el 38 y el 42 %.
+UMBRAL_MINERO_PCT = 5.0
+
+
+def veredicto(triptico: dict[str, Any]) -> dict[str, Any]:
+    """«Hay minería» o «no», decidido por la medición y no por un modelo de lenguaje.
+
+    Suma las clases que el segmentador marca como huella minera y las compara con
+    `UMBRAL_MINERO_PCT`. Viaja con el tríptico para que esté en pantalla aunque el resumen
+    en prosa de `POST /api/interpretar` falle, tarde o no esté configurado.
+
+    El límite que hay que declarar: dice que el suelo está desmontado como lo está un frente
+    minero, no bajo qué permiso lo está. La legalidad no se mide sobre píxeles.
+    """
+    clases = triptico.get("clases") or []
+    mineras = [c for c in clases if c.get("minera")]
+    porcentaje = round(sum(c.get("porcentaje", 0.0) for c in mineras), 2)
+    hay = porcentaje >= UMBRAL_MINERO_PCT
+    return {
+        "hay_mineria": hay,
+        "etiqueta": "Minería detectada" if hay else "Sin minería apreciable",
+        "porcentaje_minero": porcentaje,
+        "umbral_pct": UMBRAL_MINERO_PCT,
+        "clases_mineras": [c["clase"] for c in mineras],
+    }
+
 
 class Filtros(FiltrosBase):
     #: Sitio ELDOR. Sin valor, el primero disponible por orden alfabético.
@@ -74,6 +104,34 @@ def _disponibles() -> list[dict[str, Any]]:
     return salida
 
 
+def _elegir(
+    tripticos: list[dict[str, Any]], sitio: str | None, encuadre: str
+) -> dict[str, Any] | None:
+    candidatos = [t for t in tripticos if t["imagen"].endswith(f"-{encuadre}.png")]
+    if sitio:
+        candidatos = [t for t in candidatos if t["sitio"] == sitio]
+    # Si ese sitio no tiene ese encuadre renderizado, manda el sitio: es lo que el usuario
+    # acaba de pulsar. Se cae a cualquier encuadre suyo antes que saltar a otro sitio.
+    if not candidatos and sitio:
+        candidatos = [t for t in tripticos if t["sitio"] == sitio]
+    return candidatos[0] if candidatos else (tripticos[0] if tripticos else None)
+
+
+def buscar_triptico(sitio: str | None, encuadre: str) -> dict[str, Any] | None:
+    """El mismo tríptico que enseñaría la vista con esos filtros, o `None` si no hay ninguno.
+
+    `POST /api/interpretar` lee de aquí, y no por su cuenta, para que el resumen hable
+    siempre del recorte que el usuario tiene delante y no de otro elegido con otras reglas.
+    """
+    tripticos = _disponibles()
+    if sitio and sitio not in {t["sitio"] for t in tripticos}:
+        sitio = None
+    elegido = _elegir(tripticos, sitio, encuadre)
+    # Con el veredicto ya puesto, como lo sirve `calcular`: las dos rutas tienen que leer la
+    # misma forma, o el resumen en prosa acabaría explicando un veredicto que no existe.
+    return None if elegido is None else {**elegido, "veredicto": veredicto(elegido)}
+
+
 def calcular(
     bd: BaseDatos, filtros: dict[str, Any], textos: IndiceTextos
 ) -> tuple[Salida, Filtros, list[str]]:
@@ -87,14 +145,7 @@ def calcular(
         ignorados = sorted({*ignorados, "sitio"})
         f = f.model_copy(update={"sitio": None})
 
-    candidatos = [t for t in tripticos if t["imagen"].endswith(f"-{f.encuadre}.png")]
-    if f.sitio:
-        candidatos = [t for t in candidatos if t["sitio"] == f.sitio]
-    # Si ese sitio no tiene ese encuadre renderizado, manda el sitio: es lo que el usuario
-    # acaba de pulsar. Se cae a cualquier encuadre suyo antes que saltar a otro sitio.
-    if not candidatos and f.sitio:
-        candidatos = [t for t in tripticos if t["sitio"] == f.sitio]
-    elegido = candidatos[0] if candidatos else (tripticos[0] if tripticos else None)
+    elegido = _elegir(tripticos, f.sitio, f.encuadre)
 
     if elegido is None:
         return (
@@ -135,6 +186,12 @@ def calcular(
         "hectáreas del agente satelital; por eso se ven las costuras entre tiles. La "
         "anotación humana es la del conjunto ELDOR y no interviene en la predicción."
     )
+    nota += (
+        f" El veredicto de minería lo decide la medición, no un modelo de lenguaje: se suman "
+        f"las clases que el segmentador marca como huella minera y se comparan con un umbral "
+        f"de {UMBRAL_MINERO_PCT:.0f} % del recorte. Dice que el suelo está desmontado como lo "
+        "está un frente minero, no bajo qué permiso: la legalidad no se mide sobre píxeles."
+    )
     if f.encuadre == "bosque":
         # El límite hay que decirlo aquí, no en el pie de una diapositiva: lo que se mide es
         # cobertura en una fecha, no pérdida entre dos. ELDOR publica un vuelo por sitio.
@@ -160,7 +217,11 @@ def calcular(
             datos={
                 "sitios": sitios,
                 "encuadres": disponibles,
-                "triptico": {**elegido, "procedencia": procedencia},
+                "triptico": {
+                    **elegido,
+                    "procedencia": procedencia,
+                    "veredicto": veredicto(elegido),
+                },
             },
             evidencia=[],
             total_evidencia=0,

@@ -1,7 +1,11 @@
-import type { DatosEvidenciaSatelital } from "@/api/tipos";
+import { interpretar } from "@/api/cliente";
+import type { DatosEvidenciaSatelital, TripticoSatelital } from "@/api/tipos";
 import { Vacio } from "@/componentes/ui/estados";
+import { useLecturaDisponible } from "@/lib/lectura";
 import type { Accion, PropsVista } from "@/lib/seleccion";
+import { useRecurso } from "@/lib/usar-recurso";
 import { cn } from "@/lib/utils";
+import { useVistaTecnica } from "@/lib/vista-tecnica";
 
 /**
  * La imagen de la que salen las hectáreas.
@@ -24,10 +28,84 @@ const ENCUADRES: Record<string, string> = {
   bosque: "Frente de deforestación",
 };
 
+/**
+ * El veredicto de minería, con la cuenta que lo sostiene.
+ *
+ * Lo decide la medición, no el modelo de lenguaje: se suman las clases que el segmentador
+ * marca como huella minera y se comparan con un umbral declarado. Por eso se enseña la
+ * resta entera —qué clases, cuánto suman, contra qué umbral— en vez del titular solo: es
+ * lo que permite darle la vuelta al veredicto si alguien no está de acuerdo con el umbral.
+ */
+function Veredicto({ triptico }: { triptico: TripticoSatelital }) {
+  const v = triptico.veredicto;
+  if (!v) {
+    return null;
+  }
+  const mineras = triptico.clases.filter((c) => c.minera);
+  const suma = mineras.map((c) => `${c.clase} ${c.porcentaje.toFixed(1)} %`).join(" + ");
+  return (
+    <div
+      className={cn(
+        "rounded-lg border px-3 py-2",
+        v.hay_mineria ? "border-alerta/50 bg-alerta/10" : "border-borde bg-panel",
+      )}
+    >
+      <p className={cn("text-sm font-medium", v.hay_mineria ? "text-alerta" : "text-texto")}>
+        {v.etiqueta}
+      </p>
+      <p className="text-xs text-apagado">
+        {mineras.length > 0 ? `${suma} = ` : ""}
+        {v.porcentaje_minero.toFixed(1)} % del recorte es huella minera,{" "}
+        {v.hay_mineria ? "por encima" : "por debajo"} del umbral declarado de{" "}
+        {v.umbral_pct.toFixed(0)} %. Lo decide esta medición, no un modelo de lenguaje, y dice
+        que el suelo está desmontado como lo está un frente minero, no bajo qué permiso.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * El resumen en prosa: lo único de esta vista que escribe un modelo de lenguaje.
+ *
+ * Llega después y por su cuenta, para que el tríptico, el veredicto y las cifras estén en
+ * pantalla sin esperarlo. Si el modelo falla, tarda o el despliegue no lo trae, se pierde
+ * el párrafo y nada más.
+ */
+function ResumenModelo({ sitio, encuadre }: { sitio: string; encuadre: string }) {
+  const tecnica = useVistaTecnica();
+  const estado = useRecurso(`${sitio}|${encuadre}`, (senal) =>
+    interpretar(sitio, encuadre, senal),
+  );
+
+  if (estado.fase === "cargando") {
+    return <p className="text-xs text-apagado">Escribiendo el resumen a partir de las cifras…</p>;
+  }
+  if (estado.fase === "error") {
+    return (
+      <p className="text-xs text-apagado">
+        El resumen en lenguaje natural no está disponible ahora; el veredicto y las cifras
+        siguen siendo los medidos.
+        {tecnica ? ` ${estado.mensaje}` : ""}
+      </p>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="text-sm leading-relaxed text-texto">{estado.dato.lectura}</p>
+      <p className="text-xs text-apagado">
+        Escrito por {estado.dato.modelo} a partir de estas mismas mediciones —las hectáreas, el
+        reparto por clases y la procedencia de aquí abajo—. El modelo no ve la imagen: describe
+        la salida del segmentador.
+      </p>
+    </div>
+  );
+}
+
 export function VistaEvidenciaSatelital({
   datos,
   onAccion,
 }: PropsVista<DatosEvidenciaSatelital>) {
+  const lectura = useLecturaDisponible();
   const t = datos.triptico;
   if (!t) {
     return (
@@ -126,6 +204,10 @@ export function VistaEvidenciaSatelital({
         }
         className="w-full rounded-lg border border-borde"
       />
+
+      <Veredicto triptico={t} />
+
+      {lectura ? <ResumenModelo sitio={t.sitio} encuadre={actual} /> : null}
 
       <dl className="flex flex-wrap gap-x-8 gap-y-2">
         {cifras.map((c) => (
