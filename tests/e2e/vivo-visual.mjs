@@ -44,7 +44,11 @@ pagina.on("console", (m) => {
   if (m.type() === "error") errores.push(m.text());
 });
 
-await pagina.goto(TABLERO, { waitUntil: "networkidle" });
+// `networkidle` no vale contra el despliegue real: basta una conexión viva —teselas,
+// una lectura en curso— para que nunca se cumpla. Se espera a lo que de verdad hace
+// falta: que el tablero haya pintado su interfaz.
+await pagina.goto(TABLERO, { waitUntil: "domcontentloaded" });
+await pagina.waitForLoadState("load").catch(() => {});
 const abrir = pagina.getByRole("button", { name: "Abrir el agente" });
 if (await abrir.isVisible().catch(() => false)) await abrir.click();
 
