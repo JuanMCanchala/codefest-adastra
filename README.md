@@ -1,4 +1,7 @@
-# CODEFEST AD ASTRA 2026 — Final (Etapa 2) · Equipo AeroCode
+# CODEFEST AD ASTRA 2026 · Equipo AeroCode
+
+Repositorio único de la participación completa: la base de conocimiento vectorial de la
+**Etapa 1** y la plataforma multiagente de la **Etapa 2** (Retos 1 y 2).
 
 Plataforma de análisis estratégico multiagente sobre tres fenómenos:
 
@@ -12,8 +15,8 @@ La plataforma tiene dos superficies:
 - Un **tablero de analítica visual** en el que un agente decide qué componente mostrar a partir de
   una instrucción en lenguaje natural.
 
-Todo se construye sobre la base de conocimiento vectorial de la Etapa 1
-([codefest-adastra-2026](https://github.com/JuanMCanchala/codefest-adastra-2026)).
+Todo se construye sobre la base de conocimiento vectorial de la Etapa 1, que vive en este mismo
+repositorio en [`etapa1-base-vectorial/`](etapa1-base-vectorial/) con su historia completa.
 
 ## 🛰️ Tablero en vivo
 
@@ -86,11 +89,11 @@ flowchart LR
     DB --- SQL[("dashboard.db<br/>SQLite solo lectura")]
 ```
 
-| Agente                 | Modelo                 | Herramienta              | Cuándo actúa                                                             |
-| ---------------------- | ---------------------- | ------------------------ | ------------------------------------------------------------------------ |
-| `orquestador`          | Qwen3-Next-80B         | `filtro_seguridad`       | Siempre: filtra ataques, clasifica la intención y reformula la consulta. |
-| `agente_corpus`        | Llama 3.3 70B Instruct | `buscar_corpus`          | Preguntas que se responden con documentos.                               |
-| `agente_visualizacion` | Qwen3-Next-80B         | `seleccionar_componente` | Pedidos de gráficos, mapas, redes o líneas de tiempo.                    |
+| Agente                 | Modelo                 | Herramienta                 | Cuándo actúa                                                                         |
+| ---------------------- | ---------------------- | --------------------------- | ------------------------------------------------------------------------------------ |
+| `orquestador`          | Qwen3-Next-80B         | `filtro_seguridad`          | Siempre: filtra ataques, clasifica la intención y reformula la consulta.             |
+| `agente_corpus`        | Llama 3.3 70B Instruct | `buscar_corpus`             | Preguntas que se responden con documentos.                                           |
+| `agente_visualizacion` | Qwen3-Next-80B         | `seleccionar_componente`    | Pedidos de gráficos, mapas, redes o líneas de tiempo.                                |
 | `agente_satelital`     | Qwen3-Next-80B         | `medir_cobertura_satelital` | Áreas de minería ilegal medidas sobre imágenes: Colombia (Sentinel-2) y Perú (dron). |
 
 La ruta típica hace **2 llamadas al modelo**. Por ejemplo, una pregunta de F2 usó 2.867 tokens y
@@ -124,6 +127,11 @@ revisa cada pregunta antes del orquestador. Un ataque rechazado ahí cuesta **0 
 │   ├── ARQUITECTURA_DESPLIEGUE_SEGURIDAD.md  # despliegue, operación y seguridad
 │   ├── especificacion/      # especificación oficial de la Etapa 2
 │   └── investigacion/       # estado del arte, benchmarks y análisis de los fenómenos
+├── etapa1-base-vectorial/   # Etapa 1 · construcción de la base vectorial (proyecto completo)
+│   ├── src/                 #   indexado, recuperación híbrida, reranking y grafo
+│   ├── scripts/             #   construcción del corpus y de los índices
+│   ├── entrega/             #   paquete de entrega de la Etapa 1
+│   └── eval_interno/        #   evaluación sobre las 50 consultas
 ├── reto1/  reto2/           # enunciados
 ├── tests/e2e/               # pruebas de punta a punta (Playwright) de las dos interfaces
 ├── .github/workflows/ci.yml # integración continua
@@ -138,6 +146,9 @@ Cada componente tiene su propio README con más detalle:
   [`dashboard/API.md`](dashboard/API.md)
 - [`dashboard/datos/README.md`](dashboard/datos/README.md)
 - [`tests/e2e/README.md`](tests/e2e/README.md)
+- [`etapa1-base-vectorial/README.md`](etapa1-base-vectorial/README.md) — Etapa 1. La base
+  vectorial construida (`space_corpus.db`) no se versiona aquí: se descarga desde el release
+  de la Etapa 1, tal como documenta ese README.
 
 ---
 
@@ -160,7 +171,7 @@ Para cada recurso, sigue **+ New → Private Repository (with Deploy Key)** y co
 
 | Campo                    | `agent`                                                                                    | `frontagent`                                                           | `dashboard`                                                           |
 | ------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Repository URL (SSH)     | `git@github.com:fesamu06/codefest-adastra-final.git`                                  | ídem                                                                   | ídem                                                                  |
+| Repository URL (SSH)     | `git@github.com:fesamu06/codefest-adastra-final.git`                                       | ídem                                                                   | ídem                                                                  |
 | Branch                   | `main`                                                                                     | `main`                                                                 | `main`                                                                |
 | Build Pack               | Dockerfile                                                                                 | Dockerfile                                                             | Dockerfile                                                            |
 | **Base Directory**       | `/agent`                                                                                   | `/frontagent`                                                          | `/dashboard`                                                          |
@@ -199,19 +210,19 @@ Se declaran en **Configuration → Environment Variables**.
 
 **`frontagent`**
 
-| Variable        | ¿Obligatoria? | Valor                                                                                                                             |
-| --------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `AGENT_URL`     | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Sin ella, el valor por defecto `localhost:8000` rompe el chat. |
-| `DASHBOARD_URL` | No            | `https://dashboard.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el botón "abrir en el tablero".                     |
+| Variable        | ¿Obligatoria? | Valor                                                                                                                                                                 |
+| --------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AGENT_URL`     | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Sin ella, el valor por defecto `localhost:8000` rompe el chat.                                     |
+| `DASHBOARD_URL` | No            | `https://dashboard.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el botón "abrir en el tablero".                                                         |
 | `VISTA_TECNICA` | No            | Por defecto apagada. Con `1` la consola muestra la ruta del orquestador, los modelos y los tokens. La que revisa el jurado va limpia; la del equipo se enciende aquí. |
 
 **`dashboard`**
 
-| Variable          | ¿Obligatoria? | Valor                                                             |
-| ----------------- | ------------- | ----------------------------------------------------------------- |
-| `AGENT_URL`       | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com` |
-| `AGENT_TIMEOUT_S` | No            | Tiempo límite de `POST /chat` en segundos. Por defecto, 90.       |
-| `CONSOLA_URL`     | No            | `https://frontagent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el enlace a la consola de chat. |
+| Variable          | ¿Obligatoria? | Valor                                                                                                                                                                                                                                 |
+| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AGENT_URL`       | **Sí**        | `https://agent.aerocode.codefest2026.augusta.avaldigitallabs.com`                                                                                                                                                                     |
+| `AGENT_TIMEOUT_S` | No            | Tiempo límite de `POST /chat` en segundos. Por defecto, 90.                                                                                                                                                                           |
+| `CONSOLA_URL`     | No            | `https://frontagent.aerocode.codefest2026.augusta.avaldigitallabs.com`. Activa el enlace a la consola de chat.                                                                                                                        |
 | `CORPUS_DIR`      | No            | Raíz del corpus original montada en el contenedor (los archivos no viajan en la imagen). Si está, cada fragmento de evidencia enlaza al PDF, JSON o CSV del que salió (`GET /api/documento/{chunk_id}`); si no, el enlace no aparece. |
 
 `DB_PATH`, `METADATA_PATH`, `GEO_DIR` y `WEB_DIST` ya vienen con su valor en la imagen.
@@ -390,12 +401,12 @@ cd dashboard/web && npm run lint
 trabajos en paralelo. El análisis estático se puntúa (25 % del bloque de Seguridad del Reto 1 y 5 %
 del Reto 2), así que cubre los cuatro paquetes, no solo el agente.
 
-| Trabajo                    | Qué ejecuta                                                                 |
-| -------------------------- | --------------------------------------------------------------------------- |
-| **Agente (Reto 1)**        | `ruff check`, `ruff format --check`, `bandit` y `pytest` con dependencias ligeras (sin torch ni FAISS, gracias a los dobles de prueba) |
-| **API del tablero (Reto 2)** | `ruff`, `bandit` y `pytest` contra la base real (`dashboard.db` está versionada) |
-| **Datos del tablero**      | `ruff`. Sin pruebas: `preparar.py` necesita el corpus original de ADL, que no está en el repositorio |
-| **Frontends (eslint)**     | `npm ci` y `npm run lint` en `frontagent` y en `dashboard/web`               |
+| Trabajo                      | Qué ejecuta                                                                                                                            |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Agente (Reto 1)**          | `ruff check`, `ruff format --check`, `bandit` y `pytest` con dependencias ligeras (sin torch ni FAISS, gracias a los dobles de prueba) |
+| **API del tablero (Reto 2)** | `ruff`, `bandit` y `pytest` contra la base real (`dashboard.db` está versionada)                                                       |
+| **Datos del tablero**        | `ruff`. Sin pruebas: `preparar.py` necesita el corpus original de ADL, que no está en el repositorio                                   |
+| **Frontends (eslint)**       | `npm ci` y `npm run lint` en `frontagent` y en `dashboard/web`                                                                         |
 
 `metadata.jsonl` (1,4 GB) no está versionado: el trabajo de la API apunta `METADATA_PATH` a una
 ruta inexistente y la única prueba que necesita el texto original se salta sola.
