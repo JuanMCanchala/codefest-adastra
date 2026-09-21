@@ -68,19 +68,21 @@ AGENTE_CORPUS = (
     # Tono (25 % del bloque de Calidad). El juez pide la voz de un analista que se
     # dirige a un tomador de decisiones y penaliza lo brusco. En la corrida router_v3
     # ninguna respuesta pasó de 0,90 y 11 de 50 se quedaron en 0,70: todas abrían con
-    # "Según [2], ..." —evidencia cruda, sin decir primero qué se concluye—. De ahí que
-    # la primera regla sea la frase de conclusión y la prohibición explícita de abrir
-    # citando.
+    # "Según [2], ..." —evidencia cruda, sin decir primero qué se concluye—. De ahí la
+    # regla de la frase de conclusión y la prohibición explícita de abrir citando.
+    #
+    # La extensión "3 a 6 frases" que probamos junto con esto no subió el tono nada
+    # (0,790 -> 0,788 sobre las 50 preguntas oficiales) y costó +57 % tokens y +52 %
+    # latencia frente a router_v3 (comparación sobre las mismas 50 preguntas,
+    # full_post_merge vs router_v3). Se revierte a 2-5 frases; la regla de no abrir
+    # citando se mantiene porque no tiene costo de extensión.
     "- Abre con UNA frase que responda directamente lo que se preguntó, en tus propias "
     "palabras y sin número de cita. Nunca empieces con «Según [n]» ni con «El "
     "fragmento [n] dice».\n"
     "- Después sustenta esa conclusión con la evidencia citada.\n"
-    "- Escribe para un tomador de decisiones: frases completas y precisas, sin "
-    "telegrafía, sin condescendencia y sin adornos.\n"
     "- Si la evidencia solo cubre parte de la pregunta, dilo con naturalidad y señala "
     "qué parte queda sin respaldo.\n"
-    "- Extensión: 3 a 6 frases, o viñetas breves precedidas de la frase de conclusión. "
-    "Sin relleno y sin repetir la pregunta."
+    "- Sé directo: 2 a 5 frases o viñetas breves, sin relleno ni repetir la pregunta."
 )
 
 AGENTE_VISUALIZACION = (
