@@ -1,0 +1,529 @@
+% Informe tecnico - CODEFEST AD ASTRA 2026, Etapa 1
+% Compilar:  xelatex informe_tecnico.tex
+\documentclass[10pt,a4paper]{article}
+
+\usepackage{fontspec}
+\usepackage[spanish,es-noquoting,es-nolists]{babel}
+\usepackage[margin=2.1cm]{geometry}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+
+\definecolor{azul}{RGB}{20,60,120}
+\definecolor{rojo}{RGB}{170,30,45}
+\definecolor{gris}{RGB}{90,90,90}
+
+\hypersetup{colorlinks=true, linkcolor=azul, urlcolor=azul}
+
+\titleformat{\section}{\large\bfseries\color{azul}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{rojo}}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.1ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{0.9ex}{0.4ex}
+
+\setlist[itemize]{leftmargin=1.2em, itemsep=0.15ex, topsep=0.3ex}
+\setlist[enumerate]{leftmargin=1.4em, itemsep=0.15ex, topsep=0.3ex}
+\setlength{\parskip}{0.35ex}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{gris}CODEFEST · AD ASTRA 2026}
+\fancyhead[R]{\footnotesize\color{gris}Etapa 1 — Base de Conocimiento}
+\fancyfoot[C]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{azul} Base de Conocimiento Vectorial}\\[0.3ex]
+{\large Informe Técnico — Etapa 1}\\[0.5ex]
+{\footnotesize\color{gris} CODEFEST AD ASTRA 2026 · Fuerza Aeroespacial Colombiana · Universidad de los Andes}
+\end{center}
+\vspace{0.4ex}
+\hrule
+\vspace{1ex}
+
+\section{Resumen}
+
+Construimos un sistema de \textbf{recuperación densa multilingüe} que indexa un corpus multiformato
+(ES/EN/PT) sobre los tres fenómenos del reto y responde consultas en lenguaje natural devolviendo
+los 3 documentos y los 10 fragmentos más relevantes.
+
+El diseño parte de una lectura precisa de las reglas de evaluación (Sección 10.2.1 de la
+especificación): \textbf{la relevancia de un fragmento se juzga sobre su contenido textual}
+(\texttt{text}) \textbf{y la de un documento sobre el campo} \texttt{fuente}, no sobre los
+identificadores internos que asigna cada equipo. De ahí nuestra prioridad de ingeniería: la
+\emph{fidelidad de la extracción y la limpieza del texto} determinan el techo de las métricas,
+por encima de cualquier ajuste fino del recuperador.
+
+\begin{center}\small\ttfamily
+Extracción $\rightarrow$ Limpieza $\rightarrow$ Chunking (2 niveles) $\rightarrow$ Encoder(s) $\rightarrow$ FAISS\\
+$\rightarrow$ Fusión RRF $\rightarrow$ [Reranking] $\rightarrow$ Agregación chunk$\rightarrow$doc $\rightarrow$ resultados.jsonl\\
+(+ Grafo de conocimiento)
+\end{center}
+
+\section{Preprocesamiento: extracción y limpieza}
+
+\subsection{Extracción por formato}
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Formato} & \textbf{Herramienta} & \textbf{Motivo} \\
+\midrule
+PDF & Docling (MIT) + PyMuPDF & Docling reconstruye layout, tablas y orden de lectura; PyMuPDF garantiza robustez si Docling falla \\
+HTML & trafilatura & Elimina \emph{boilerplate} conservando el cuerpo del artículo \\
+JSON & selección de campos & Concatena \texttt{title}/\texttt{body\_text} en orden; \texttt{url}, \texttt{date} van a metadata \\
+CSV/XLSX & pandas + openpyxl & Cada fila serializada como pares \texttt{columna: valor} para preservar contexto \\
+Imágenes & OCR multilingüe & Recupera texto de infografías y figuras \\
+PBF & recorrido de capas & Atributos como pares clave-valor; una versión por elemento (evita duplicar por zoom) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+La elección de Docling se validó empíricamente: sobre un PDF institucional real de 24 páginas
+extrajo \textbf{13\,\% más contenido} que PyMuPDF y fue el único que recuperó una tabla como
+estructura tabular en lugar de texto aplanado.
+
+\subsection{Limpieza y normalización}
+
+Esta etapa resultó la de \textbf{mayor impacto medido} del preprocesamiento. Al analizar la
+extracción de un PDF real detectamos tres patrones de ruido que degradaban el índice:
+
+\begin{enumerate}
+\item \textbf{Índices con puntos de relleno} (\texttt{Introducción . . . . 3}): el segmentador
+interpretaba cada punto como fin de oración.
+\item \textbf{Encabezados y pies repetidos} en cada página, que generaban fragmentos sin valor
+informativo y diluían la señal semántica.
+\item \textbf{Guiones de corte de línea} (\texttt{conges-\textbackslash n tión}), que parten
+palabras y rompen el emparejamiento léxico y semántico.
+\end{enumerate}
+
+Nuestra limpieza normaliza a NFC, elimina caracteres de control, descarta líneas de índice,
+detecta \emph{boilerplate} por repetición y \textbf{re-une palabras cortadas por guion},
+distinguiéndolas de compuestos legítimos (\texttt{space-debris} no se altera).
+
+\textbf{Efecto medido:} en los primeros 3\,000 caracteres del documento de prueba, las falsas
+oraciones detectadas pasaron de \textbf{279 a 59}, y desaparecieron los fragmentos compuestos
+únicamente por el índice del documento.
+
+\section{Estrategia de chunking}
+
+\subsection{Chunking de dos niveles}
+
+La especificación impone dos restricciones que operan en momentos distintos: la
+\textbf{completitud lingüística} (Sección 3.3), que prohíbe fragmentos con oraciones incompletas,
+y el \textbf{límite de 250 palabras} por fragmento de salida (Sección 9.2). El tamaño óptimo para
+\emph{codificar} no coincide con el máximo de \emph{presentación}, así que los separamos:
+
+\begin{itemize}
+\item \textbf{Nivel 1 — chunk de índice.} Agrupa oraciones completas hasta un máximo configurable
+de tokens (256–384, dentro del límite del encoder), con solapamiento de una oración entre
+fragmentos consecutivos. Es la unidad que se codifica y almacena en FAISS.
+\item \textbf{Nivel 2 — sub-fragmento de salida.} Al construir la respuesta, un chunk que exceda
+las 250 palabras se divide respetando de nuevo los límites oracionales. Los sub-fragmentos
+conservan el \texttt{chunk\_id} original, que cumple función de \textbf{trazabilidad} hacia la
+evidencia indexada.
+\end{itemize}
+
+\textbf{Verificar la completitud, no suponerla.} Respetar los límites oracionales \emph{por diseño}
+no basta cuando el texto de origen no los tiene. Medimos la salida contra el requisito: de 500
+fragmentos, \textbf{35 no cerraban en fin de oración y 14 no empezaban en uno}. Veintidós eran
+falsos positivos —una oración completa seguida de un DOI o del colofón postal del editor—, pero
+diecinueve sí incumplían: trece cortados exactamente en la palabra 250 y seis que eran la cola de
+una frase iniciada fuera del fragmento. Los primeros procedían del troceo por palabras que este
+mismo sistema aplica a los volcados geoespaciales sin puntuación; los segundos, de los PDF
+escaneados, donde el OCR no recupera la puntuación y el segmentador no encuentra dónde cortar.
+
+La corrección opera en dos frentes: la división de salida busca \textbf{fronteras secundarias}
+—viñetas, punto y coma, dos puntos— antes de recurrir al corte por palabras, y el recuperador exige
+que todo sub-fragmento \textbf{abra y cierre} en frontera oracional, posponiendo a una reserva los
+que no lo hagan. Resultado: \textbf{0 de 500 fragmentos mal formados}, sin pérdida de cobertura.
+
+\subsection{Justificación}
+
+\begin{itemize}
+\item \emph{Frente a tamaño fijo de tokens:} cortar por conteo parte oraciones y viola el
+requisito obligatorio de la Sección 3.3.
+\item \emph{Frente a chunking por párrafo puro:} los párrafos de documentos técnicos van de una
+línea a más de una página; produce fragmentos desiguales que pueden superar la ventana del encoder.
+\item \emph{A favor del solapamiento:} una idea en la frontera entre dos fragmentos quedaría
+representada a medias en ambos; solapar una oración lo mitiga con bajo coste.
+\end{itemize}
+
+La segmentación oracional usa \textbf{pysbd} (multilingüe), con un segmentador de respaldo basado
+en reglas para que el sistema opere aunque falte la dependencia.
+
+\subsection{Metadata por fragmento}
+
+Cada chunk almacena los ocho campos obligatorios de la Tabla 1 más campos opcionales
+(\texttt{idioma}, \texttt{titulo}, \texttt{fecha}). El campo \texttt{fuente} se normaliza siempre
+con separadores \texttt{/}: durante el desarrollo detectamos que en Windows se guardaba con
+\texttt{\textbackslash}, lo que \textbf{anulaba el emparejamiento a nivel documento} y llevaba el
+F1@3 a cero pese a una recuperación correcta.
+
+\section{Codificación semántica: selección de encoder}
+
+\subsection{Encoder principal: BAAI/bge-m3}
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Criterio (Sección 4.3)} & \textbf{Cumplimiento} \\
+\midrule
+Soporte multilingüe & Nativo en ES/EN/PT, entrenado para recuperación cross-lingual \\
+Dimensionalidad & 1024 — equilibrio entre expresividad y coste \\
+Longitud de entrada & Hasta 8\,192 tokens, muy por encima de los 512 habituales \\
+Benchmarks & Estado del arte en MIRACL/MTEB multilingüe para recuperación densa \\
+Licencia & MIT \\
+Eficiencia & Ejecuta en una GPU de 8\,GB en fp16 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+El criterio decisivo es el \textbf{cross-lingual}: el conjunto de evaluación reparte las consultas
+entre español, inglés y portugués, y una consulta en un idioma debe recuperar documentos en los
+otros dos. Un encoder monolingüe fallaría en dos tercios de las consultas.
+
+\textbf{Validación empírica.} BGE-M3 obtuvo NDCG@10 de \textbf{0,990} frente a \textbf{0,966} de
+\texttt{paraphrase-multi\-lingual-MiniLM-L12-v2}, con la diferencia concentrada exactamente donde
+se predijo: la consulta en portugués pasó de 0,877 a \textbf{1,000}.
+
+\subsection{Restricción de arquitectura}
+
+Todos los modelos empleados en indexación y recuperación son \textbf{encoders} (familia BERT). No
+se utiliza ningún modelo generativo (decoder) en la construcción del índice ni en la recuperación,
+conforme a las Secciones 4.2 y 8.3.
+
+\section{Índice vectorial FAISS}
+
+Elegimos \textbf{\texttt{IndexFlatIP} con vectores normalizados a norma unitaria}, que equivale
+exactamente a similitud coseno (ecuación 4 de la especificación).
+
+\textbf{Justificación:} para el volumen de este reto la búsqueda exhaustiva es holgadamente viable
+y ofrece resultados \textbf{exactos}. Los índices aproximados (\texttt{IVFFlat}, \texttt{HNSW})
+sacrifican exactitud por velocidad, un intercambio que no compensa cuando la métrica evaluada es la
+calidad del ranking y el tiempo de respuesta no se puntúa. Si el corpus creciera un orden de
+magnitud, migrar a \texttt{IndexHNSWFlat} es un cambio de una línea en la configuración.
+
+FAISS almacena únicamente vectores e identificadores internos. La metadata vive en
+\texttt{metadata.jsonl}, donde \textbf{la línea $i$ corresponde al identificador interno $i$} que
+FAISS asigna al indexar, tal como exige el formato de entrega. La persistencia usa las funciones
+nativas \texttt{write\_index}/\texttt{read\_index}.
+
+\section{Módulo de recuperación}
+
+\subsection{Fusión de múltiples índices}
+
+Implementamos las tres estrategias de la Sección 8.4 y adoptamos \textbf{Reciprocal Rank Fusion}
+por defecto:
+\[ s_{\mathrm{RRF}}(c) = \sum_{j=1}^{m} \frac{1}{k_0 + r_j(c)}, \qquad k_0 = 60 \]
+RRF opera sobre \textbf{posiciones} y no sobre puntuaciones, por lo que es robusto frente a las
+distintas escalas de similitud de encoders diferentes —un problema real, ya que CombSUM permitiría
+que el encoder con puntuaciones sistemáticamente más altas domine la fusión.
+
+\subsection{Agregación de fragmentos a documentos}
+
+Para el nivel documento (F1@3) agrupamos los chunks por \texttt{doc\_id} y calculamos una
+puntuación agregada. Implementamos tres estrategias —máximo (\emph{max pooling}), suma y media
+ponderada— comparadas empíricamente en la Sección 8.
+
+\subsection{Reranking con cross-encoder}
+
+Incluimos un paso opcional de reordenamiento con \texttt{BAAI/bge-reranker-v2-m3}, un
+\textbf{cross-encoder} que puntúa conjuntamente el par (consulta, fragmento).
+
+\textbf{Consideración sobre el reglamento.} La Sección 8.3 prohíbe modelos \textbf{generativos}
+(decoders) en la recuperación. Un cross-encoder es arquitectura \textbf{encoder} (familia BERT) y
+produce una puntuación escalar de relevancia; no genera texto. Entendemos que su uso es admisible,
+pero por prudencia el paso es \textbf{desactivable por configuración} y, ante una interpretación
+restrictiva, el sistema opera con fusión RRF pura sin modificar una línea de código.
+
+\subsection{Cumplimiento del formato de salida}
+
+Un validador estricto verifica cada objeto antes de escribir \texttt{resultados.jsonl}: exactamente
+3 documentos, exactamente 10 fragmentos, ningún fragmento por encima de 250 palabras y orden
+\texttt{q001}–\texttt{q050}. La verificación es automática y forma parte del pipeline de generación.
+
+\section{Grafo de conocimiento (componente bonus)}
+
+\textbf{Construcción.} (i) \emph{Reconocimiento de entidades} con \texttt{GLiNER} multilingüe
+(MIT), modelo \emph{zero-shot} que extrae tipos definidos en configuración sin reentrenamiento;
+verificamos su comportamiento cross-lingual: sobre texto en español identificó \emph{Estados
+Unidos} (país), \emph{sistemas de armas autónomas} (tecnología) y \emph{Convenio de Ginebra}
+(evento). (ii) \emph{Extracción de relaciones} por co-ocurrencia dentro del mismo fragmento, con
+peso acumulado; \textbf{no se emplea ningún modelo generativo}. (iii) \emph{Persistencia} en grafo
+dirigido NetworkX exportado a \texttt{grafo.graphml}, donde cada nodo guarda los \texttt{chunk\_id}
+en que aparece la entidad y cada arista referencia el \texttt{doc\_id} y \texttt{chunk\_id} que la
+respalda, garantizando \textbf{trazabilidad} de toda relación hasta su evidencia textual.
+
+\textbf{Integración con la recuperación.} El grafo actúa como \textbf{índice adicional} dentro del
+esquema de fusión (Sección 8.5): se extraen las entidades de la consulta con el mismo NER, se
+recuperan los chunks vinculados a esas entidades y a sus \textbf{vecinos de primer orden}, se
+puntúan por evidencia acumulada y el ranking resultante se fusiona con los vectoriales mediante
+RRF. Aporta una señal que los embeddings sólo capturan de forma implícita: \textbf{relaciones
+explícitas entre entidades}. Sobre el corpus completo resultan \textbf{104\,293 entidades y
+561\,522 relaciones}, podadas a \textbf{26\,961 nodos y 97\,182 aristas} descartando las
+co-ocurrencias vistas una sola vez.
+
+\subsection{El grafo con peso pleno degrada la recuperación}
+
+Integrarlo no basta: hay que comprobar que ayuda. Medimos \textbf{tres corridas completas} sobre el
+mismo índice —sin grafo, con grafo a peso pleno y con grafo atenuado— comparadas con
+\texttt{scripts/compare\_resultados.py}.
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+& \textbf{Sin grafo} & \textbf{Peso 1,0} & \textbf{Peso 0,3} \\
+\midrule
+Consultas que cambian (vs. sin grafo) & --- & 27/50 & \textbf{2/50} \\
+Solape de documentos                  & --- & 90,0\,\% & 99,3\,\% \\
+Coherencia temática                   & 84,0\,\% & 83,3\,\% & \textbf{84,0\,\%} \\
+Documentos distintos en el top-3      & 94 & 93 & 93 \\
+Consultas con un solo observatorio    & 18 & 19 & \textbf{18} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Con peso pleno el grafo altera 27 de las 50 consultas \textbf{sin mejorar un solo indicador}. El
+dato agregado, sin embargo, escondía lo relevante, que apareció al inspeccionar fragmento a
+fragmento: en \texttt{q006} (riesgos de la IA militar sin doctrina) el documento
+\texttt{F1-CSET-125}, que aportaba los fragmentos en posiciones 1, 2 y 3, \textbf{desaparecía del
+top-3 de documentos}, sustituido por gobernanza de la CCW y tecnología de defensa indonesia. En
+\texttt{q023} el grafo sí incorporaba un fragmento excelente —el malware \emph{Orbitshade}
+explotando debilidades de autenticación en protocolos de \emph{uplink}— pero a costa de expulsar
+del top-3 al documento \texttt{F2-SWF-124}, que era el primero sin grafo \textbf{y del que procede
+ese mismo fragmento}.
+
+\textbf{La causa es la fusión, no el grafo.} RRF pondera \textbf{únicamente por posición}: el primer
+elemento de cada ranking aporta $1/(k_0+1)$ con independencia de su origen. Eso es correcto entre
+índices que miden lo mismo, pero el grafo ordena por \textbf{co-ocurrencia de entidades} y el
+recuperador denso por \textbf{relevancia semántica}. Con el mismo voto, una señal de popularidad
+desplaza aciertos.
+
+\textbf{Corrección.} Se generalizaron las tres fórmulas de fusión a \textbf{pesos por ranking},
+$s(c) = \sum_j w_j / (k_0 + r_j(c))$. Con $w_j = 1$ el resultado es idéntico a la ecuación~7 del
+enunciado, propiedad verificada por test. El grafo entra con $w = 0{,}3$: rompe empates y aporta
+evidencia, pero no puede por sí solo desplazar un acierto del recuperador denso. Sigue siendo
+aritmética sobre posiciones, sin ningún modelo generativo.
+
+No se exploraron pesos intermedios de forma deliberada. Sin juicios de relevancia sobre las 50
+consultas solo disponemos de indicadores débiles, y afinar contra ellos sería sobreajustar a una
+métrica que no es la que se evalúa.
+
+\section{Metodología de evaluación y resultados}
+
+\subsection{Optimizar sin ground truth}
+
+El conjunto de evaluación y sus juicios de relevancia no son públicos durante el reto. Ajustar
+hiperparámetros «a ojo» equivale a no ajustarlos. Construimos un \textbf{arnés de evaluación
+interno}: (i) consultas propias con relevancia conocida, equilibradas entre fenómenos e idiomas;
+(ii) una implementación de \textbf{NDCG@10 y F1@3 idéntica a la especificación} (ecuaciones 8–14),
+verificada con pruebas unitarias que reproducen el ejemplo de Conteo de Borda de la Tabla 3;
+(iii) un barrido que rankea cada configuración con \textbf{Conteo de Borda}, el mismo criterio del
+leaderboard oficial, optimizando así el equilibrio entre ambas métricas y no una sola.
+
+Este arnés detectó dos defectos que habrían costado puntos y que ninguna inspección visual habría
+revelado: el separador de rutas en \texttt{fuente} y un error en el ranking ideal del NDCG que
+producía valores superiores a 1.
+
+\subsection{Corpus de validación previo}
+
+Antes de disponer del corpus oficial reunimos \textbf{151 documentos públicos auténticos}
+(artículos de arXiv, \emph{ESA Space Environment Report}, informe IADC de UNOOSA, \emph{Panorama
+Social} de la CEPAL) y construimos 34 consultas con juicios de relevancia derivados de una señal
+externa e independiente: el propio buscador de arXiv. Si una consulta devolvió un artículo, ese
+artículo es relevante para la consulta en lenguaje natural equivalente, y su posición da el grado.
+Es supervisión débil, pero ajena a nuestro sistema, lo que evita el sesgo circular de evaluarnos
+con juicios propios.
+
+\subsection{El corpus oficial}
+
+El corpus entregado consta de \textbf{1\,826 documentos} (2,93\,GB) de \textbf{20 observatorios}.
+Difería de nuestras previsiones en tres puntos que obligaron a adaptar el sistema:
+
+\begin{itemize}
+\item \textbf{El formato dominante es JSON} (964 archivos, 52\,\%), no PDF (759). Los esquemas son
+heterogéneos —artículos con \texttt{body\_text}, páginas con \texttt{sections}, catálogos de
+fichas—, así que reescribimos el extractor para recorrer cualquier estructura y recoger todo el
+texto útil descartando metadata técnica, en lugar de buscar un conjunto fijo de claves.
+\item \textbf{ADL entrega un inventario oficial} con un \texttt{DOC\_ID} único por archivo. La
+especificación decía que la evaluación a nivel documento empareja por \texttt{fuente}, pero
+optamos por el identificador del organizador en vez de inventar uno propio. La decisión resultó
+acertada: ADL aclaró después que aquella frase era \textbf{una errata de versionado} y que
+\emph{«el emparejamiento a nivel de documento se realiza mediante el campo \texttt{doc\_id}»}.
+\item \textbf{51 PDFs no tienen capa de texto.} Son escaneados y la extracción devolvía cadena
+vacía \emph{sin error visible}. 47 son informes de Alertas Tempranas (Defensoría del Pueblo), el
+observatorio más relevante para 18 de las 50 consultas. Se recuperaron mediante OCR.
+\end{itemize}
+
+\textbf{Resultado de la indexación:} \textbf{90\,613 fragmentos de 1\,821 de los 1\,826 documentos}
+del inventario, metadata alineada 1:1 con el índice FAISS, índice disperso con 59\,637 tokens
+únicos, y \texttt{resultados.jsonl} con \textbf{cero errores de esquema}. Los cinco documentos no
+indexados carecen de texto extraíble por cualquier medio: cuatro son fotografías —un retrato y
+tres imágenes de misión, sobre las que el OCR se ejecuta y devuelve vacío correctamente— y el
+quinto es un archivo de dos bytes (\texttt{[]}).
+
+\textbf{Auditoría de cobertura.} Llegar a esa cifra exigió perseguir omisiones que el sistema no
+reportaba como errores. El caso más instructivo: un archivo con extensión \texttt{.csv} que en
+realidad está separado por tabuladores hacía fallar al lector estricto de \emph{pandas} con
+\texttt{ParserError}, y sus \textbf{15\,115 registros} quedaban fuera; un reintento tolerante los
+recupera. Cuatro páginas cuyo único texto útil es el título (13--31 caracteres) caían por debajo
+del umbral de longitud mínima y \textbf{el documento entero desaparecía del índice}: se conserva
+ahora el mejor fragmento disponible, porque un documento pobre es recuperable y uno ausente no lo
+es jamás. Y una imagen \texttt{.avif} con extensión no registrada se omitía \emph{en silencio}, sin
+contarse siquiera como descartada.
+
+\subsection{Tres hallazgos que solo aparecen con el corpus real}
+
+\textbf{Contaminación por el archivo de consultas.} El paquete de ADL incluye, junto al corpus, el
+PDF con las 50 consultas de evaluación. Al indexarlo como un documento más, emparejaba de forma
+trivial —contiene el texto literal de cada consulta— y aparecía en el top-3 de \textbf{20 de las 50
+consultas}, gastando uno de los tres únicos huecos de documento. La regla que lo resuelve es
+\textbf{el inventario oficial define el corpus}: todo archivo ausente de él se omite. Contaminación
+medida: 20/50 $\rightarrow$ 0/50.
+
+\textbf{Concentración de fragmentos.} Tres volcados bibliográficos en CSV generaban 78\,000
+fragmentos entre los tres —el 51\,\% del índice— sobre biomedicina ajena a las consultas. Un
+límite configurable por documento acota su peso sin excluirlos del corpus.
+
+\textbf{Un documento sin puntos cabía entero en un solo fragmento.} Los 73 mapas \texttt{.pbf} del
+corpus son datos geoespaciales sin una sola marca de puntuación. El segmentador oracional devolvía
+por tanto el documento completo como una única «oración», y la política de no partir oraciones la
+emitía tal cual: un fragmento de hasta 291\,KB del que el encoder solo procesa sus primeros 8\,192
+tokens, quedando \textbf{el resto del documento fuera del índice sin aviso alguno}. La corrección
+opera en dos niveles: el extractor emite \emph{un registro por elemento} —igual que en CSV, donde
+cada fila es una unidad de fragmentación con sentido propio— y el fragmentador trocea por palabras
+cualquier oración que exceda el presupuesto, garantía verificada por test. El resultado pasa de 77
+a \textbf{3\,871 fragmentos}, con datos de presencia de grupos armados por municipio amazónico
+directamente pertinentes al Fenómeno 3.
+
+Merece señalarse el diagnóstico del formato, porque contradice la guía recibida. Consultado por la
+comunidad, el organizador respondió que \texttt{.pbf} es \emph{«el formato de OpenStreetMap»} y
+sugirió \texttt{pyrosm} o \texttt{pyosmium}. La verificación sobre los bytes del archivo dice otra
+cosa: comienzan por \texttt{1a\,\ldots\,0a\,10\,"au\_compilado\_R02"}, esto es el campo~3
+(\emph{layers}) y el campo~1 (\emph{name}) del esquema \textbf{Mapbox Vector Tile}; un
+\texttt{.osm.pbf} comenzaría por la longitud del \emph{BlobHeader} seguida de la cadena
+\texttt{OSMHeader}, ausente aquí. Los archivos residen además en una pirámide de teselas
+\texttt{tiles/\{z\}/\{x\}/\{y\}.pbf}. Decodificado como vector tile, un solo archivo entrega 251
+elementos con atributos reales. Se conserva \texttt{pyosmium} como respaldo por si algún archivo sí
+fuera de OSM, pero el corpus se indexa con el decodificador que corresponde a su contenido real.
+
+\subsection{Selección del motor de OCR}
+
+Medimos dos motores sobre la misma página escaneada. PaddleOCR requiere desactivar oneDNN para no
+fallar en Windows, lo que elimina sus kernels optimizados: \textbf{115\,s por página}, es decir
+20 horas para las 648 páginas escaneadas del corpus. EasyOCR, que se apoya en la misma pila de
+GPU ya empleada por los encoders, baja a \textbf{6,5\,s por página} (48 minutos en total) con
+calidad equivalente. Ambos son modelos de detección y reconocimiento clásicos, no generativos.
+
+\subsection{Resultados}
+
+Los 50 documentos se procesaron \textbf{sin una sola omisión}, produciendo \textbf{2\,601
+fragmentos}. El almacén de metadata pasó la validación de esquema con \textbf{cero errores} y
+mantiene la correspondencia exacta línea $\leftrightarrow$ identificador interno de FAISS.
+
+\begin{center}\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Configuración} & \textbf{NDCG@10} & \textbf{F1@3} & \textbf{Borda} \\
+\midrule
+\textbf{max pooling + reranking} & \textbf{0,4246} & \textbf{0,5000} & \textbf{8} \\
+media ponderada & 0,3625 & 0,5000 & 6 \\
+max pooling & 0,3625 & 0,5000 & 6 \\
+media ponderada + reranking & 0,4246 & 0,4697 & 5 \\
+suma & 0,3625 & 0,4697 & 3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Hallazgo 1 — el reranking es la palanca más rentable.} El cross-encoder eleva el NDCG@10 de
+0,3625 a \textbf{0,4246}, una mejora relativa del \textbf{17\,\%}, sin degradar el F1@3. Es la
+mayor ganancia individual medida en todo el sistema.
+
+\textbf{Hallazgo 2 — los corpus de juguete engañan.} Sobre un conjunto sintético reducido, las
+mismas variantes indicaban que el reranking \textbf{no aportaba nada} e incluso perjudicaba, porque
+con pocos documentos el recuperador denso ya saturaba las métricas (NDCG $\approx$ 0,95 en toda
+variante). De haber confiado en ese conjunto habríamos descartado el componente más valioso.
+
+\textbf{Hallazgo 3 — la agregación por suma perjudica el nivel documento.} En ambos corpus, sumar
+las puntuaciones de todos los fragmentos de un documento reduce el F1@3: favorece documentos largos
+con muchos fragmentos mediocres sobre documentos concisos con un fragmento excelente. Adoptamos
+\textbf{max pooling}.
+
+\textbf{Interpretación de las cifras absolutas.} Los juicios de este conjunto son
+\textbf{incompletos por construcción}: cada consulta tiene unos cinco documentos etiquetados, pero
+el corpus contiene otros genuinamente relacionados que no lo están; cuando el sistema los recupera
+—acertadamente— computan como error y deprimen el NDCG. Estas cifras son válidas para
+\textbf{comparar configuraciones entre sí}, que es el uso que les damos, pero no son una estimación
+del rendimiento absoluto sobre el conjunto oficial, cuyos juicios sí son exhaustivos.
+
+\section{Reproducibilidad}
+
+El script \texttt{generador.py} reconstruye \texttt{resultados.jsonl} a partir del índice
+persistido y del archivo de consultas. El determinismo se asegura fijando las semillas de
+\texttt{random}, NumPy y PyTorch, activando algoritmos deterministas y escribiendo el JSON Lines
+con separadores fijos y codificación UTF-8 explícita. Toda la configuración —chunking, encoders,
+tipo de índice, fusión, agregación— reside en un único \texttt{config.yaml}, de modo que cualquier
+resultado reportado es rastreable a una configuración concreta. El proyecto cuenta con
+\textbf{61 pruebas automatizadas} que cubren las métricas, el validador de esquema, el chunker, las
+estrategias de fusión, la limpieza y el recuperador basado en grafo.
+
+\section{Limitaciones}
+
+\textbf{Las 50 consultas de ADL no traen juicios de relevancia.} No es posible calcular NDCG@10 ni
+F1@3 sobre ellas, de modo que ninguna cifra de este informe afirma que una configuración sea
+\emph{mejor} que otra en la métrica del reto: se compara cuánto cambia cada corrida y se inspeccionan
+fragmentos a mano.
+
+\textbf{La coherencia temática es un indicador sesgado.} Lo usamos por ser observable, pero asume
+que un documento relevante para una consulta del Fenómeno~1 reside en la carpeta del Fenómeno~1, lo
+cual es falso: SIPRI y CEEEP están archivados bajo el Fenómeno~3 y publican precisamente sobre IA
+militar. Por eso \texttt{q001} (IA frente a amenazas NBQR), \texttt{q003} (IA en operaciones
+militares) y \texttt{q007} (sistemas autónomos y DIH) figuran como desalineadas mientras devuelven
+documentos \textbf{correctos}: SIPRI sobre mando y control nuclear (NC3) y CEEEP sobre IA y
+desinformación en conflictos. El indicador mide dónde archivó ADL el observatorio, no de qué trata
+el documento.
+
+\textbf{Cinco documentos del inventario no están indexados} y no podrán estarlo: cuatro son
+fotografías sin texto —el OCR se ejecuta y devuelve vacío correctamente— y el quinto es un archivo
+de dos bytes. La cobertura efectiva es de 1\,821 sobre 1\,826.
+
+\textbf{La contribución positiva demostrable del grafo es pequeña}: con el peso calibrado altera 2
+de las 50 consultas. Está integrado a la recuperación, como exige el bono, y ajustado con evidencia
+para no degradar el ranking, pero no reclamamos para él una ganancia que no hemos podido medir.
+
+\section{Conclusiones}
+
+La decisión de diseño más rentable no fue la elección del modelo, sino \textbf{leer la regla de
+emparejamiento y orientar el esfuerzo a la fidelidad del texto}. La limpieza del corpus produjo la
+mejora más barata; el encoder correcto (BGE-M3) resolvió el requisito cross-lingual; el reranking
+aportó la mayor ganancia medida (+17\,\% de NDCG@10); y el arnés de evaluación interno convirtió
+decisiones de intuición en decisiones medidas.
+
+La lección metodológica que atraviesa el trabajo es que \textbf{medir en condiciones
+representativas cambia las conclusiones}. Dos hallazgos —el valor del reranking y el perjuicio de
+la agregación por suma— sólo emergieron al evaluar sobre documentos reales, largos y multilingües.
+Y dos defectos que habrían costado puntos fueron detectados por las pruebas y el arnés, no por
+inspección visual.
+
+Esa misma lección se repitió con el componente bonus. El grafo de conocimiento estaba construido y
+podría haberse entregado como tal; medirlo reveló que, integrado con peso pleno, expulsaba del
+top-3 los documentos que respondían la consulta. El valor no estuvo en construirlo, sino en
+descubrir \textbf{por qué} degradaba —la fusión daba el mismo voto a dos señales de naturaleza
+distinta— y corregir la fusión en lugar de descartar el componente.
+
+Los componentes de mayor riesgo regulatorio quedan aislados tras interruptores de configuración,
+de modo que el sistema puede ajustarse a la interpretación del jurado sin tocar código. La consulta
+que elevamos sobre el reranking fue respondida por el organizador —\emph{«sí está permitido
+re-ranking con cross-encoders; la restricción aplica es para arquitecturas decoders»}—, de modo que
+se mantiene activo: es la diferencia medida más grande entre una entrada correcta y una
+competitiva.
+
+\end{document}

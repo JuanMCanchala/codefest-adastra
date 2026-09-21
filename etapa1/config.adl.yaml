@@ -1,0 +1,88 @@
+# Configuracion para el CORPUS OFICIAL DE ADL (1826 documentos, 2.93 GB).
+# Es la configuracion de la entrega real.
+
+seed: 42
+
+paths:
+  corpus_raw: "data/adl/corpus"
+  inventario: "data/adl/Indice_Datos_Codefest.xlsx"   # DOC_ID oficial por archivo
+  processed: "data/processed"
+  entrega: "entrega"
+  queries: "data/adl/queries.jsonl"                    # las 50 consultas reales
+  resultados: "entrega/resultados.jsonl"
+
+extraction:
+  pdf_backend: "pymupdf"     # 759 PDFs; docling da mas fidelidad pero ~60s/doc
+  ocr_enabled: false         # solo 8 imagenes en todo el corpus
+  ocr_langs: ["es", "en", "pt"]
+
+cleaning:
+  fix_encoding: true
+  detect_language: false
+  drop_boilerplate: true
+  min_chunk_chars: 40
+
+chunking:
+  strategy: "sentence_window"
+  index_max_tokens: 256
+  overlap_sentences: 1
+  output_max_words: 250
+  respect_sentences: true
+  # Tres volcados bibliograficos de PubMed en CSV generan 78.000 fragmentos entre
+  # los tres (el 51% del indice) sobre temas biomedicos ajenos a las 50 consultas.
+  # El limite acota su peso sin excluirlos del corpus.
+  max_chunks_per_doc: 3000
+
+encoders:
+  - name: "bge-m3"
+    model_id: "BAAI/bge-m3"
+    weight: 1.0
+    normalize: true
+    use_dense: true
+    use_sparse: true         # CLAVE: las 50 consultas reales estan llenas de
+                             # siglas (NBQR, RPO, GAO, GAOR, GDO) y nombres
+                             # propios (Chocó, Arauca) donde el denso es debil
+    use_colbert: false
+
+faiss:
+  index_type: "IndexFlatIP"
+
+retrieval:
+  top_k_faiss: 100
+  fusion: "rrf"
+  rrf_k: 60
+  final_fragments: 10
+  final_documents: 3
+  # Descarta notas al pie y restos de encabezado del top-10; solo se usan
+  # como relleno si no hay 10 fragmentos sustanciales.
+  min_fragment_words: 20
+  # Evita que varias versiones del mismo informe (idiomas/ediciones distintos)
+  # ocupen los 3 huecos de documento. Se comparan centroides de embeddings.
+  # Calibrado con datos: pares del mismo informe dan 0.935-0.959; documentos
+  # distintos, mediana 0.578 y percentil 95 de 0.708.
+  doc_dedup_threshold: 0.90
+
+rerank:
+  enabled: true              # mejor configuracion medida (hibrido + reranking)
+  model_id: "BAAI/bge-reranker-v2-m3"
+  # Medido sobre el corpus: el top-50 fusionado contiene solo 8 documentos
+  # distintos, insuficientes para elegir 3 diversos; el top-100 contiene 33.
+  top_k_candidates: 100
+
+aggregation:
+  method: "max_pool"
+
+  k_chunks: 30
+
+graph:
+  # Las FAQ del reto son explicitas: "es bono y para que sea valido lo deben
+  # integrar a la recuperacion, el solo construirlo no es valido". El grafo entra
+  # como un ranking mas en la fusion RRF (Seccion 8.5), no como adorno.
+  enabled: true
+  ner_model: "urchade/gliner_multi-v2.1"
+  entity_types: ["persona", "organizacion", "pais", "tecnologia", "evento", "lugar"]
+  fuse_into_retrieval: true
+  # Peso del ranking del grafo dentro de la fusion RRF. Denso y disperso pesan
+  # 1.0. El grafo ordena por coocurrencia de entidades, no por relevancia, y con
+  # peso pleno desplazaba aciertos del recuperador denso (ver BITACORA, R8).
+  fusion_weight: 0.3
