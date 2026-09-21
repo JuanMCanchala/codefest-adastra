@@ -3,7 +3,7 @@
 > Registro cronológico: **qué** se cambió, **por qué**, **dónde** quedó y **qué resultado** dio.
 > Para la referencia del sistema ver `SISTEMA.md`; para el entregable ver `informe_tecnico.pdf`.
 
-Repositorio: `JuanMCanchala/codefest-adastra-2026` · rama principal `main`
+Repositorio: `JuanMCanchala/codefest-adastra` (monorepo, carpeta `etapa1-base-vectorial/`) · rama principal `main`
 
 ---
 

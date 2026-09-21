@@ -27,25 +27,26 @@ entrega/
 ```
 
 > **La base vectorial se descarga aparte.** `index.faiss` (354 MB) y `metadata.jsonl` (190 MB)
-> superan el límite de 100 MB por archivo de GitHub, así que viaja como *release*:
+> superan el límite de 100 MB por archivo de GitHub, así que viaja como _release_:
 >
-> **https://github.com/JuanMCanchala/codefest-adastra-2026/releases/tag/base-vectorial-v1**
+> **https://github.com/JuanMCanchala/codefest-adastra/releases/tag/base-vectorial-v1**
 >
 > ```bash
+> cd etapa1-base-vectorial
 > unzip base_vectorial.zip -d entrega/     # 507 MB, md5 adf39b0dd4aee9835d19aa5371d86ed3
 > python scripts/check_entrega.py --entrega entrega
 > ```
 >
-> Alternativamente puede reconstruirse desde el corpus (ver *Reproducción desde cero*).
+> Alternativamente puede reconstruirse desde el corpus (ver _Reproducción desde cero_).
 
 ## Documentación
 
-| Documento | Para qué |
-|---|---|
-| **[docs/SISTEMA.md](docs/SISTEMA.md)** | Referencia completa: arquitectura, cada módulo, cada decisión, runbook |
-| **[docs/BITACORA.md](docs/BITACORA.md)** | Trazabilidad: qué cambió, por qué, resultados medidos, bugs corregidos |
-| **[entrega/informe_tecnico.pdf](entrega/informe_tecnico.pdf)** | Informe técnico oficial |
-| [docs/NOTA_UNLIMITED_OCR.md](docs/NOTA_UNLIMITED_OCR.md) | Componente parqueado y por qué |
+| Documento                                                      | Para qué                                                               |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **[docs/SISTEMA.md](docs/SISTEMA.md)**                         | Referencia completa: arquitectura, cada módulo, cada decisión, runbook |
+| **[docs/BITACORA.md](docs/BITACORA.md)**                       | Trazabilidad: qué cambió, por qué, resultados medidos, bugs corregidos |
+| **[entrega/informe_tecnico.pdf](entrega/informe_tecnico.pdf)** | Informe técnico oficial                                                |
+| [docs/NOTA_UNLIMITED_OCR.md](docs/NOTA_UNLIMITED_OCR.md)       | Componente parqueado y por qué                                         |
 
 ## Las claves que deciden el puntaje
 
@@ -56,10 +57,10 @@ entrega/
 2. **Cross-lingual**: una consulta en español debe recuperar documentos en inglés y portugués →
    encoder multilingüe fuerte (**BGE-M3**).
 3. **Decoders prohibidos, cross-encoders permitidos.** Consultamos formalmente al jurado; la
-   respuesta fue *«sí está permitido re-ranking con cross-encoders; la restricción aplica es para
-   arquitecturas decoders»*. El reranking está activo.
-4. **El grafo solo puntúa si está integrado a la recuperación** (*«el solo construirlo no es
-   válido»*). Entra como un ranking más en la fusión RRF, con peso calibrado (ver abajo).
+   respuesta fue _«sí está permitido re-ranking con cross-encoders; la restricción aplica es para
+   arquitecturas decoders»_. El reranking está activo.
+4. **El grafo solo puntúa si está integrado a la recuperación** (_«el solo construirlo no es
+   válido»_). Entra como un ranking más en la fusión RRF, con peso calibrado (ver abajo).
 5. **Completitud lingüística + 250 palabras** → chunking de **dos niveles**.
 
 ## Arquitectura
@@ -91,7 +92,7 @@ pip install -r requirements.txt
 
 > Instalar torch **antes** que el resto y comprobarlo después: varias dependencias
 > (`docling`, `gliner`) arrastran la build de CPU y la sustituyen en silencio. `pip install
-> torch==2.13.0` responde *"already satisfied"* aunque la instalada sea `+cpu`. Verificar con
+torch==2.13.0` responde _"already satisfied"_ aunque la instalada sea `+cpu`. Verificar con
 > `python -c "import torch; print(torch.__version__, torch.cuda.is_available())"` → debe decir
 > `2.13.0+cu126 True`.
 
@@ -168,7 +169,7 @@ las 50 consultas indexado como documento del corpus, que aparecía en el top-3 d
 ## Limitaciones declaradas
 
 - Las 50 consultas **no traen juicios de relevancia**: no se puede calcular NDCG@10 ni F1@3 sobre
-  ellas. Ninguna cifra de este repositorio afirma que una configuración sea *mejor* que otra en la
+  ellas. Ninguna cifra de este repositorio afirma que una configuración sea _mejor_ que otra en la
   métrica del reto.
 - La **coherencia temática es un indicador sesgado**: asume que un documento relevante para una
   consulta de F1 vive en la carpeta F1, y SIPRI y CEEEP están archivados bajo F3 publicando sobre

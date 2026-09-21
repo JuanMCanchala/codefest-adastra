@@ -1,8 +1,8 @@
 # etapa1 — recuperación de la Etapa 1
 
-Copia del paquete `src/` del repositorio de la Etapa 1
-([codefest-adastra-2026](https://github.com/JuanMCanchala/codefest-adastra-2026), commit `a88941d`),
-reducida a lo necesario para *consultar* la base vectorial: esquema, encoders BGE-M3, índices FAISS
+Copia del paquete `src/` de la Etapa 1
+([`etapa1-base-vectorial/src/`](../../etapa1-base-vectorial/src), commit `a88941d`),
+reducida a lo necesario para _consultar_ la base vectorial: esquema, encoders BGE-M3, índices FAISS
 y disperso, fusión RRF, reranking, agregación por documento y recuperación por grafo.
 
 No incluye extracción, OCR, chunking de indexación ni construcción del grafo: la base ya está
