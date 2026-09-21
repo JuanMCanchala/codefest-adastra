@@ -54,3 +54,10 @@ Preguntas Frecuentes.xlsx
 *.toc
 *.out
 *.synctex.gz
+
+# Base vectorial construida y su volcado: viajan en el release, no en el repositorio.
+*.db
+space_corpus.sql
+# Documento oficial del reto y transcripciones de contexto (no redistribuir).
+CODEFEST_2026*.pdf
+reto_texto_de_las_imagenes.txt
