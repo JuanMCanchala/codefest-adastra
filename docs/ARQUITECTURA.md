@@ -734,7 +734,7 @@ Eso cambia la forma que toma la coordinación, y conviene decir exactamente cuá
 
 §3.3 dice explícitamente que **no existe un catálogo obligatorio de componentes** y que la
 decisión debe justificarse. El Anexo B es material de referencia, no una lista de la compra;
-el agente elige entre ocho componentes, el tablero ofrece nueve, y lo que descartamos lo
+el agente elige entre diez componentes, el tablero ofrece doce, y lo que descartamos lo
 descartamos por criterios, no por tiempo. Lo declaramos para que el jurado no tenga que
 adivinar si fue omisión o decisión:
 
